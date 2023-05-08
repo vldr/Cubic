@@ -1,0 +1,82 @@
+#pragma once
+#include "LocalPlayer.h"
+#include "LevelRenderer.h"
+#include "TextureManager.h"
+#include "ShaderManager.h"
+#include "LevelGenerator.h"
+#include "Level.h"
+#include "Random.h"
+#include "Timer.h"
+#include "ParticleManager.h"
+#include "HeldBlock.h"
+#include "SelectedBlock.h"
+#include "UI.h"
+#include "Frustum.h"
+
+#include <SDL2/SDL.h>
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <vector>
+
+class Game {
+public:
+	void init(SDL_Window* window);
+	void input(const SDL_Event& event);
+	void run();
+	void resize();
+
+	SDL_Window* window;
+	TextureManager textureManager;
+	ShaderManager shaderManager;
+	ParticleManager particleManager;
+	LocalPlayer localPlayer;
+	HeldBlock heldBlock;
+	SelectedBlock selectedBlock;
+	LevelRenderer levelRenderer;
+	LevelGenerator levelGenerator;
+	Level level;
+	Random random;
+	Timer timer;
+	UI ui;
+	Frustum frustum;
+
+	GLuint shader;
+	GLuint atlasTexture;
+
+	GLuint projectionMatrixUniform;
+	GLuint viewMatrixUniform;
+	GLuint modelMatrixUniform;
+
+	GLuint playerPositionUniform;
+	GLuint fragmentOffsetUniform;
+
+	GLuint fogEnableUniform;
+	GLuint fogDistanceUniform;
+	GLuint fogColorUniform;
+
+	int height;
+	int width;
+	float scaledHeight;
+	float scaledWidth;
+	int scaleFactor;
+	int scaleCount;
+
+	uint64_t lastTick;
+	uint64_t lastChunkUpdates;
+	uint64_t lastFrameRate;
+	uint64_t frameRate;
+	size_t chunkUpdates;
+
+	float fogDistance;
+	glm::vec4 fogColor;
+
+	glm::mat4 orthographicProjectionMatrix;
+	glm::mat4 perspectiveProjectionMatrix;
+	glm::mat4 viewMatrix;
+
+	const glm::mat4 identityMatrix = glm::mat4(1.0f);
+	const float fieldOfView = 70.0f;
+	const float nearPlane = 0.01f;
+	const float farPlane = 1000.0f;
+	const float tickRate = 20.0f;
+}; 
