@@ -11,165 +11,165 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\AABB.cpp">
+    <ClCompile Include="..\Source\AABB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Block.cpp">
+    <ClCompile Include="..\Source\Block.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Chunk.cpp">
+    <ClCompile Include="..\Source\Chunk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\CombinedNoise.cpp">
+    <ClCompile Include="..\Source\CombinedNoise.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Entity.cpp">
+    <ClCompile Include="..\Source\Entity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\HeldBlock.cpp">
+    <ClCompile Include="..\Source\HeldBlock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ParticleManager.cpp">
+    <ClCompile Include="..\Source\ParticleManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\LevelGenerator.cpp">
+    <ClCompile Include="..\Source\LevelGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\LevelRenderer.cpp">
+    <ClCompile Include="..\Source\LevelRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\LocalPlayer.cpp">
+    <ClCompile Include="..\Source\LocalPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Level.cpp">
+    <ClCompile Include="..\Source\Level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Lodepng.cpp">
+    <ClCompile Include="..\Source\Lodepng.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Main.cpp">
+    <ClCompile Include="..\Source\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Game.cpp">
+    <ClCompile Include="..\Source\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\OctaveNoise.cpp">
+    <ClCompile Include="..\Source\OctaveNoise.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Particle.cpp">
+    <ClCompile Include="..\Source\Particle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\PerlinNoise.cpp">
+    <ClCompile Include="..\Source\PerlinNoise.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Random.cpp">
+    <ClCompile Include="..\Source\Random.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ShaderManager.cpp">
+    <ClCompile Include="..\Source\ShaderManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Skybox.cpp">
+    <ClCompile Include="..\Source\Skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\TextureManager.cpp">
+    <ClCompile Include="..\Source\TextureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Timer.cpp">
+    <ClCompile Include="..\Source\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\UI.cpp">
+    <ClCompile Include="..\Source\UI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\VertexList.cpp">
+    <ClCompile Include="..\Source\VertexList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\SelectedBlock.cpp">
+    <ClCompile Include="..\Source\SelectedBlock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Frustum.cpp">
+    <ClCompile Include="..\Source\Frustum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\AABB.h">
+    <ClInclude Include="..\Source\AABB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\AABBPosition.h">
+    <ClInclude Include="..\Source\AABBPosition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Block.h">
+    <ClInclude Include="..\Source\Block.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Chunk.h">
+    <ClInclude Include="..\Source\Chunk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\CombinedNoise.h">
+    <ClInclude Include="..\Source\CombinedNoise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Entity.h">
+    <ClInclude Include="..\Source\Entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\HeldBlock.h">
+    <ClInclude Include="..\Source\HeldBlock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ParticleManager.h">
+    <ClInclude Include="..\Source\ParticleManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\LevelGenerator.h">
+    <ClInclude Include="..\Source\LevelGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\LevelRenderer.h">
+    <ClInclude Include="..\Source\LevelRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\LocalPlayer.h">
+    <ClInclude Include="..\Source\LocalPlayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Level.h">
+    <ClInclude Include="..\Source\Level.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Game.h">
+    <ClInclude Include="..\Source\Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Lodepng.h">
+    <ClInclude Include="..\Source\Lodepng.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Noise.h">
+    <ClInclude Include="..\Source\Noise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\OctaveNoise.h">
+    <ClInclude Include="..\Source\OctaveNoise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Particle.h">
+    <ClInclude Include="..\Source\Particle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\PerlinNoise.h">
+    <ClInclude Include="..\Source\PerlinNoise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Random.h">
+    <ClInclude Include="..\Source\Random.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ShaderManager.h">
+    <ClInclude Include="..\Source\ShaderManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Skybox.h">
+    <ClInclude Include="..\Source\Skybox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\TextureManager.h">
+    <ClInclude Include="..\Source\TextureManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Timer.h">
+    <ClInclude Include="..\Source\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\UI.h">
+    <ClInclude Include="..\Source\UI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\VertexList.h">
+    <ClInclude Include="..\Source\VertexList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\SelectedBlock.h">
+    <ClInclude Include="..\Source\SelectedBlock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Frustum.h">
+    <ClInclude Include="..\Source\Frustum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
