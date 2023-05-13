@@ -300,26 +300,6 @@ void LocalPlayer::input(const SDL_Event& event)
 {
     if (event.type == SDL_KEYDOWN)
     {
-        if (event.key.keysym.sym == SDLK_a)
-            moveState |= Move::Move_Left;
-
-        if (event.key.keysym.sym == SDLK_d)
-            moveState |= Move::Move_Right;
-
-        if (event.key.keysym.sym == SDLK_w)
-            moveState |= Move::Move_Forward;
-
-        if (event.key.keysym.sym == SDLK_s)
-            moveState |= Move::Move_Backward;
-
-        if (event.key.keysym.sym == SDLK_SPACE)
-            moveState |= Move::Move_Jump;
-
-        if (event.key.keysym.sym == SDLK_LSHIFT)
-            moveState |= Move::Move_Sprint;
-    }
-    else if (event.type == SDL_KEYUP)
-    {
         if (game->ui.state == UI::State::None)
         {
             if (event.key.keysym.sym == SDLK_r)
@@ -344,6 +324,39 @@ void LocalPlayer::input(const SDL_Event& event)
             }
         }
 
+        if (event.key.keysym.sym >= SDLK_1 && event.key.keysym.sym <= SDLK_9)
+        {
+            const auto newInventoryIndex = event.key.keysym.sym - SDLK_1;
+
+            if (inventoryIndex != newInventoryIndex)
+            {
+                inventoryIndex = newInventoryIndex;
+
+                game->heldBlock.update();
+                game->ui.update();
+            }
+        }
+
+        if (event.key.keysym.sym == SDLK_a)
+            moveState |= Move::Move_Left;
+
+        if (event.key.keysym.sym == SDLK_d)
+            moveState |= Move::Move_Right;
+
+        if (event.key.keysym.sym == SDLK_w)
+            moveState |= Move::Move_Forward;
+
+        if (event.key.keysym.sym == SDLK_s)
+            moveState |= Move::Move_Backward;
+
+        if (event.key.keysym.sym == SDLK_SPACE)
+            moveState |= Move::Move_Jump;
+
+        if (event.key.keysym.sym == SDLK_LSHIFT)
+            moveState |= Move::Move_Sprint;
+    }
+    else if (event.type == SDL_KEYUP)
+    {
         if (event.key.keysym.sym == SDLK_a)
             moveState &= ~Move::Move_Left;
 
