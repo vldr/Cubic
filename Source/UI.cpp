@@ -6,6 +6,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#ifdef EMSCRIPTEN
+#include <emscripten/html5.h>
+#endif
+
 void UI::init(Game* game)
 {
 	this->game = game;
@@ -26,7 +30,10 @@ void UI::openMenu(UI::State newState)
 	if (newState != State::None)
 	{
 		SDL_SetRelativeMouseMode(SDL_FALSE);
-		SDL_WarpMouseInWindow(game->window, game->width / 2, game->height / 2);
+
+#ifdef EMSCRIPTEN
+		emscripten_exit_pointerlock();
+#endif
 
 		mouseState = MouseState::Up;
 		state = newState;
