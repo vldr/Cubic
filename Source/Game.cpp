@@ -123,7 +123,6 @@ void Game::run()
         timer.tick();
     }
 
-    glEnable(GL_DEPTH_TEST);
     glClearColor(fogColor.r, fogColor.g, fogColor.b, fogColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -145,7 +144,7 @@ void Game::run()
     selectedBlock.renderPost();
     levelRenderer.renderPost();
 
-    glDisable(GL_DEPTH_TEST);
+    glClear(GL_DEPTH_BUFFER_BIT);
     glUniform1f(fogEnableUniform, 1.0f);
     glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, glm::value_ptr(identityMatrix));
 

@@ -290,7 +290,7 @@ void UI::drawBlock(unsigned char blockType, float x, float y, float scale)
 		VertexList::Vertex* vertex = &vertices[i];
 
 		auto matrix = game->identityMatrix;
-		matrix = glm::translate(matrix, glm::vec3(x, y, 0.0f));
+		matrix = glm::translate(matrix, glm::vec3(x, y, -15.0f));
 
 		if (blockDefinition.draw == Block::DrawType::DRAW_SPRITE)
 		{
