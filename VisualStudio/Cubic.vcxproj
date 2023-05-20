@@ -118,7 +118,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
@@ -170,6 +170,7 @@
     <ClCompile Include="..\Source\OctaveNoise.cpp" />
     <ClCompile Include="..\Source\Particle.cpp" />
     <ClCompile Include="..\Source\PerlinNoise.cpp" />
+    <ClCompile Include="..\Source\Player.cpp" />
     <ClCompile Include="..\Source\Random.cpp" />
     <ClCompile Include="..\Source\SelectedBlock.cpp" />
     <ClCompile Include="..\Source\ShaderManager.cpp" />
@@ -199,6 +200,7 @@
     <ClInclude Include="..\Source\OctaveNoise.h" />
     <ClInclude Include="..\Source\Particle.h" />
     <ClInclude Include="..\Source\PerlinNoise.h" />
+    <ClInclude Include="..\Source\Player.h" />
     <ClInclude Include="..\Source\Random.h" />
     <ClInclude Include="..\Source\SelectedBlock.h" />
     <ClInclude Include="..\Source\ShaderManager.h" />

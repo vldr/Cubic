@@ -167,7 +167,7 @@ void HeldBlock::render()
     float walk = game->localPlayer.walkDistance + (game->localPlayer.walkDistance - game->localPlayer.oldWalkDistance) * game->timer.delta;
     float bob = game->localPlayer.oldBobbing + (game->localPlayer.bobbing - game->localPlayer.oldBobbing) * game->timer.delta;
     float tilt = game->localPlayer.oldTilt + (game->localPlayer.tilt - game->localPlayer.oldTilt) * game->timer.delta;
-
+    
     auto matrix = game->identityMatrix;
     matrix = glm::translate(matrix, glm::vec3(0.45f, -0.55f - (0.25f * (1.0f - height)), -0.8f));
     matrix = glm::translate(matrix, glm::vec3(glm::sin(walk * M_PI) * bob * 0.5, -glm::abs(glm::cos(walk * M_PI) * bob), 0.0));

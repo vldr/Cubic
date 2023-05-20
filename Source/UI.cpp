@@ -236,8 +236,8 @@ bool UI::drawButton(float x, float y, const char* text)
 	int state = 1;
 	if (hover) { state = 2; }
 
-	drawInterface(x, y, 0.0f, 46.0f + state * 20.0f, width / 2, height);
-	drawInterface(x + width / 2, y, 200 - width / 2, 46 + state * 20, width / 2, height);
+	drawInterface(x, y, 0.0f, 46.0f + state * 19.99f, width / 2, height);
+	drawInterface(x + width / 2, y, 200 - width / 2, 46.0f + state * 19.99f, width / 2, height);
 	drawCenteredFont(text, x + width / 2, y + (height - 8) / 2, 1.0f);
 
 	return hover && clicked;

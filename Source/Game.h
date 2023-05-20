@@ -12,6 +12,7 @@
 #include "SelectedBlock.h"
 #include "UI.h"
 #include "Frustum.h"
+#include "Player.h"
 
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
@@ -39,6 +40,7 @@ public:
 	Timer timer;
 	UI ui;
 	Frustum frustum;
+	Player player;
 
 	GLuint shader;
 	GLuint atlasTexture;
