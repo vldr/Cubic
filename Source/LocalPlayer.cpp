@@ -110,8 +110,7 @@ void LocalPlayer::update()
 
                 if (
                     selected.destructible &&
-                    blockType != (unsigned char)Block::Type::BLOCK_AIR &&
-                    blockType != (unsigned char)Block::Type::BLOCK_BEDROCK
+                    !game->level.isAirTile(blockType)
                 )
                 {
                     bool setTile = game->level.setTileWithNeighborChange(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR);

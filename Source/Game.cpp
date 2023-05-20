@@ -14,7 +14,7 @@
 #include <cstdio>
 
 static const GLchar* fragmentSource = R""""(#version 100
-    precision lowp float;
+    precision mediump float;
 
     uniform sampler2D TextureSample;
     uniform vec2 FragmentOffset;
@@ -170,12 +170,15 @@ void Game::run()
 
 void Game::input(const SDL_Event& event)
 {
-    if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+    if (event.type == SDL_WINDOWEVENT)
     {
-        width = event.window.data1;
-        height = event.window.data2;
+        if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+        {
+            width = event.window.data1;
+            height = event.window.data2;
 
-        resize();
+            resize();
+        }
     }
 
     if (ui.input(event))
@@ -202,7 +205,7 @@ void Game::resize()
     scaledWidth /= scaleFactor;
     scaledHeight /= scaleFactor;
 
-    orthographicProjectionMatrix = glm::ortho(0.0f, scaledWidth, scaledHeight, 0.0f, 1000.0f, -1000.0f);
+    orthographicProjectionMatrix = glm::ortho(0.0f, scaledWidth, scaledHeight, 0.0f, -1000.0f, 1000.0f);
     perspectiveProjectionMatrix = glm::perspective(
         glm::radians(fieldOfView),
         GLfloat(width) / GLfloat(height),

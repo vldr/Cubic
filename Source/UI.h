@@ -15,12 +15,7 @@ public:
 	{
 		None,
 		SelectBlockMenu,
-		ChatMenu,
-		MainMenu,
-		SaveLevelMenu,
-		LoadLevelMenu,
-		SettingsMenu,
-		KeybindMenu
+		StatusMenu,
 	};
 
 	enum class MouseState 
@@ -53,13 +48,16 @@ private:
 
 	bool drawSelectBlockMenu();
 	bool drawSelectBlockButton(unsigned char blockType, unsigned char& selectedBlockType, float x, float y, float width, float height);
+	bool drawButton(float x, float y, const char* text);
 
+	void drawInterface(float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1, float shade, float z);
 	void drawInterface(float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1, float shade);
+	void drawInterface(float x0, float y0, float x1, float y1, float u, float v, float shade);
 	void drawInterface(float x0, float y0, float x1, float y1, float u, float v);
 
 	void drawFont(const char* text, float x, float y, float shade);
-	void drawFont(const char* text, float x, float y);
-	void drawCenteredFont(const char* text, float x, float y);
+	void drawShadowedFont(const char* text, float x, float y, float shade);
+	void drawCenteredFont(const char* text, float x, float y, float shade);
 
 	const float fontWidths[128] = {
 		1, 8, 8, 8, 8, 8, 8, 1, 8, 1, 8, 8, 1, 8, 8, 8,

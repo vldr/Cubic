@@ -30,6 +30,7 @@ void UI::openMenu(UI::State newState)
 	if (newState != State::None)
 	{
 		SDL_SetRelativeMouseMode(SDL_FALSE);
+		SDL_WarpMouseInWindow(game->window, game->width / 2, game->height / 2);
 
 #ifdef EMSCRIPTEN
 		emscripten_exit_pointerlock();
@@ -56,19 +57,19 @@ bool UI::input(const SDL_Event& event)
 {
 	if (event.type == SDL_KEYUP)
 	{
-		if (event.key.keysym.sym == SDLK_b)
+		if (event.key.keysym.sym == SDLK_b || event.key.keysym.sym == SDLK_e)
 		{
-			if (state != State::None)
+			if (state == State::SelectBlockMenu)
 			{
 				closeMenu();
 				return false;
 			}
-			else
+			else if (state == State::None)
 			{
 				openMenu(State::SelectBlockMenu);
 				return false;
 			}
-		}
+		}	
 	}
 	else if (event.type == SDL_MOUSEMOTION)
 	{
@@ -110,12 +111,35 @@ void UI::update()
 	fontVertices.reset();
 	interfaceVertices.reset();
 	blockVertices.reset();
-
-	drawHUD();
-
-	if (state == State::SelectBlockMenu && drawSelectBlockMenu())
+	
+	if (state == State::StatusMenu)
 	{
-		return;
+		int x = glm::ceil(game->scaledWidth / 16);
+		int y = glm::ceil(game->scaledHeight / 16);
+
+		for (int i = 0; i < x; i++)
+		{
+			for (int j = 0; j < y; j++)
+			{
+				drawInterface(i * 16.0f, j * 16.0f, 240.0f, 0.0f, 16.0f, 16.0f, 0.25f);
+			}
+		}
+
+		drawCenteredFont("Connection Lost", game->scaledWidth / 2, game->scaledHeight / 2 - 30.0f, 0.6f);
+		drawCenteredFont("An existing connection was forcibly closed", game->scaledWidth / 2, game->scaledHeight / 2 - 15.0f, 1.0f);
+
+		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 5.0f, "Back to game"))
+		{
+		}
+	}
+	else
+	{
+		drawHUD();
+
+		if (state == State::SelectBlockMenu && drawSelectBlockMenu())
+		{
+			return;
+		}
 	}
 
 	fontVertices.update();
@@ -125,22 +149,21 @@ void UI::update()
 
 void UI::render()
 {
+	blockVertices.render();
+
 	glBindTexture(GL_TEXTURE_2D, interfaceTexture);
 	interfaceVertices.render();
 
 	glBindTexture(GL_TEXTURE_2D, fontTexture);
 	fontVertices.render();
-
-	glBindTexture(GL_TEXTURE_2D, game->atlasTexture);
-	blockVertices.render();
 }
 
 bool UI::drawSelectBlockMenu()
 {
-	float left = game->scaledWidth / 2.0f - 196.5f / 2.0f;
-	float top = game->scaledHeight / 2 - 143.0f / 2.0f;
+	float left = game->scaledWidth / 2.0f - 196.0f / 2.0f;
+	float top = game->scaledHeight / 2.0f - 143.0f / 2.0f;
 
-	drawInterface(left, top, 208, 143, 183, 0, 16, 16, 0.12f);
+	drawInterface(left, top, 196, 143, 183, 0, 16, 16, 0.12f);
 
 	for (unsigned char blockType = 0, selectedBlockType = 0, index = 0; blockType < std::size(Block::Definitions); blockType++)
 	{
@@ -183,7 +206,7 @@ bool UI::drawSelectBlockButton(unsigned char blockType, unsigned char& selectedB
 	if (selectedBlockType == 0 && hover)
 	{	
 		drawInterface(hoverX, hoverY, width, height, 183, 0, 16, 16, 0.7f);
-		drawBlock(blockType, x - 1.8f, y + 1.0f, 12.0f);
+		drawBlock(blockType, x - 1.2f, y + 1.0f, 12.0f);
 
 		selectedBlockType = blockType;
 	}
@@ -195,15 +218,40 @@ bool UI::drawSelectBlockButton(unsigned char blockType, unsigned char& selectedB
 	return hover && clicked;
 }
 
+bool UI::drawButton(float x, float y, const char* text)
+{
+	float width = 200; 
+	float height = 20;
+
+	bool clicked = mouseState == MouseState::Down;
+
+	float hoverX = x;
+	float hoverY = y;
+
+	bool hover = mousePosition.x >= hoverX &&
+		mousePosition.x <= hoverX + width &&
+		mousePosition.y >= hoverY &&
+		mousePosition.y <= hoverY + height;
+
+	int state = 1;
+	if (hover) { state = 2; }
+
+	drawInterface(x, y, 0.0f, 46.0f + state * 20.0f, width / 2, height);
+	drawInterface(x + width / 2, y, 200 - width / 2, 46 + state * 20, width / 2, height);
+	drawCenteredFont(text, x + width / 2, y + (height - 8) / 2, 1.0f);
+
+	return hover && clicked;
+}
+
 void UI::drawHUD()
 {
 	static char fps[100];
 	std::snprintf(fps, sizeof(fps), "%lld fps, %lld chunk updates", game->lastFrameRate, game->lastChunkUpdates);
-	drawFont(fps, 3.0f, 3.0f);
+	drawShadowedFont(fps, 3.0f, 3.0f, 1.0f);
 
 	drawInterface(game->scaledWidth / 2 - 91, game->scaledHeight - 22, 0, 0, 182, 22);
 	drawInterface(game->scaledWidth / 2 - 92 + float(game->localPlayer.inventoryIndex) * 20, game->scaledHeight - 23, 0, 22, 24, 22);
-	drawInterface(game->scaledWidth / 2 - 7, game->scaledHeight / 2 - 7, 24, 22, 16, 16);
+	drawInterface(game->scaledWidth / 2 - 7, game->scaledHeight / 2 - 7, 211, 0, 16, 16);
 
 	drawHotbar();
 }
@@ -290,7 +338,7 @@ void UI::drawBlock(unsigned char blockType, float x, float y, float scale)
 		VertexList::Vertex* vertex = &vertices[i];
 
 		auto matrix = game->identityMatrix;
-		matrix = glm::translate(matrix, glm::vec3(x, y, -15.0f));
+		matrix = glm::translate(matrix, glm::vec3(x, y, 15.0f));
 
 		if (blockDefinition.draw == Block::DrawType::DRAW_SPRITE)
 		{
@@ -313,39 +361,49 @@ void UI::drawBlock(unsigned char blockType, float x, float y, float scale)
 	}
 }
 
+void UI::drawInterface(float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1, float shade, float z)
+{
+	float size = 0.00390625f;
+
+	interfaceVertices.push(VertexList::Vertex(x0, y0, z, u0 * size, v0 * size, shade));
+	interfaceVertices.push(VertexList::Vertex(x0, y0 + y1, z, u0 * size, (v0 + v1) * size, shade));
+	interfaceVertices.push(VertexList::Vertex(x0 + x1, y0 + y1, z, (u0 + u1) * size, (v0 + v1) * size, shade));
+
+	interfaceVertices.push(VertexList::Vertex(x0, y0, z, u0 * size, v0 * size, shade));
+	interfaceVertices.push(VertexList::Vertex(x0 + x1, y0 + y1, z, (u0 + u1) * size, (v0 + v1) * size, shade));
+	interfaceVertices.push(VertexList::Vertex(x0 + x1, y0, z, (u0 + u1) * size, v0 * size, shade));
+}
+
 void UI::drawInterface(float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1, float shade)
+{
+	drawInterface(x0, y0, x1, y1, u0, v0, u1, v1, shade, 1.0f);
+}
+
+void UI::drawInterface(float x0, float y0, float x1, float y1, float u, float v, float shade)
 {
 	float size = 0.00390625;
 
-	interfaceVertices.push(VertexList::Vertex(x0, y0, 1.0f, u0 * size, v0 * size, shade));
-	interfaceVertices.push(VertexList::Vertex(x0, y0 + y1, 1.0f, u0 * size, (v0 + v1) * size, shade));
-	interfaceVertices.push(VertexList::Vertex(x0 + x1, y0 + y1, 1.0f, (u0 + u1) * size, (v0 + v1) * size, shade));
+	interfaceVertices.push(VertexList::Vertex(x0, y0, 1.0f, x1 * size, y1 * size, shade));
+	interfaceVertices.push(VertexList::Vertex(x0, y0 + v, 1.0f, x1 * size, (y1 + v) * size, shade));
+	interfaceVertices.push(VertexList::Vertex(x0 + u, y0 + v, 1.0f, (x1 + u) * size, (y1 + v) * size, shade));
 
-	interfaceVertices.push(VertexList::Vertex(x0, y0, 1.0f, u0 * size, v0 * size, shade));
-	interfaceVertices.push(VertexList::Vertex(x0 + x1, y0 + y1, 1.0f, (u0 + u1) * size, (v0 + v1) * size, shade));
-	interfaceVertices.push(VertexList::Vertex(x0 + x1, y0, 1.0f, (u0 + u1) * size, v0 * size, shade));
+	interfaceVertices.push(VertexList::Vertex(x0, y0, 1.0f, x1 * size, y1 * size, shade));
+	interfaceVertices.push(VertexList::Vertex(x0 + u, y0 + v, 1.0f, (x1 + u) * size, (y1 + v) * size, shade));
+	interfaceVertices.push(VertexList::Vertex(x0 + u, y0, 1.0f, (x1 + u) * size, y1 * size, shade));
 }
 
 void UI::drawInterface(float x0, float y0, float x1, float y1, float u, float v)
 {
-	float size = 0.00390625;
-
-	interfaceVertices.push(VertexList::Vertex(x0, y0, 1.0f, x1 * size, y1 * size, 1.0f));
-	interfaceVertices.push(VertexList::Vertex(x0, y0 + v, 1.0f, x1 * size, (y1 + v) * size, 1.0f));
-	interfaceVertices.push(VertexList::Vertex(x0 + u, y0 + v, 1.0f, (x1 + u) * size, (y1 + v) * size, 1.0f));
-
-	interfaceVertices.push(VertexList::Vertex(x0, y0, 1.0f, x1 * size, y1 * size, 1.0f));
-	interfaceVertices.push(VertexList::Vertex(x0 + u, y0 + v, 1.0f, (x1 + u) * size, (y1 + v) * size, 1.0f));
-	interfaceVertices.push(VertexList::Vertex(x0 + u, y0, 1.0f, (x1 + u) * size, y1 * size, 1.0f));
+	drawInterface(x0, y0, x1, y1, u, v, 1.0f);
 }
 
-void UI::drawFont(const char* text, float x, float y)
+void UI::drawShadowedFont(const char* text, float x, float y, float shade)
 {
-	drawFont(text, x + 1.0f, y + 1.0f, 0.3f);
-	drawFont(text, x, y, 1.0f);
+	drawFont(text, x + 1.0f, y + 1.0f, 0.3f * shade);
+	drawFont(text, x, y, shade);
 }
 
-void UI::drawCenteredFont(const char* text, float x, float y)
+void UI::drawCenteredFont(const char* text, float x, float y, float shade)
 {
 	float width = 0.0f;
 
@@ -355,7 +413,7 @@ void UI::drawCenteredFont(const char* text, float x, float y)
 		width += fontWidths[int(text[i])];
 	}
 
-	drawFont(text, x - width / 2, y);
+	drawShadowedFont(text, x - width / 2, y, shade);
 }
 
 void UI::drawFont(const char* text, float x, float y, float shade)
@@ -365,10 +423,10 @@ void UI::drawFont(const char* text, float x, float y, float shade)
 	const auto length = std::strlen(text);
 	for (int index = 0; index < length; index++)
 	{
-		int u = text[index] % 16 << 3;
-		int v = text[index] / 16 << 3;
+		float u = float(text[index] % 16 << 3);
+		float v = float(text[index] / 16 << 3);
 
-		float height = 7.99f;
+		float height = 7.9999f;
 
 		fontVertices.push(VertexList::Vertex(x + width, y, 1.0f, u / 128.0f, v / 128.0f, shade));
 		fontVertices.push(VertexList::Vertex(x + width, y + height, 1.0f, u / 128.0f, (v + height) / 128.0f, shade));
