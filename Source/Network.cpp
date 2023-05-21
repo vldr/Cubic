@@ -4,11 +4,36 @@
 static Network* network;
 
 #ifdef EMSCRIPTEN
+EM_BOOL emscripten_on_message(int event_type, const EmscriptenWebSocketMessageEvent* websocket_event, void* user_data)
+{
+    if (websocket_event->isText)
+    {
+        std::string text(websocket_event->data, websocket_event->data + websocket_event->numBytes);
 
+        network->onMessage(text);
+    }
+    else
+    {
+        network->onBinaryMessage(websocket_event->data);
+    }
+
+    return EM_TRUE;
+}
+
+EM_BOOL emscripten_on_close(int event_type, const EmscriptenWebSocketCloseEvent* websocket_event, void* user_data)
+{
+    network->onClose();
+
+    return EM_TRUE;
+}
+
+EM_BOOL emscripten_on_open(int event_type, const EmscriptenWebSocketOpenEvent* websocket_event, void* user_data)
+{
+    network->onOpen();
+
+    return EM_TRUE;
+}
 #else
-#include <windows.h>
-#include <tlhelp32.h>
-
 void websocketpp_on_message(websocketpp_client* socket, websocketpp_connection_handle connection_handle, websocketpp_message_ptr message)
 {
     if (message->get_opcode() == websocketpp::frame::opcode::text)
@@ -37,13 +62,22 @@ void websocketpp_on_open(websocketpp_client* socket, websocketpp_connection_hand
 
 void Network::init(Game* game)
 {
-	this->game = game;
+    this->game = game;
     this->connected = false;
 
     network = this;
 
 #ifdef EMSCRIPTEN
+    EmscriptenWebSocketCreateAttributes ws_attrs = {
+        URI,
+        NULL,
+        EM_TRUE
+    };
 
+    socket = emscripten_websocket_new(&ws_attrs);
+    emscripten_websocket_set_onopen_callback(socket, NULL, emscripten_on_open);
+    emscripten_websocket_set_onclose_callback(socket, NULL, emscripten_on_close);
+    emscripten_websocket_set_onmessage_callback(socket, NULL, emscripten_on_message);
 #else
     try
     {
@@ -82,7 +116,7 @@ void Network::tick()
     if (connected)
     {
         PositionPacket positionPacket = PositionPacket();
-        positionPacket.index = 255;
+        positionPacket.index = UCHAR_MAX;
         positionPacket.position = game->localPlayer.position;
         positionPacket.rotation = game->localPlayer.viewAngles;
 
@@ -104,7 +138,11 @@ void Network::render()
 void Network::send(std::string& text)
 {
 #ifdef EMSCRIPTEN
-
+    EMSCRIPTEN_RESULT result = emscripten_websocket_send_utf8_text(socket, text.c_str());
+    if (result)
+    {
+        printf("Failed to send: %d\n", result);
+    }
 #else
     websocketpp::lib::error_code error_code;
     socket.send(connection_handle, text, websocketpp::frame::opcode::text, error_code);
@@ -120,7 +158,11 @@ void Network::send(std::string& text)
 void Network::sendBinary(unsigned char* data, size_t size)
 {
 #ifdef EMSCRIPTEN
-
+    EMSCRIPTEN_RESULT result = emscripten_websocket_send_binary(socket, (void*)data, size);
+    if (result)
+    {
+        printf("Failed to send binary: %d\n", result);
+    }
 #else
     websocketpp::lib::error_code error_code;
     socket.send(connection_handle, (void*)data, size, websocketpp::frame::opcode::binary, error_code);
@@ -150,49 +192,26 @@ bool Network::isHost()
 
 void Network::onOpen()
 {
-    auto programCount = []() {
-        std::wstring programName = L"Cubic.exe";
-
-        HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-        if (snapshot == INVALID_HANDLE_VALUE) {
-            return 0;
-        }
-
-        PROCESSENTRY32 processEntry;
-        processEntry.dwSize = sizeof(PROCESSENTRY32);
-
-        if (!Process32First(snapshot, &processEntry)) {
-            CloseHandle(snapshot);
-            return 0;
-        }
-
-        int count = 0;
-
-        do {
-            std::wstring currentProcessName = processEntry.szExeFile;
-            if (currentProcessName == programName) {
-                count++;
-            }
-        } while (Process32Next(snapshot, &processEntry));
-
-        CloseHandle(snapshot);
-        return count;
-    };
-
     connected = true;
 
-    json message;
+    printf("onOpen\n");
+}
 
-    if (programCount() > 1)
-    {
-        message["type"] = "join";
-        message["id"] = "hi";
-    }
-    else
-    {
-        message["type"] = "create";
-        message["size"] = 254;
-    }
+void Network::join()
+{
+    json message;
+    message["type"] = "join";
+    message["id"] = "hi";
+
+    std::string dumpedMessage = message.dump();
+    send(dumpedMessage);
+}
+
+void Network::create()
+{
+    json message;
+    message["type"] = "create";
+    message["size"] = UCHAR_MAX - 1;
 
     std::string dumpedMessage = message.dump();
     send(dumpedMessage);
@@ -201,11 +220,15 @@ void Network::onOpen()
 void Network::onClose()
 {
     connected = false;
+
+    printf("onClose\n");
 }
 
 void Network::onMessage(const std::string& text)
 {
     auto message = json::parse(text);
+
+    printf("onMessage: %s\n", text.c_str());
 
     if (message["type"] == "create")
     {
@@ -243,7 +266,9 @@ void Network::onMessage(const std::string& text)
     }
     else if (message["type"] == "leave")
     {
-        players.erase(players.begin() + message["index"]);
+        unsigned int index = message["index"];
+        delete players[index];
+        players.erase(players.begin() + index); 
     }
 }
 

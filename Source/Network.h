@@ -7,8 +7,8 @@
 using nlohmann::json;
 
 #ifdef EMSCRIPTEN
-
-
+#include <emscripten/emscripten.h>
+#include <emscripten/websocket.h>
 #else
 
 #define ASIO_STANDALONE
@@ -39,6 +39,9 @@ public:
 	void tick();
 	void render();
 
+    void join();
+    void create();
+
     void send(std::string& text);
     void sendBinary(unsigned char* data, size_t size);
 
@@ -51,7 +54,7 @@ public:
     void onBinaryMessage(const unsigned char* data);
 
 #ifdef EMSCRIPTEN
-
+    EMSCRIPTEN_WEBSOCKET_T socket;
 #else
     websocketpp_connection_handle connection_handle;
     websocketpp_client socket;

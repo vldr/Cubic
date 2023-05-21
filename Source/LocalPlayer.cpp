@@ -373,6 +373,16 @@ void LocalPlayer::input(const SDL_Event& event)
 
         if (event.key.keysym.sym == SDLK_LSHIFT)
             moveState &= ~Move::Move_Sprint;
+
+        if (event.key.keysym.sym == SDLK_HOME)
+        {
+            game->network.create();
+        }
+
+        if (event.key.keysym.sym == SDLK_END)
+        {
+            game->network.join();
+        }     
     }
     else if (event.type == SDL_MOUSEBUTTONDOWN)
     {
