@@ -192,11 +192,11 @@ void LocalPlayer::update()
 
 void LocalPlayer::tick()
 {
-    Entity::tick();
+    Entity::tick(); 
     
     oldBobbing = bobbing;
     oldTilt = tilt;
-
+     
     float moveX = 0.0f;
     float moveY = 0.0f;
     bool jumping = false;

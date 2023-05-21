@@ -1,21 +1,18 @@
 #pragma once
 #include "VertexList.h"
+#include "Entity.h"
 
 class Game;
 
-class Player
+class Player : public Entity
 {
 public:
 	void init(Game* game);
+	void rotate(float x, float y);
+	void move(float x, float y, float z);
 	void render();
-private:
-	Game* game;
-	GLuint playerTexture;
 
-	VertexList head;
-	VertexList body;
-	VertexList leftArm;
-	VertexList rightArm;
-	VertexList leftLeg;
-	VertexList rightLeg;
+private:
+	float bobbing;
+	float oldBobbing;
 };

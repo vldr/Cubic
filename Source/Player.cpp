@@ -5,262 +5,378 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+static bool initialized = false;
+static GLuint playerTexture{};
+static VertexList head{};
+static VertexList body{};
+static VertexList leftArm{};
+static VertexList rightArm{};
+static VertexList leftLeg{};
+static VertexList rightLeg{};
+
 void Player::init(Game* game)
 {
-	this->game = game;
-	this->playerTexture = game->textureManager.load("Assets/player.png");
+	Entity::init(game);
 
-	head.init();
-	body.init();
-	leftArm.init();
-	rightArm.init();
-	leftLeg.init();
-	rightLeg.init();
+	this->footSize = 0.5f;
+	this->heightOffset = 1.62f;
+	this->noPhysics = true;
+	this->setPosition(game->level.spawnX, game->level.spawnY - 1.62f, game->level.spawnZ);
 
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.000000f, -0.687500f, 1.0f));
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.000000f, -0.500000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.062500f, -0.687500f, 1.0f));
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.000000f, -0.500000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.062500f, -0.500000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.062500f, -0.687500f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.125000f, -0.687500f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, -0.117500f, 0.125000f, -0.500000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.187500f, -0.687500f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, -0.117500f, 0.125000f, -0.500000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, 0.117500f, 0.187500f, -0.500000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.187500f, -0.687500f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.062500f, -0.750000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.062500f, -0.687500f, 1.0f));
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.125000f, -0.750000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.062500f, -0.687500f, 1.0f));
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.125000f, -0.687500f, 1.0f));
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.125000f, -0.750000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, 0.117500f, 0.125000f, -0.750000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, -0.117500f, 0.125000f, -0.687500f, 1.0f));
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.187500f, -0.750000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, -0.117500f, 0.125000f, -0.687500f, 1.0f));
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.187500f, -0.687500f, 1.0f));
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.187500f, -0.750000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.187500f, -0.687500f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, 0.117500f, 0.187500f, -0.500000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.250000f, -0.687500f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, 0.117500f, 0.187500f, -0.500000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.250000f, -0.500000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.250000f, -0.687500f, 1.0f));
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.062500f, -0.687500f, 1.0f));
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.062500f, -0.500000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.125000f, -0.687500f, 1.0f));
-	leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.062500f, -0.500000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, -0.117500f, 0.125000f, -0.500000f, 1.0f));
-	leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.125000f, -0.687500f, 1.0f));
+	if (!initialized)
+	{
+		playerTexture = game->textureManager.load("Assets/player.png");
 
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.250000f, -0.187500f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, 0.117500f, 0.250000f, -0.000000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.312500f, -0.187500f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, 0.117500f, 0.250000f, -0.000000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, -0.117500f, 0.312500f, -0.000000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.312500f, -0.187500f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.375000f, -0.187500f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.375000f, -0.000000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.437500f, -0.187500f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.375000f, -0.000000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.437500f, -0.000000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.437500f, -0.187500f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.312500f, -0.250000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.312500f, -0.187500f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.375000f, -0.250000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.312500f, -0.187500f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.375000f, -0.187500f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.375000f, -0.250000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.375000f, -0.250000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.375000f, -0.187500f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, 0.117500f, 0.437500f, -0.250000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.375000f, -0.187500f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, -0.117500f, 0.437500f, -0.187500f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, 0.117500f, 0.437500f, -0.250000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.437500f, -0.187500f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.437500f, -0.000000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.500000f, -0.187500f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.437500f, -0.000000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, 0.117500f, 0.500000f, -0.000000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.500000f, -0.187500f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.312500f, -0.187500f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, -0.117500f, 0.312500f, -0.000000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.375000f, -0.187500f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, -0.117500f, 0.312500f, -0.000000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.375000f, -0.000000f, 1.0f));
-	rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.375000f, -0.187500f, 1.0f));
+		head.init(36);
+		body.init(36);
+		leftArm.init(36);
+		rightArm.init(36);
+		leftLeg.init(36);
+		rightLeg.init(36);
 
-	body.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.250000f, -0.687500f, 1.0f));
-	body.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.250000f, -0.500000f, 1.0f));
-	body.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.312500f, -0.687500f, 1.0f));
-	body.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.250000f, -0.500000f, 1.0f));
-	body.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.312500f, -0.500000f, 1.0f));
-	body.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.312500f, -0.687500f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.437500f, -0.687500f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.437500f, -0.500000f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.500000f, -0.687500f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.437500f, -0.500000f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.500000f, -0.500000f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.500000f, -0.687500f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.312500f, -0.750000f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.312500f, -0.687500f, 1.0f));
-	body.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.437500f, -0.750000f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.312500f, -0.687500f, 1.0f));
-	body.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.437500f, -0.687500f, 1.0f));
-	body.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.437500f, -0.750000f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.437500f, -0.750000f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.437500f, -0.687500f, 1.0f));
-	body.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.562500f, -0.750000f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.437500f, -0.687500f, 1.0f));
-	body.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.562500f, -0.687500f, 1.0f));
-	body.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.562500f, -0.750000f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.500000f, -0.687500f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.500000f, -0.500000f, 1.0f));
-	body.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.625000f, -0.687500f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.500000f, -0.500000f, 1.0f));
-	body.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.625000f, -0.500000f, 1.0f));
-	body.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.625000f, -0.687500f, 1.0f));
-	body.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.312500f, -0.687500f, 1.0f));
-	body.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.312500f, -0.500000f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.437500f, -0.687500f, 1.0f));
-	body.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.312500f, -0.500000f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.437500f, -0.500000f, 1.0f));
-	body.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.437500f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.000000f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.000000f, -0.500000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.062500f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.000000f, -0.500000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.062500f, -0.500000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.062500f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.125000f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, -0.117500f, 0.125000f, -0.500000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.187500f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, -0.117500f, 0.125000f, -0.500000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, 0.117500f, 0.187500f, -0.500000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.187500f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.062500f, -0.750000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.062500f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.125000f, -0.750000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.062500f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.125000f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.125000f, -0.750000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, 0.117500f, 0.125000f, -0.750000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, -0.117500f, 0.125000f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.187500f, -0.750000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, -0.117500f, 0.125000f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.187500f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.187500f, -0.750000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.187500f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, 0.117500f, 0.187500f, -0.500000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.250000f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, 0.117500f, 0.187500f, -0.500000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.250000f, -0.500000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.250000f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.062500f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.062500f, -0.500000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.125000f, -0.687500f, 1.0f));
+		leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.062500f, -0.500000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.000000f, -0.117500f, 0.125000f, -0.500000f, 1.0f));
+		leftLeg.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.125000f, -0.687500f, 1.0f));
 
-	leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.625000f, -0.687500f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.625000f, -0.500000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.687500f, -0.687500f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.625000f, -0.500000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.687500f, -0.500000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.687500f, -0.687500f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, -0.117500f, 0.812500f, -0.687500f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, -0.117500f, 0.812500f, -0.500000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, 0.117500f, 0.875000f, -0.687500f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, -0.117500f, 0.812500f, -0.500000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, 0.117500f, 0.875000f, -0.500000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, 0.117500f, 0.875000f, -0.687500f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, -0.117500f, 0.687500f, -0.750000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, 0.117500f, 0.687500f, -0.687500f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.750000f, -0.750000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, 0.117500f, 0.687500f, -0.687500f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.750000f, -0.687500f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.750000f, -0.750000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, 0.117500f, 0.750000f, -0.750000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, -0.117500f, 0.750000f, -0.687500f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.812500f, -0.750000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, -0.117500f, 0.750000f, -0.687500f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.812500f, -0.687500f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.812500f, -0.750000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, 0.117500f, 0.750000f, -0.687500f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, 0.117500f, 0.750000f, -0.500000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.812500f, -0.687500f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, 0.117500f, 0.750000f, -0.500000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.812500f, -0.500000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.812500f, -0.687500f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.687500f, -0.687500f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.687500f, -0.500000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, -0.117500f, 0.750000f, -0.687500f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.687500f, -0.500000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, -0.117500f, 0.750000f, -0.500000f, 1.0f));
-	leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, -0.117500f, 0.750000f, -0.687500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.250000f, -0.187500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, 0.117500f, 0.250000f, -0.000000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.312500f, -0.187500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, 0.117500f, 0.250000f, -0.000000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, -0.117500f, 0.312500f, -0.000000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.312500f, -0.187500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.375000f, -0.187500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.375000f, -0.000000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.437500f, -0.187500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.375000f, -0.000000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.437500f, -0.000000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.437500f, -0.187500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.312500f, -0.250000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.312500f, -0.187500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.375000f, -0.250000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.312500f, -0.187500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.375000f, -0.187500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.375000f, -0.250000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.375000f, -0.250000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.375000f, -0.187500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, 0.117500f, 0.437500f, -0.250000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.375000f, -0.187500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, -0.117500f, 0.437500f, -0.187500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, 0.117500f, 0.437500f, -0.250000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.437500f, -0.187500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.437500f, -0.000000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.500000f, -0.187500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.437500f, -0.000000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, 0.117500f, 0.500000f, -0.000000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.500000f, -0.187500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.312500f, -0.187500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, -0.117500f, 0.312500f, -0.000000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.375000f, -0.187500f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.235000f, 0.000000f, -0.117500f, 0.312500f, -0.000000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.000000f, -0.117500f, 0.375000f, -0.000000f, 1.0f));
+		rightLeg.push(VertexList::Vertex(0.000000f, 0.705000f, -0.117500f, 0.375000f, -0.187500f, 1.0f));
 
-	rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, 0.117500f, 0.500000f, -0.187500f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, 0.117500f, 0.500000f, -0.000000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, -0.117500f, 0.562500f, -0.187500f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, 0.117500f, 0.500000f, -0.000000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, -0.117500f, 0.562500f, -0.000000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, -0.117500f, 0.562500f, -0.187500f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.687500f, -0.187500f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.687500f, -0.000000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.750000f, -0.187500f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.687500f, -0.000000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.750000f, -0.000000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.750000f, -0.187500f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.562500f, -0.250000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.562500f, -0.187500f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, -0.117500f, 0.625000f, -0.250000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.562500f, -0.187500f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, 0.117500f, 0.625000f, -0.187500f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, -0.117500f, 0.625000f, -0.250000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.625000f, -0.250000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.625000f, -0.187500f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, 0.117500f, 0.687500f, -0.250000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.625000f, -0.187500f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, -0.117500f, 0.687500f, -0.187500f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, 0.117500f, 0.687500f, -0.250000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.625000f, -0.187500f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.625000f, -0.000000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, 0.117500f, 0.687500f, -0.187500f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.625000f, -0.000000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, 0.117500f, 0.687500f, -0.000000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, 0.117500f, 0.687500f, -0.187500f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, -0.117500f, 0.562500f, -0.187500f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, -0.117500f, 0.562500f, -0.000000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.625000f, -0.187500f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, -0.117500f, 0.562500f, -0.000000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.625000f, -0.000000f, 1.0f));
-	rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.625000f, -0.187500f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.250000f, -0.687500f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.250000f, -0.500000f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.312500f, -0.687500f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.250000f, -0.500000f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.312500f, -0.500000f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.312500f, -0.687500f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.437500f, -0.687500f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.437500f, -0.500000f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.500000f, -0.687500f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.437500f, -0.500000f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.500000f, -0.500000f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.500000f, -0.687500f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.312500f, -0.750000f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.312500f, -0.687500f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.437500f, -0.750000f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.312500f, -0.687500f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.437500f, -0.687500f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.437500f, -0.750000f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.437500f, -0.750000f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.437500f, -0.687500f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.562500f, -0.750000f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.437500f, -0.687500f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.562500f, -0.687500f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.562500f, -0.750000f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.500000f, -0.687500f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.500000f, -0.500000f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.625000f, -0.687500f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.500000f, -0.500000f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.625000f, -0.500000f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.625000f, -0.687500f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.312500f, -0.687500f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.312500f, -0.500000f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.437500f, -0.687500f, 1.0f));
+		body.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.312500f, -0.500000f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.437500f, -0.500000f, 1.0f));
+		body.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.437500f, -0.687500f, 1.0f));
 
-	head.push(VertexList::Vertex(0.235000f, 1.880000f, 0.235000f, 0.000000f, -0.875000f, 1.0f));
-	head.push(VertexList::Vertex(0.235000f, 1.410000f, 0.235000f, 0.000000f, -0.750000f, 1.0f));
-	head.push(VertexList::Vertex(0.235000f, 1.880000f, -0.235000f, 0.125000f, -0.875000f, 1.0f));
-	head.push(VertexList::Vertex(0.235000f, 1.410000f, 0.235000f, 0.000000f, -0.750000f, 1.0f));
-	head.push(VertexList::Vertex(0.235000f, 1.410000f, -0.235000f, 0.125000f, -0.750000f, 1.0f));
-	head.push(VertexList::Vertex(0.235000f, 1.880000f, -0.235000f, 0.125000f, -0.875000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.880000f, -0.235000f, 0.250000f, -0.875000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.235000f, 0.250000f, -0.750000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.880000f, 0.235000f, 0.375000f, -0.875000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.235000f, 0.250000f, -0.750000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.235000f, 0.375000f, -0.750000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.880000f, 0.235000f, 0.375000f, -0.875000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.880000f, -0.235000f, 0.125000f, -1.000000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.880000f, 0.235000f, 0.125000f, -0.875000f, 1.0f));
-	head.push(VertexList::Vertex(0.235000f, 1.880000f, -0.235000f, 0.250000f, -1.000000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.880000f, 0.235000f, 0.125000f, -0.875000f, 1.0f));
-	head.push(VertexList::Vertex(0.235000f, 1.880000f, 0.235000f, 0.250000f, -0.875000f, 1.0f));
-	head.push(VertexList::Vertex(0.235000f, 1.880000f, -0.235000f, 0.250000f, -1.000000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.235000f, 0.250000f, -1.000000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.235000f, 0.250000f, -0.875000f, 1.0f));
-	head.push(VertexList::Vertex(0.235000f, 1.410000f, 0.235000f, 0.375000f, -1.000000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.235000f, 0.250000f, -0.875000f, 1.0f));
-	head.push(VertexList::Vertex(0.235000f, 1.410000f, -0.235000f, 0.375000f, -0.875000f, 1.0f));
-	head.push(VertexList::Vertex(0.235000f, 1.410000f, 0.235000f, 0.375000f, -1.000000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.880000f, 0.235000f, 0.375000f, -0.875000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.235000f, 0.375000f, -0.750000f, 1.0f));
-	head.push(VertexList::Vertex(0.235000f, 1.880000f, 0.235000f, 0.500000f, -0.875000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.235000f, 0.375000f, -0.750000f, 1.0f));
-	head.push(VertexList::Vertex(0.235000f, 1.410000f, 0.235000f, 0.500000f, -0.750000f, 1.0f));
-	head.push(VertexList::Vertex(0.235000f, 1.880000f, 0.235000f, 0.500000f, -0.875000f, 1.0f));
-	head.push(VertexList::Vertex(0.235000f, 1.880000f, -0.235000f, 0.125000f, -0.875000f, 1.0f));
-	head.push(VertexList::Vertex(0.235000f, 1.410000f, -0.235000f, 0.125000f, -0.750000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.880000f, -0.235000f, 0.250000f, -0.875000f, 1.0f));
-	head.push(VertexList::Vertex(0.235000f, 1.410000f, -0.235000f, 0.125000f, -0.750000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.235000f, 0.250000f, -0.750000f, 1.0f));
-	head.push(VertexList::Vertex(-0.235000f, 1.880000f, -0.235000f, 0.250000f, -0.875000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.625000f, -0.687500f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.625000f, -0.500000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.687500f, -0.687500f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.625000f, -0.500000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.687500f, -0.500000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.687500f, -0.687500f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, -0.117500f, 0.812500f, -0.687500f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, -0.117500f, 0.812500f, -0.500000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, 0.117500f, 0.875000f, -0.687500f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, -0.117500f, 0.812500f, -0.500000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, 0.117500f, 0.875000f, -0.500000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, 0.117500f, 0.875000f, -0.687500f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, -0.117500f, 0.687500f, -0.750000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, 0.117500f, 0.687500f, -0.687500f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.750000f, -0.750000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, 0.117500f, 0.687500f, -0.687500f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.750000f, -0.687500f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.750000f, -0.750000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, 0.117500f, 0.750000f, -0.750000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, -0.117500f, 0.750000f, -0.687500f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.812500f, -0.750000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, -0.117500f, 0.750000f, -0.687500f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.812500f, -0.687500f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.812500f, -0.750000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, 0.117500f, 0.750000f, -0.687500f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, 0.117500f, 0.750000f, -0.500000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.812500f, -0.687500f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, 0.117500f, 0.750000f, -0.500000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, 0.117500f, 0.812500f, -0.500000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.117500f, 0.812500f, -0.687500f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.117500f, 0.687500f, -0.687500f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.687500f, -0.500000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, -0.117500f, 0.750000f, -0.687500f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.235000f, 0.705000f, -0.117500f, 0.687500f, -0.500000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 0.705000f, -0.117500f, 0.750000f, -0.500000f, 1.0f));
+		leftArm.push(VertexList::Vertex(-0.470000f, 1.410000f, -0.117500f, 0.750000f, -0.687500f, 1.0f));
 
-	head.update();
-	body.update();
-	leftArm.update();
-	rightArm.update();
-	leftLeg.update();
-	rightLeg.update();
+		rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, 0.117500f, 0.500000f, -0.187500f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, 0.117500f, 0.500000f, -0.000000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, -0.117500f, 0.562500f, -0.187500f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, 0.117500f, 0.500000f, -0.000000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, -0.117500f, 0.562500f, -0.000000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, -0.117500f, 0.562500f, -0.187500f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.687500f, -0.187500f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.687500f, -0.000000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.750000f, -0.187500f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.687500f, -0.000000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.750000f, -0.000000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.750000f, -0.187500f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.562500f, -0.250000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.562500f, -0.187500f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, -0.117500f, 0.625000f, -0.250000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.562500f, -0.187500f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, 0.117500f, 0.625000f, -0.187500f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, -0.117500f, 0.625000f, -0.250000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.625000f, -0.250000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.625000f, -0.187500f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, 0.117500f, 0.687500f, -0.250000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.625000f, -0.187500f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, -0.117500f, 0.687500f, -0.187500f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, 0.117500f, 0.687500f, -0.250000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, 0.117500f, 0.625000f, -0.187500f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.625000f, -0.000000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, 0.117500f, 0.687500f, -0.187500f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, 0.117500f, 0.625000f, -0.000000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, 0.117500f, 0.687500f, -0.000000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, 0.117500f, 0.687500f, -0.187500f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.470000f, 1.410000f, -0.117500f, 0.562500f, -0.187500f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, -0.117500f, 0.562500f, -0.000000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.625000f, -0.187500f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.470000f, 0.705000f, -0.117500f, 0.562500f, -0.000000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 0.705000f, -0.117500f, 0.625000f, -0.000000f, 1.0f));
+		rightArm.push(VertexList::Vertex(0.235000f, 1.410000f, -0.117500f, 0.625000f, -0.187500f, 1.0f));
+
+		head.push(VertexList::Vertex(0.235000f, 1.880000f, 0.235000f, 0.000000f, -0.875000f, 1.0f));
+		head.push(VertexList::Vertex(0.235000f, 1.410000f, 0.235000f, 0.000000f, -0.750000f, 1.0f));
+		head.push(VertexList::Vertex(0.235000f, 1.880000f, -0.235000f, 0.125000f, -0.875000f, 1.0f));
+		head.push(VertexList::Vertex(0.235000f, 1.410000f, 0.235000f, 0.000000f, -0.750000f, 1.0f));
+		head.push(VertexList::Vertex(0.235000f, 1.410000f, -0.235000f, 0.125000f, -0.750000f, 1.0f));
+		head.push(VertexList::Vertex(0.235000f, 1.880000f, -0.235000f, 0.125000f, -0.875000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.880000f, -0.235000f, 0.250000f, -0.875000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.235000f, 0.250000f, -0.750000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.880000f, 0.235000f, 0.375000f, -0.875000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.235000f, 0.250000f, -0.750000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.235000f, 0.375000f, -0.750000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.880000f, 0.235000f, 0.375000f, -0.875000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.880000f, -0.235000f, 0.125000f, -1.000000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.880000f, 0.235000f, 0.125000f, -0.875000f, 1.0f));
+		head.push(VertexList::Vertex(0.235000f, 1.880000f, -0.235000f, 0.250000f, -1.000000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.880000f, 0.235000f, 0.125000f, -0.875000f, 1.0f));
+		head.push(VertexList::Vertex(0.235000f, 1.880000f, 0.235000f, 0.250000f, -0.875000f, 1.0f));
+		head.push(VertexList::Vertex(0.235000f, 1.880000f, -0.235000f, 0.250000f, -1.000000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.235000f, 0.250000f, -1.000000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.235000f, 0.250000f, -0.875000f, 1.0f));
+		head.push(VertexList::Vertex(0.235000f, 1.410000f, 0.235000f, 0.375000f, -1.000000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.235000f, 0.250000f, -0.875000f, 1.0f));
+		head.push(VertexList::Vertex(0.235000f, 1.410000f, -0.235000f, 0.375000f, -0.875000f, 1.0f));
+		head.push(VertexList::Vertex(0.235000f, 1.410000f, 0.235000f, 0.375000f, -1.000000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.880000f, 0.235000f, 0.375000f, -0.875000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.235000f, 0.375000f, -0.750000f, 1.0f));
+		head.push(VertexList::Vertex(0.235000f, 1.880000f, 0.235000f, 0.500000f, -0.875000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.410000f, 0.235000f, 0.375000f, -0.750000f, 1.0f));
+		head.push(VertexList::Vertex(0.235000f, 1.410000f, 0.235000f, 0.500000f, -0.750000f, 1.0f));
+		head.push(VertexList::Vertex(0.235000f, 1.880000f, 0.235000f, 0.500000f, -0.875000f, 1.0f));
+		head.push(VertexList::Vertex(0.235000f, 1.880000f, -0.235000f, 0.125000f, -0.875000f, 1.0f));
+		head.push(VertexList::Vertex(0.235000f, 1.410000f, -0.235000f, 0.125000f, -0.750000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.880000f, -0.235000f, 0.250000f, -0.875000f, 1.0f));
+		head.push(VertexList::Vertex(0.235000f, 1.410000f, -0.235000f, 0.125000f, -0.750000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.410000f, -0.235000f, 0.250000f, -0.750000f, 1.0f));
+		head.push(VertexList::Vertex(-0.235000f, 1.880000f, -0.235000f, 0.250000f, -0.875000f, 1.0f));
+
+		head.update();
+		body.update();
+		leftArm.update();
+		rightArm.update();
+		leftLeg.update();
+		rightLeg.update();
+
+		initialized = true;
+	}
+}
+
+void Player::rotate(float x, float y)
+{
+	oldRotation = rotation;
+
+	rotation.y = x;
+	rotation.y = y;
+}
+
+void Player::move(float x, float y, float z)
+{
+	oldBobbing = bobbing;
+	oldPosition = position;
+
+	position.x = x; 
+	position.y = y - 1.62f;
+	position.z = z;
+
+	oldWalkDistance = walkDistance;
+	walkDistance += glm::sqrt((oldPosition.x - x) * (oldPosition.x - x) + (oldPosition.z - z) * (oldPosition.z - z));
+
+	float bob = glm::sqrt((oldPosition.x - x) * (oldPosition.x - x) + (oldPosition.z - z) * (oldPosition.z - z));
+	if (bob > 0.1f) 
+	{ 
+		bob = 0.1f; 
+	}
+
+	bobbing += (bob - bobbing) * 0.4f;
 }
 
 void Player::render()
 {
-	auto matrix = game->identityMatrix;
-	matrix = glm::translate(matrix, glm::vec3(game->level.spawnX, game->level.spawnY - 1.62f, game->level.spawnZ));
+	const auto viewPosition = oldPosition + ((position - oldPosition) * game->timer.delta);
+	const auto viewRotation = oldRotation + ((rotation - oldRotation) * game->timer.delta);
+	const auto viewBobbing = oldBobbing + ((bobbing - oldBobbing) * game->timer.delta);
+	const auto viewWalkDistance = oldWalkDistance + ((walkDistance - oldWalkDistance) * game->timer.delta);
 
-	glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(matrix));
+	float angle = 600.0f * glm::sin(viewWalkDistance * M_PI) * viewBobbing;
+
 	glBindTexture(GL_TEXTURE_2D, playerTexture);
 
-	head.render();
+	auto matrix = game->identityMatrix;
+	matrix = glm::translate(matrix, viewPosition);
+	matrix = glm::rotate(matrix, glm::radians(viewRotation.x), glm::vec3(0, 1, 0));
+
+	{
+		float headHeight = 1.410000f;
+
+		auto subMatrix = matrix;
+		subMatrix = glm::translate(subMatrix, glm::vec3(0, headHeight, 0));
+		subMatrix = glm::rotate(subMatrix, glm::radians(viewRotation.y), glm::vec3(1.0F, 0.0F, 0.0F));
+		subMatrix = glm::translate(subMatrix, glm::vec3(0, -headHeight, 0));
+
+		glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(subMatrix));
+		head.render();
+	}
+
+	{
+		float pitch = -angle;
+		float armHeight = 1.410000f;
+
+		auto subMatrix = matrix;
+		subMatrix = glm::translate(subMatrix, glm::vec3(0, armHeight, 0));
+		subMatrix = glm::rotate(subMatrix, glm::radians(pitch), glm::vec3(1.0F, 0.0F, 0.0F));
+		subMatrix = glm::translate(subMatrix, glm::vec3(0, -armHeight, 0));
+
+		glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(subMatrix));
+		leftArm.render();
+	}
+
+	{
+		float pitch = angle;
+		float armHeight = 1.410000f;
+
+		auto subMatrix = matrix;
+		subMatrix = glm::translate(subMatrix, glm::vec3(0, armHeight, 0));
+		subMatrix = glm::rotate(subMatrix, glm::radians(pitch), glm::vec3(1.0F, 0.0F, 0.0F));
+		subMatrix = glm::translate(subMatrix, glm::vec3(0, -armHeight, 0));
+
+		glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(subMatrix));
+		rightArm.render();
+	}
+
+	{
+		float pitch = angle;
+		float legHeight = 0.705f;
+
+		auto subMatrix = matrix;
+		subMatrix = glm::translate(subMatrix, glm::vec3(0, legHeight, 0));
+		subMatrix = glm::rotate(subMatrix, glm::radians(pitch), glm::vec3(1.0F, 0.0F, 0.0F));
+		subMatrix = glm::translate(subMatrix, glm::vec3(0, -legHeight, 0));
+
+		glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(subMatrix));
+		leftLeg.render();
+	}
+
+	{
+		float pitch = -angle;
+		float legHeight = 0.705f;
+
+		auto subMatrix = matrix;
+		subMatrix = glm::translate(subMatrix, glm::vec3(0, legHeight, 0));
+		subMatrix = glm::rotate(subMatrix, glm::radians(pitch), glm::vec3(1.0F, 0.0F, 0.0F));
+		subMatrix = glm::translate(subMatrix, glm::vec3(0, -legHeight, 0));
+
+		glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(subMatrix));
+		rightLeg.render();
+	}
+
+	glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(matrix));
 	body.render();
-	leftArm.render();
-	rightArm.render();
-	leftLeg.render();
-	rightLeg.render();
 
 	glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(game->identityMatrix));
 }

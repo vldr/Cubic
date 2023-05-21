@@ -114,8 +114,8 @@ void UI::update()
 	
 	if (state == State::StatusMenu)
 	{
-		int x = glm::ceil(game->scaledWidth / 16);
-		int y = glm::ceil(game->scaledHeight / 16);
+		int x = int(glm::ceil(game->scaledWidth / 16));
+		int y = int(glm::ceil(game->scaledHeight / 16));
 
 		for (int i = 0; i < x; i++)
 		{
