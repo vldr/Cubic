@@ -86,7 +86,7 @@ void Game::init(SDL_Window* sdlWindow)
     this->frameRate = 0;
     this->atlasTexture = textureManager.load("Assets/terrain.png");
     this->shader = shaderManager.load(vertexSource, fragmentSource);
-    this->player.init(this);
+    this->network.init(this);
 
     SDL_GetWindowSize(window, &width, &height);
     resize();
@@ -120,6 +120,7 @@ void Game::run()
         level.tick();
         levelRenderer.tick();
         heldBlock.tick();
+        network.tick();
 
         timer.tick();
     }
@@ -141,7 +142,7 @@ void Game::run()
 
     levelRenderer.render();
     particleManager.render();
-    player.render();
+    network.render();
 
     selectedBlock.renderPost();
     levelRenderer.renderPost();

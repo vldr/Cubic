@@ -260,7 +260,7 @@ void Player::init(Game* game)
 		body.update();
 		leftArm.update();
 		rightArm.update();
-		leftLeg.update();
+		leftLeg.update(); 
 		rightLeg.update();
 
 		initialized = true;
@@ -271,12 +271,13 @@ void Player::rotate(float x, float y)
 {
 	oldRotation = rotation;
 
-	rotation.y = x;
+	rotation.x = x;
 	rotation.y = y;
 }
 
 void Player::move(float x, float y, float z)
 {
+
 	oldBobbing = bobbing;
 	oldPosition = position;
 
@@ -287,13 +288,13 @@ void Player::move(float x, float y, float z)
 	oldWalkDistance = walkDistance;
 	walkDistance += glm::sqrt((oldPosition.x - x) * (oldPosition.x - x) + (oldPosition.z - z) * (oldPosition.z - z));
 
-	float bob = glm::sqrt((oldPosition.x - x) * (oldPosition.x - x) + (oldPosition.z - z) * (oldPosition.z - z));
-	if (bob > 0.1f) 
+	float distance = glm::sqrt((oldPosition.x - x) * (oldPosition.x - x) + (oldPosition.z - z) * (oldPosition.z - z));
+	if (distance > 0.1f)
 	{ 
-		bob = 0.1f; 
+		distance = 0.1f;
 	}
 
-	bobbing += (bob - bobbing) * 0.4f;
+	bobbing += (distance - bobbing) * 0.4f;
 }
 
 void Player::render()
@@ -303,20 +304,20 @@ void Player::render()
 	const auto viewBobbing = oldBobbing + ((bobbing - oldBobbing) * game->timer.delta);
 	const auto viewWalkDistance = oldWalkDistance + ((walkDistance - oldWalkDistance) * game->timer.delta);
 
-	float angle = 600.0f * glm::sin(viewWalkDistance * M_PI) * viewBobbing;
+	float angle = 600.0f * glm::sin(viewWalkDistance * float(M_PI)) * viewBobbing;
 
 	glBindTexture(GL_TEXTURE_2D, playerTexture);
 
 	auto matrix = game->identityMatrix;
 	matrix = glm::translate(matrix, viewPosition);
-	matrix = glm::rotate(matrix, glm::radians(viewRotation.x), glm::vec3(0, 1, 0));
+	matrix = glm::rotate(matrix, viewRotation.x + glm::radians(180.0f), glm::vec3(0, 1, 0));
 
 	{
 		float headHeight = 1.410000f;
 
 		auto subMatrix = matrix;
 		subMatrix = glm::translate(subMatrix, glm::vec3(0, headHeight, 0));
-		subMatrix = glm::rotate(subMatrix, glm::radians(viewRotation.y), glm::vec3(1.0F, 0.0F, 0.0F));
+		subMatrix = glm::rotate(subMatrix, viewRotation.y, glm::vec3(1.0F, 0.0F, 0.0F));
 		subMatrix = glm::translate(subMatrix, glm::vec3(0, -headHeight, 0));
 
 		glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(subMatrix));

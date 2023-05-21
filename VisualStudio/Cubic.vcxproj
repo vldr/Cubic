@@ -159,6 +159,7 @@
     <ClCompile Include="..\Source\Entity.cpp" />
     <ClCompile Include="..\Source\Frustum.cpp" />
     <ClCompile Include="..\Source\HeldBlock.cpp" />
+    <ClCompile Include="..\Source\Network.cpp" />
     <ClCompile Include="..\Source\ParticleManager.cpp" />
     <ClCompile Include="..\Source\LevelGenerator.cpp" />
     <ClCompile Include="..\Source\LevelRenderer.cpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="..\Source\Entity.h" />
     <ClInclude Include="..\Source\Frustum.h" />
     <ClInclude Include="..\Source\HeldBlock.h" />
+    <ClInclude Include="..\Source\Network.h" />
     <ClInclude Include="..\Source\ParticleManager.h" />
     <ClInclude Include="..\Source\LevelGenerator.h" />
     <ClInclude Include="..\Source\LevelRenderer.h" />
