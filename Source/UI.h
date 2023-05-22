@@ -30,12 +30,14 @@ public:
 	void render();
 
 	void openMenu(UI::State state);
+	void openStatusMenu(const char* title, const char* description, bool closeable = false);
 	void closeMenu();
 
 	UI::State state;
-
 	UI::MouseState mouseState;
+
 	glm::vec2 mousePosition;
+
 private:
 	struct Button 
 	{
@@ -69,6 +71,10 @@ private:
 		3, 6, 6, 6, 6, 6, 5, 6, 6, 2, 6, 5, 3, 6, 6, 6,
 		6, 6, 6, 6, 4, 6, 6, 6, 6, 6, 6, 5, 2, 5, 7, 6,
 	};
+
+	std::string statusTitle;
+	std::string statusDescription;
+	bool statusCloseable;
 
 	VertexList fontVertices;
 	GLuint fontTexture;

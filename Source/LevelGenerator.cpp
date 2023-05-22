@@ -406,9 +406,9 @@ void LevelGenerator::generateSpawnPosition()
 
 	if (maxX != -1 && maxY != -1 && maxZ != -1)
 	{
-		game->level.spawnX = maxX + 0.5f;
-		game->level.spawnY = maxY + 2.0f;
-		game->level.spawnZ = maxZ + 0.5f;
+		game->level.spawn.x = maxX + 0.5f;
+		game->level.spawn.y = maxY + 2.0f;
+		game->level.spawn.z = maxZ + 0.5f;
 	}
 }
 
@@ -445,10 +445,9 @@ void LevelGenerator::generate()
 	generateSpawnPosition();
 
 	game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);
-	game->localPlayer.setPosition(game->level.spawnX, game->level.spawnY, game->level.spawnZ);
-	game->level.spawnX = game->localPlayer.position.x;
-	game->level.spawnY = game->localPlayer.position.y;
-	game->level.spawnZ = game->localPlayer.position.z;
+	game->localPlayer.setPosition(game->level.spawn.x, game->level.spawn.y, game->level.spawn.z);
+
+	game->level.spawn = game->localPlayer.position;
 
 	delete[] heights;
 }

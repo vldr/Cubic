@@ -75,9 +75,9 @@ void Network::init(Game* game)
     };
 
     socket = emscripten_websocket_new(&ws_attrs);
-    emscripten_websocket_set_onopen_callback(socket, NULL, emscripten_on_open);
-    emscripten_websocket_set_onclose_callback(socket, NULL, emscripten_on_close);
     emscripten_websocket_set_onmessage_callback(socket, NULL, emscripten_on_message);
+    emscripten_websocket_set_onclose_callback(socket, NULL, emscripten_on_close); 
+    emscripten_websocket_set_onopen_callback(socket, NULL, emscripten_on_open);
 #else
     try
     {
@@ -86,6 +86,7 @@ void Network::init(Game* game)
 
         socket.init_asio();
         socket.set_message_handler(bind(&websocketpp_on_message, &socket, ::_1, ::_2));
+        socket.set_fail_handler(bind(&websocketpp_on_close, &socket, ::_1));
         socket.set_close_handler(bind(&websocketpp_on_close, &socket, ::_1));
         socket.set_open_handler(bind(&websocketpp_on_open, &socket, ::_1));
 
@@ -113,29 +114,47 @@ void Network::tick()
     socket.poll();
 #endif
 
-    if (connected)
+    if (isConnected())
     {
-        PositionPacket positionPacket = PositionPacket();
-        positionPacket.index = UCHAR_MAX;
-        positionPacket.position = game->localPlayer.position;
-        positionPacket.rotation = game->localPlayer.viewAngles;
+        for (const auto& networkPlayer : players)
+        {
+            if (networkPlayer)
+            {
+                if (!networkPlayer->positions.empty())
+                {
+                    auto positionPacket = networkPlayer->positions.front();
 
-        sendBinary((unsigned char*)&positionPacket, sizeof(positionPacket));
+                    networkPlayer->player.rotate(positionPacket.rotation.x, positionPacket.rotation.y);
+                    networkPlayer->player.move(positionPacket.position.x, positionPacket.position.y, positionPacket.position.z);
+                    networkPlayer->positions.pop();
+                }
+            }
+        }
+
+        if (players.size() > 1)
+        {
+            PositionPacket positionPacket = PositionPacket();
+            positionPacket.index = UCHAR_MAX;
+            positionPacket.position = game->localPlayer.position;
+            positionPacket.rotation = game->localPlayer.viewAngles;
+
+            sendBinary((unsigned char*)&positionPacket, sizeof(positionPacket));
+        }
     }
 }
 
 void Network::render()
 {
-    for (const auto& player : players)
+    for (const auto& networkPlayer : players)
     {
-        if (player)
+        if (networkPlayer)
         {
-            player->render();
+            networkPlayer->player.render();
         }
     }
 }
 
-void Network::send(std::string& text)
+void Network::send(const std::string& text)
 {
 #ifdef EMSCRIPTEN
     EMSCRIPTEN_RESULT result = emscripten_websocket_send_utf8_text(socket, text.c_str());
@@ -190,64 +209,101 @@ bool Network::isHost()
     return false;
 }
 
-void Network::onOpen()
+void Network::join(const std::string& id)
 {
-    connected = true;
+    if (isConnected())
+    {
+        game->ui.openStatusMenu("Joining Room", "Attempting to join room...");
 
-    printf("onOpen\n");
-}
+        json message;
+        message["type"] = "join";
+        message["id"] = id;
 
-void Network::join()
-{
-    json message;
-    message["type"] = "join";
-    message["id"] = "hi";
-
-    std::string dumpedMessage = message.dump();
-    send(dumpedMessage);
+        send(message.dump());
+    }
 }
 
 void Network::create()
 {
-    json message;
-    message["type"] = "create";
-    message["size"] = UCHAR_MAX - 1;
+    if (isConnected())
+    {
+        game->ui.openStatusMenu("Creating Room", "Attempting to create room...");
 
-    std::string dumpedMessage = message.dump();
-    send(dumpedMessage);
+        json message;
+        message["type"] = "create";
+        message["size"] = UCHAR_MAX - 1;
+
+        send(message.dump());
+    }
+}
+
+void Network::setBlock(int x, int y, int z, unsigned char blockType)
+{
+    if (isConnected() && players.size() > 1)
+    {
+        SetBlockPacket setBlockPacket = SetBlockPacket();
+
+        if (isHost())
+        {
+            setBlockPacket.index = UCHAR_MAX;
+        }
+        else
+        {
+            setBlockPacket.index = 0;
+        }
+
+        setBlockPacket.blockType = blockType;
+        setBlockPacket.position = glm::ivec3(x, y, z);
+
+        sendBinary((unsigned char*)&setBlockPacket, sizeof(setBlockPacket));
+    }
+}
+
+void Network::onOpen()
+{
+    connected = true;
+
+    game->ui.openStatusMenu("Connected", "Waiting on input...");
 }
 
 void Network::onClose()
 {
     connected = false;
 
-    printf("onClose\n");
+    game->ui.openStatusMenu("Disconnected", "The connection was forcibly closed.", true);
 }
 
 void Network::onMessage(const std::string& text)
 {
     auto message = json::parse(text);
 
-    printf("onMessage: %s\n", text.c_str());
-
-    if (message["type"] == "create")
+    if (message["type"] == "error")
+    {
+        game->ui.openStatusMenu("Disconnected", std::string(message["message"]).c_str(), true);
+    }
+    else if (message["type"] == "create")
     {
         players.push_back(nullptr);
+
+        game->ui.closeMenu();
     }
     else if (message["type"] == "join")
     {
         if (message["size"].is_null())
         {
-            Player* player = new Player();
-            player->init(game);
+            NetworkPlayer* networkPlayer = new NetworkPlayer();
+            networkPlayer->player.init(game);
 
-            players.push_back(player);
+            players.push_back(networkPlayer);
 
-            std::unique_ptr<LevelPacket> levelPacket = std::make_unique<LevelPacket>();
-            levelPacket->index = players.size() - 1;
+            if (isHost())
+            {
+                std::unique_ptr<LevelPacket> levelPacket = std::make_unique<LevelPacket>();
+                levelPacket->index = (unsigned int)players.size() - 1;
 
-            memcpy(levelPacket->level, game->level.blocks, sizeof(levelPacket->level));
-            sendBinary((unsigned char*)levelPacket.get(), sizeof(*levelPacket));
+                memcpy(levelPacket->level, game->level.blocks, sizeof(levelPacket->level));
+                sendBinary((unsigned char*)levelPacket.get(), sizeof(*levelPacket));
+            } 
         }
         else
         {
@@ -255,10 +311,10 @@ void Network::onMessage(const std::string& text)
 
             for (unsigned int i = 0; i < size; i++)
             {
-                Player* player = new Player();
-                player->init(game);
+                NetworkPlayer* networkPlayer = new NetworkPlayer();
+                networkPlayer->player.init(game);
 
-                players.push_back(player);
+                players.push_back(networkPlayer);
             }
 
             players.push_back(nullptr);
@@ -267,8 +323,22 @@ void Network::onMessage(const std::string& text)
     else if (message["type"] == "leave")
     {
         unsigned int index = message["index"];
+
         delete players[index];
         players.erase(players.begin() + index); 
+
+        if (isHost())
+        {
+            std::unique_ptr<LevelPacket> levelPacket = std::make_unique<LevelPacket>();
+            levelPacket->index = UCHAR_MAX;
+
+            memcpy(levelPacket->level, game->level.blocks, sizeof(levelPacket->level));
+            sendBinary((unsigned char*)levelPacket.get(), sizeof(*levelPacket));
+        }
+        else if (!index)
+        {
+            game->ui.openStatusMenu("Migrating Host", "Attempting to migrate the host...");
+        }
     }
 }
 
@@ -279,11 +349,19 @@ void Network::onBinaryMessage(const unsigned char* data)
 
     if (type == (unsigned char)PacketType::Level)
     {
+        if (index)
+        {
+            printf("network error: cannot process level packet from a non-host.\n");
+            return;
+        }
+
         LevelPacket* levelPacket = (LevelPacket*)data;
         memcpy(game->level.blocks, levelPacket->level, sizeof(levelPacket->level));
 
         game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);
         game->levelRenderer.loadChunks(0, 0, 0, game->level.width, game->level.height, game->level.depth);
+
+        game->ui.closeMenu();
     }
     else if (type == (unsigned char)PacketType::Position)
     {
@@ -291,11 +369,63 @@ void Network::onBinaryMessage(const unsigned char* data)
 
         if (players[index])
         {
-            players[index]->rotate(positionPacket->rotation.x, positionPacket->rotation.y);
-            players[index]->move(positionPacket->position.x, positionPacket->position.y, positionPacket->position.z);
+            players[index]->positions.push(*positionPacket);
         }
-    }
+    } 
     else if (type == (unsigned char)PacketType::SetBlock)
     {
+        SetBlockPacket* setBlockPacket = (SetBlockPacket*)data;
+
+        auto blockType = game->level.getTile(
+            setBlockPacket->position.x,
+            setBlockPacket->position.y,
+            setBlockPacket->position.z
+        );
+
+        if (isHost())
+        {
+            game->level.setTileWithNeighborChange(
+                setBlockPacket->position.x, 
+                setBlockPacket->position.y, 
+                setBlockPacket->position.z, 
+                setBlockPacket->blockType
+            );
+
+            if (!game->level.isAirTile(blockType) && !game->level.isWaterTile(blockType) && game->level.isAirTile(setBlockPacket->blockType))
+            {
+                game->particleManager.spawn(
+                    (float)setBlockPacket->position.x,
+                    (float)setBlockPacket->position.y,
+                    (float)setBlockPacket->position.z,
+                    blockType
+                );
+            }
+        }
+        else
+        {
+            if (index)
+            {
+                printf("network error: cannot process set block packet from a non-host.\n");
+                return;
+            }
+
+            game->level.setTileWithRender(
+                setBlockPacket->position.x,
+                setBlockPacket->position.y,
+                setBlockPacket->position.z,
+                setBlockPacket->blockType
+            );
+
+            if (!game->level.isAirTile(blockType) && !game->level.isWaterTile(blockType) && game->level.isAirTile(setBlockPacket->blockType))
+            {
+                game->particleManager.spawn(
+                    (float)setBlockPacket->position.x,
+                    (float)setBlockPacket->position.y,
+                    (float)setBlockPacket->position.z,
+                    blockType
+                );
+            }
+        }
+
     }
 }

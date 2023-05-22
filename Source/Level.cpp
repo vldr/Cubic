@@ -16,9 +16,9 @@ void Level::init(Game* game, int width, int depth)
 	this->groundLevel = this->waterLevel - 2;
 	this->blocks = new unsigned char[width * height * depth]();
 
-	this->spawnX = this->width - 1.0f;
-	this->spawnY = this->height - 1.0f;
-	this->spawnZ = this->depth - 1.0f;
+	this->spawn.x = this->width - 1.0f;
+	this->spawn.x = this->height - 1.0f;
+	this->spawn.x = this->depth - 1.0f;
 
 	this->lightDepths = new int[width * depth];
 	for (int i = 0; i < width * depth; i++)
@@ -529,10 +529,7 @@ bool Level::setTileWithNoNeighborChange(int x, int y, int z, unsigned char tile)
 		tile = (unsigned char)Block::Type::BLOCK_WATER;
 	}
 
-	setTile(x, y, z, tile);
-	calculateLightDepths(x, z, 1, 1);
-
-	game->levelRenderer.loadChunks(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1);
+	setTileWithRender(x, y, z, tile);
 
 	if (previousTile != (unsigned char)Block::Type::BLOCK_AIR) { removedTile(x, y, z, previousTile); }
 	if (tile != (unsigned char)Block::Type::BLOCK_AIR) { addedTile(x, y, z, tile); }
@@ -540,11 +537,24 @@ bool Level::setTileWithNoNeighborChange(int x, int y, int z, unsigned char tile)
 	return true;
 }
 
+void Level::setTileWithRender(int x, int y, int z, unsigned char tile)
+{
+	setTile(x, y, z, tile);
+	calculateLightDepths(x, z, 1, 1);
+
+	game->levelRenderer.loadChunks(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1);
+}
+
 void Level::setTile(int x, int y, int z, unsigned char value)
 {
 	if (isInBounds(x, y, z))
 	{
 		blocks[(z * height + y) * width + x] = value;
+
+		if (game->network.isConnected() && game->network.isHost())
+		{
+			game->network.setBlock(x, y, z, value);
+		}
 	}
 }
 

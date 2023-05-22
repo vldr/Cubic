@@ -113,11 +113,17 @@ void LocalPlayer::update()
                     !game->level.isAirTile(blockType)
                 )
                 {
-                    bool setTile = game->level.setTileWithNeighborChange(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR);
-                    if (setTile)
+                    if (!game->network.isConnected() || game->network.isHost())
                     {
-                        game->particleManager.spawn((float)vx, (float)vy, (float)vz, blockType);
+                        game->level.setTileWithNeighborChange(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR);
                     }
+                    else
+                    {
+                        game->level.setTileWithRender(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR);
+                        game->network.setBlock(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR);
+                    }
+
+                    game->particleManager.spawn((float)vx, (float)vy, (float)vz, blockType);
                 }
             }
             else if (interactRight)
@@ -143,21 +149,16 @@ void LocalPlayer::update()
                 {
                     if (!aabb.intersects(heldBlockAABB))
                     {
-                        game->level.setTileWithNeighborChange(vx, vy, vz, heldBlockType);
-                        game->heldBlock.reset();
+                        if (!game->network.isConnected() || game->network.isHost())
+                        {
+                            game->level.setTileWithNeighborChange(vx, vy, vz, heldBlockType);
+                        }
+                        else
+                        {
+                            game->level.setTileWithRender(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR);
+                            game->network.setBlock(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR);
+                        }
 
-                        selectedIndex = 0;
-                    }
-                }
-                else if (
-                    heldBlockDefinition.draw == Block::DrawType::DRAW_OPAQUE_SMALL &&
-                    game->level.getTile(vx, vy - 1, vz) == heldBlockType &&
-                    selected.face == 1
-                )
-                {
-                    if (!aabb.intersects(heldBlockAABB))
-                    {
-                        game->level.setTileWithNeighborChange(vx, vy - 1, vz, (unsigned char)heldBlockDefinition.counterPart);
                         game->heldBlock.reset();
 
                         selectedIndex = 0;
@@ -304,17 +305,15 @@ void LocalPlayer::input(const SDL_Event& event)
             if (event.key.keysym.sym == SDLK_r)
             {
                 setPosition(
-                    game->level.spawnX,
-                    game->level.spawnY,
-                    game->level.spawnZ
+                    game->level.spawn.x,
+                    game->level.spawn.y,
+                    game->level.spawn.z
                 );
             }
 
             if (event.key.keysym.sym == SDLK_RETURN)
             {
-                game->level.spawnX = position.x;
-                game->level.spawnY = position.y;
-                game->level.spawnZ = position.z;
+                game->level.spawn = position;
             }
 
             if (event.key.keysym.sym == SDLK_v)
@@ -381,7 +380,7 @@ void LocalPlayer::input(const SDL_Event& event)
 
         if (event.key.keysym.sym == SDLK_END)
         {
-            game->network.join();
+            game->network.join("hi");
         }     
     }
     else if (event.type == SDL_MOUSEBUTTONDOWN)

@@ -16,7 +16,7 @@ void loop()
     {
         game.input(event);
     }
-
+     
     game.run();
 
     SDL_GL_SwapWindow(game.window);

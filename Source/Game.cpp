@@ -88,6 +88,8 @@ void Game::init(SDL_Window* sdlWindow)
     this->shader = shaderManager.load(vertexSource, fragmentSource);
     this->network.init(this);
 
+    this->ui.openStatusMenu("Connecting", "Attempting to connect...");
+
     SDL_GetWindowSize(window, &width, &height);
     resize();
 

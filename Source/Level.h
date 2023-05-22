@@ -23,6 +23,7 @@ public:
 	void setTile(int x, int y, int z, unsigned char value);
 	bool setTileWithNeighborChange(int x, int y, int z, unsigned char value);
 	bool setTileWithNoNeighborChange(int x, int y, int z, unsigned char tile);
+	void setTileWithRender(int x, int y, int z, unsigned char value);
 
 	void addedTile(int x, int y, int z, unsigned char tile);
 	void removedTile(int x, int y, int z, unsigned char tile);
@@ -67,9 +68,6 @@ public:
 	int waterLevel;
 	int* lightDepths;
 
-	float spawnX;
-	float spawnY;
-	float spawnZ;
-
+	glm::vec3 spawn;
 	unsigned char* blocks;
 };

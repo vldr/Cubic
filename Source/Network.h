@@ -39,10 +39,11 @@ public:
 	void tick();
 	void render();
 
-    void join();
+    void join(const std::string& id);
     void create();
+    void setBlock(int x, int y, int z, unsigned char blockType);
 
-    void send(std::string& text);
+    void send(const std::string& text);
     void sendBinary(unsigned char* data, size_t size);
 
     bool isConnected();
@@ -61,7 +62,7 @@ public:
 #endif
 
 private:
-    const char* URI = "ws://127.0.0.1:1234";
+    const char* URI = "ws://vjldr.org:1234";
 
     enum class PacketType : unsigned char
     {
@@ -106,7 +107,12 @@ private:
     };
 #pragma pack(pop)
 
-	std::vector<Player*> players;
+    struct NetworkPlayer {
+        Player player;
+        std::queue<PositionPacket> positions;
+    };
+
+	std::vector<NetworkPlayer*> players;
     bool connected;
 
 	Game* game;

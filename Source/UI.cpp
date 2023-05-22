@@ -30,7 +30,6 @@ void UI::openMenu(UI::State newState)
 	if (newState != State::None)
 	{
 		SDL_SetRelativeMouseMode(SDL_FALSE);
-		SDL_WarpMouseInWindow(game->window, game->width / 2, game->height / 2);
 
 #ifdef EMSCRIPTEN
 		emscripten_exit_pointerlock();
@@ -41,6 +40,15 @@ void UI::openMenu(UI::State newState)
 
 		update();
 	}
+}
+
+void UI::openStatusMenu(const char* title, const char* description, bool closeable)
+{
+	statusTitle = title;
+	statusDescription = description;
+	statusCloseable = closeable;
+
+	openMenu(State::StatusMenu);
 }
 
 void UI::closeMenu()
@@ -125,11 +133,23 @@ void UI::update()
 			}
 		}
 
-		drawCenteredFont("Connection Lost", game->scaledWidth / 2, game->scaledHeight / 2 - 30.0f, 0.6f);
-		drawCenteredFont("An existing connection was forcibly closed", game->scaledWidth / 2, game->scaledHeight / 2 - 15.0f, 1.0f);
-
-		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 5.0f, "Back to game"))
+		if (statusCloseable)
 		{
+			drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 30.0f, 0.6f);
+			drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 15.0f, 1.0f);
+
+			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 5.0f, "Back to game"))
+			{
+				game->network.create();
+
+				closeMenu();
+				return;
+			}
+		}
+		else
+		{
+			drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 13.0f, 0.6f);
+			drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2, 1.0f);
 		}
 	}
 	else
