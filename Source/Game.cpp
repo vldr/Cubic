@@ -8,7 +8,6 @@
 #include "Timer.h"
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <ctime>
 #include <cstdio>
@@ -75,20 +74,17 @@ void Game::init(SDL_Window* sdlWindow)
     this->timer.init(this, tickRate);
     this->localPlayer.init(this);
     this->frustum.init(this);
+    this->network.init(this);
     this->ui.init(this);
     this->heldBlock.init(this);
     this->selectedBlock.init(this);
     this->particleManager.init(this);
     this->levelGenerator.init(this);
-    this->levelGenerator.generate();
     this->levelRenderer.init(this);
     this->lastTick = timer.milliTime();
     this->frameRate = 0;
     this->atlasTexture = textureManager.load("Assets/terrain.png");
     this->shader = shaderManager.load(vertexSource, fragmentSource);
-    this->network.init(this);
-
-    this->ui.openStatusMenu("Connecting", "Attempting to connect...");
 
     SDL_GetWindowSize(window, &width, &height);
     resize();
@@ -109,6 +105,9 @@ void Game::init(SDL_Window* sdlWindow)
     viewMatrixUniform = glGetUniformLocation(shader, "View");
     modelMatrixUniform = glGetUniformLocation(shader, "Model");
     glUniformMatrix4fv(modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(identityMatrix));
+
+    levelGenerator.generate();
+    network.connect();
 }
 
 void Game::run()
@@ -166,7 +165,7 @@ void Game::run()
         lastChunkUpdates = chunkUpdates;
 
         frameRate = 0;
-        chunkUpdates = 0;
+        chunkUpdates = 0; 
         lastTick = timer.milliTime();
 
         ui.update();
