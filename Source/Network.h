@@ -2,6 +2,7 @@
 #include "Player.h"
 
 #include <vector>
+#include <queue>
 #include <json.hpp>
 
 using nlohmann::json;
@@ -62,7 +63,12 @@ public:
 #endif
 
 private:
-    const char* URI = "ws://vjldr.org:1234";
+
+#ifdef EMSCRIPTEN
+    const char* URI = "ws://vldr.org:1234";
+#else
+    const char* URI = "ws://127.0.0.1:1234";
+#endif
 
     enum class PacketType : unsigned char
     {
@@ -107,12 +113,7 @@ private:
     };
 #pragma pack(pop)
 
-    struct NetworkPlayer {
-        Player player;
-        std::queue<PositionPacket> positions;
-    };
-
-	std::vector<NetworkPlayer*> players;
+	std::vector<Player*> players;
     bool connected;
 
 	Game* game;

@@ -1,9 +1,18 @@
 #include "Network.h"
 #include "Game.h"
 
+#include <cstdlib>
+
 static Network* network;
 
 #ifdef EMSCRIPTEN
+EM_JS(void, set_hash, (const char* hash), { location.hash = UTF8ToString(hash); });
+EM_JS(char*, get_hash, (), { 
+    return stringToNewUTF8(
+        location.hash.replace("#","")
+    );
+});
+
 EM_BOOL emscripten_on_message(int event_type, const EmscriptenWebSocketMessageEvent* websocket_event, void* user_data)
 {
     if (websocket_event->isText)
@@ -114,42 +123,24 @@ void Network::tick()
     socket.poll();
 #endif
 
-    if (isConnected())
+    if (isConnected() && players.size() > 1)
     {
-        for (const auto& networkPlayer : players)
-        {
-            if (networkPlayer)
-            {
-                if (!networkPlayer->positions.empty())
-                {
-                    auto positionPacket = networkPlayer->positions.front();
+        PositionPacket positionPacket = PositionPacket();
+        positionPacket.index = UCHAR_MAX;
+        positionPacket.position = game->localPlayer.position;
+        positionPacket.rotation = game->localPlayer.viewAngles;
 
-                    networkPlayer->player.rotate(positionPacket.rotation.x, positionPacket.rotation.y);
-                    networkPlayer->player.move(positionPacket.position.x, positionPacket.position.y, positionPacket.position.z);
-                    networkPlayer->positions.pop();
-                }
-            }
-        }
-
-        if (players.size() > 1)
-        {
-            PositionPacket positionPacket = PositionPacket();
-            positionPacket.index = UCHAR_MAX;
-            positionPacket.position = game->localPlayer.position;
-            positionPacket.rotation = game->localPlayer.viewAngles;
-
-            sendBinary((unsigned char*)&positionPacket, sizeof(positionPacket));
-        }
+        sendBinary((unsigned char*)&positionPacket, sizeof(positionPacket));
     }
 }
 
 void Network::render()
 {
-    for (const auto& networkPlayer : players)
+    for (const auto& player : players)
     {
-        if (networkPlayer)
+        if (player)
         {
-            networkPlayer->player.render();
+            player->render();
         }
     }
 }
@@ -263,7 +254,23 @@ void Network::onOpen()
 {
     connected = true;
 
-    game->ui.openStatusMenu("Connected", "Waiting on input...");
+#ifdef EMSCRIPTEN
+    const char* hash = get_hash();
+
+    if (*hash)
+    {
+        join(hash);
+    }
+    else
+    {
+        create();
+    }
+    
+    std::free((void*)hash);
+#else
+    game->ui.closeMenu();
+#endif
+    
 }
 
 void Network::onClose()
@@ -286,15 +293,20 @@ void Network::onMessage(const std::string& text)
         players.push_back(nullptr);
 
         game->ui.closeMenu();
+
+#ifdef EMSCRIPTEN
+        std::string id = message["id"];
+        set_hash(id.c_str());
+#endif
     }
     else if (message["type"] == "join")
     {
         if (message["size"].is_null())
         {
-            NetworkPlayer* networkPlayer = new NetworkPlayer();
-            networkPlayer->player.init(game);
+            Player* player = new Player();
+            player->init(game);
 
-            players.push_back(networkPlayer);
+            players.push_back(player);
 
             if (isHost())
             {
@@ -311,10 +323,10 @@ void Network::onMessage(const std::string& text)
 
             for (unsigned int i = 0; i < size; i++)
             {
-                NetworkPlayer* networkPlayer = new NetworkPlayer();
-                networkPlayer->player.init(game);
+                Player* player = new Player();
+                player->init(game);
 
-                players.push_back(networkPlayer);
+                players.push_back(player);
             }
 
             players.push_back(nullptr);
@@ -366,10 +378,12 @@ void Network::onBinaryMessage(const unsigned char* data)
     else if (type == (unsigned char)PacketType::Position)
     {
         PositionPacket* positionPacket = (PositionPacket*)data;
+        Player* player = players[index];
 
-        if (players[index])
+        if (player)
         {
-            players[index]->positions.push(*positionPacket);
+            player->rotate(positionPacket->rotation.x, positionPacket->rotation.y);
+            player->move(positionPacket->position.x, positionPacket->position.y, positionPacket->position.z);
         }
     } 
     else if (type == (unsigned char)PacketType::SetBlock)

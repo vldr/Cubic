@@ -155,8 +155,8 @@ void LocalPlayer::update()
                         }
                         else
                         {
-                            game->level.setTileWithRender(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR);
-                            game->network.setBlock(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR);
+                            game->level.setTileWithRender(vx, vy, vz, heldBlockType);
+                            game->network.setBlock(vx, vy, vz, heldBlockType);
                         }
 
                         game->heldBlock.reset();
