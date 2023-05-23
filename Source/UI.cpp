@@ -122,34 +122,9 @@ void UI::update()
 	
 	if (state == State::StatusMenu)
 	{
-		int x = int(glm::ceil(game->scaledWidth / 16));
-		int y = int(glm::ceil(game->scaledHeight / 16));
-
-		for (int i = 0; i < x; i++)
+		if (drawStatusMenu())
 		{
-			for (int j = 0; j < y; j++)
-			{
-				drawInterface(i * 16.0f, j * 16.0f, 240.0f, 0.0f, 16.0f, 16.0f, 0.25f);
-			}
-		}
-
-		if (statusCloseable)
-		{
-			drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 30.0f, 0.6f);
-			drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 15.0f, 1.0f);
-
-			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 5.0f, "Back to game"))
-			{
-				game->network.create();
-
-				closeMenu();
-				return;
-			}
-		}
-		else
-		{
-			drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 13.0f, 0.6f);
-			drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2, 1.0f);
+			return;
 		}
 	}
 	else
@@ -176,6 +151,50 @@ void UI::render()
 
 	glBindTexture(GL_TEXTURE_2D, fontTexture);
 	fontVertices.render();
+}
+
+void UI::log(const std::string& text)
+{
+	Log log;
+	log.created = game->timer.milliTime();
+	log.text = text;
+
+	logs.push_back(log);
+}
+
+bool UI::drawStatusMenu()
+{
+	int x = int(glm::ceil(game->scaledWidth / 16));
+	int y = int(glm::ceil(game->scaledHeight / 16));
+
+	for (int i = 0; i < x; i++)
+	{
+		for (int j = 0; j < y; j++)
+		{
+			drawInterface(i * 16.0f, j * 16.0f, 240.0f, 0.0f, 16.0f, 16.0f, 0.25f);
+		}
+	}
+
+	if (statusCloseable)
+	{
+		drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 25.0f, 0.6f);
+		drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 12.0f, 1.0f);
+
+		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 5.0f, game->network.isConnected() ? "Create a new room" : "Play offline"))
+		{
+			game->network.create();
+
+			closeMenu();
+			return true;
+		}
+	}
+	else
+	{
+		drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 13.0f, 0.6f);
+		drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2, 1.0f);
+	}
+
+	return false;
 }
 
 bool UI::drawSelectBlockMenu()
@@ -274,6 +293,24 @@ void UI::drawHUD()
 	drawInterface(game->scaledWidth / 2 - 7, game->scaledHeight / 2 - 7, 211, 0, 16, 16);
 
 	drawHotbar();
+
+	for (auto log = logs.begin(); log != logs.end();)
+	{
+		auto index = logs.end() - log - 1;
+
+		if (game->timer.milliTime() - log->created > 5000)
+		{
+			log = logs.erase(log);
+		}
+		else
+		{
+			drawInterface(0, game->scaledHeight - 35.0f - index * 10.0f, 1.5f, 10.0f, 183, 0, 16, 16, 1.0f);
+			drawInterface(1.5f, game->scaledHeight - 35.0f - index * 10.0f, game->scaledWidth / 2 + 18.0f, 10.0f, 183, 0, 16, 16, 0.12f);
+			drawShadowedFont(log->text.c_str(), 3.25f, game->scaledHeight - 34.f - index * 10.0f, 1.0f);
+
+			log++;
+		}
+	}
 }
 
 void UI::drawHotbar()
@@ -446,7 +483,7 @@ void UI::drawFont(const char* text, float x, float y, float shade)
 		float u = float(text[index] % 16 << 3);
 		float v = float(text[index] / 16 << 3);
 
-		float height = 7.9999f;
+		float height = 7.98f;
 
 		fontVertices.push(VertexList::Vertex(x + width, y, 1.0f, u / 128.0f, v / 128.0f, shade));
 		fontVertices.push(VertexList::Vertex(x + width, y + height, 1.0f, u / 128.0f, (v + height) / 128.0f, shade));

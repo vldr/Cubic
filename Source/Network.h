@@ -30,7 +30,11 @@ public:
     void onBinaryMessage(const unsigned char* data);
 
 private:
+#ifdef EMSCRIPTEN
+    const char* URI = "wss://vldr.org:1235";
+#else
     const char* URI = "ws://vldr.org:1234";
+#endif
 
     enum class PacketType : unsigned char
     {

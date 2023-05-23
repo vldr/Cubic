@@ -35,6 +35,13 @@ EM_BOOL emscripten_on_message(int event_type, const EmscriptenWebSocketMessageEv
     return EM_TRUE;
 }
 
+EM_BOOL emscripten_on_error(int event_type, const EmscriptenWebSocketErrorEvent* websocket_event, void* user_data)
+{
+    network->onClose();
+
+    return EM_TRUE;
+}
+
 EM_BOOL emscripten_on_close(int event_type, const EmscriptenWebSocketCloseEvent* websocket_event, void* user_data)
 {
     network->onClose();
@@ -117,13 +124,14 @@ void Network::connect()
 
     socket = emscripten_websocket_new(&ws_attrs);
     emscripten_websocket_set_onmessage_callback(socket, NULL, emscripten_on_message);
+    emscripten_websocket_set_onerror_callback(socket, NULL, emscripten_on_error);
     emscripten_websocket_set_onclose_callback(socket, NULL, emscripten_on_close);
     emscripten_websocket_set_onopen_callback(socket, NULL, emscripten_on_open);
 #else
     try
     {
-        socket_client.set_access_channels(websocketpp::log::alevel::all);
-        socket_client.clear_access_channels(websocketpp::log::alevel::all);
+        socket_client.set_access_channels(websocketpp::log::alevel::none);
+        socket_client.clear_access_channels(websocketpp::log::alevel::none);
 
         socket_client.init_asio();
         socket_client.set_message_handler(bind(&websocketpp_on_message, &socket_client, ::_1, ::_2));
@@ -330,7 +338,11 @@ void Network::onClose()
 {
     connected = false;
 
-    game->ui.openStatusMenu("Disconnected", "The connection was forcibly closed.", true);
+#ifdef EMSCRIPTEN
+    set_hash("");
+#endif
+
+    game->ui.openStatusMenu("Disconnected", "The connection was closed.", true);
 }
 
 void Network::onMessage(const std::string& text)
@@ -350,10 +362,9 @@ void Network::onMessage(const std::string& text)
 
 #ifdef EMSCRIPTEN
         set_hash(id.c_str());
-#else
-        puts(id.c_str());
 #endif
 
+        game->ui.log("Connected! Invite friends by sharing the link.");
         game->ui.closeMenu();
     }
     else if (message["type"] == "join")
@@ -373,6 +384,8 @@ void Network::onMessage(const std::string& text)
                 memcpy(levelPacket->level, game->level.blocks, sizeof(levelPacket->level));
                 sendBinary((unsigned char*)levelPacket.get(), sizeof(*levelPacket));
             } 
+
+            game->ui.log("A player has joined.");
         }
         else
         {
@@ -387,6 +400,8 @@ void Network::onMessage(const std::string& text)
             }
 
             players.push_back(nullptr);
+
+            game->ui.log("Connected! Invite friends by sharing the link.");
         }
     }
     else if (message["type"] == "leave")
@@ -408,6 +423,8 @@ void Network::onMessage(const std::string& text)
         {
             game->ui.openStatusMenu("Migrating Host", "Attempting to migrate the host...");
         }
+
+        game->ui.log("A player has left.");
     }
 }
 
@@ -454,16 +471,6 @@ void Network::onBinaryMessage(const unsigned char* data)
                 setBlockPacket->position.z, 
                 setBlockPacket->blockType
             );
-
-            if (!game->level.isAirTile(blockType) && !game->level.isWaterTile(blockType) && game->level.isAirTile(setBlockPacket->blockType))
-            {
-                game->particleManager.spawn(
-                    (float)setBlockPacket->position.x,
-                    (float)setBlockPacket->position.y,
-                    (float)setBlockPacket->position.z,
-                    blockType
-                );
-            }
         }
         else
         {
@@ -479,17 +486,16 @@ void Network::onBinaryMessage(const unsigned char* data)
                 setBlockPacket->position.z,
                 setBlockPacket->blockType
             );
-
-            if (!game->level.isAirTile(blockType) && !game->level.isWaterTile(blockType) && game->level.isAirTile(setBlockPacket->blockType))
-            {
-                game->particleManager.spawn(
-                    (float)setBlockPacket->position.x,
-                    (float)setBlockPacket->position.y,
-                    (float)setBlockPacket->position.z,
-                    blockType
-                );
-            }
         }
 
+        if (!game->level.isAirTile(blockType) && !game->level.isWaterTile(blockType) && game->level.isAirTile(setBlockPacket->blockType))
+        {
+            game->particleManager.spawn(
+                (float)setBlockPacket->position.x,
+                (float)setBlockPacket->position.y,
+                (float)setBlockPacket->position.z,
+                blockType
+            );
+        }
     }
 }
