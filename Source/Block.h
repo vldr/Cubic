@@ -88,7 +88,7 @@ public:
 		unsigned char topTexture, sideTexture, bottomTexture;
 		float height;
 		const AABB boundingBox; 
-		bool fullBright, blocksLight; Type counterPart;
+		bool fullBright, blocksLight;
 		DrawType draw; 
 		CollideType collide;
 		SoundType digSound, stepSound;

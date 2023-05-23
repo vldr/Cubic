@@ -16,7 +16,7 @@ void loop()
     {
         game.input(event);
     }
-
+     
     game.run();
 
     SDL_GL_SwapWindow(game.window);
@@ -45,6 +45,7 @@ int main(int argc, char** argv)
     }
 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
 #ifdef EMSCRIPTEN
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);

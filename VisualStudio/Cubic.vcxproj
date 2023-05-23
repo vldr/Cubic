@@ -159,6 +159,7 @@
     <ClCompile Include="..\Source\Entity.cpp" />
     <ClCompile Include="..\Source\Frustum.cpp" />
     <ClCompile Include="..\Source\HeldBlock.cpp" />
+    <ClCompile Include="..\Source\Network.cpp" />
     <ClCompile Include="..\Source\ParticleManager.cpp" />
     <ClCompile Include="..\Source\LevelGenerator.cpp" />
     <ClCompile Include="..\Source\LevelRenderer.cpp" />
@@ -170,6 +171,7 @@
     <ClCompile Include="..\Source\OctaveNoise.cpp" />
     <ClCompile Include="..\Source\Particle.cpp" />
     <ClCompile Include="..\Source\PerlinNoise.cpp" />
+    <ClCompile Include="..\Source\Player.cpp" />
     <ClCompile Include="..\Source\Random.cpp" />
     <ClCompile Include="..\Source\SelectedBlock.cpp" />
     <ClCompile Include="..\Source\ShaderManager.cpp" />
@@ -188,6 +190,7 @@
     <ClInclude Include="..\Source\Entity.h" />
     <ClInclude Include="..\Source\Frustum.h" />
     <ClInclude Include="..\Source\HeldBlock.h" />
+    <ClInclude Include="..\Source\Network.h" />
     <ClInclude Include="..\Source\ParticleManager.h" />
     <ClInclude Include="..\Source\LevelGenerator.h" />
     <ClInclude Include="..\Source\LevelRenderer.h" />
@@ -199,6 +202,7 @@
     <ClInclude Include="..\Source\OctaveNoise.h" />
     <ClInclude Include="..\Source\Particle.h" />
     <ClInclude Include="..\Source\PerlinNoise.h" />
+    <ClInclude Include="..\Source\Player.h" />
     <ClInclude Include="..\Source\Random.h" />
     <ClInclude Include="..\Source\SelectedBlock.h" />
     <ClInclude Include="..\Source\ShaderManager.h" />

@@ -10,6 +10,7 @@
 #include <ctime>
 #include <algorithm>
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 void LevelGenerator::init(Game* game, int size)
 {
@@ -17,8 +18,23 @@ void LevelGenerator::init(Game* game, int size)
 	this->game->level.init(game, 128 << size, 128 << size);
 }
 
+void LevelGenerator::render(const char* title, const char* description)
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glUniform1f(game->fogEnableUniform, 1.0f);
+	glUniformMatrix4fv(game->viewMatrixUniform, 1, GL_FALSE, glm::value_ptr(game->identityMatrix));
+	glUniformMatrix4fv(game->projectionMatrixUniform, 1, GL_FALSE, glm::value_ptr(game->orthographicProjectionMatrix));
+
+	game->ui.openStatusMenu(title, description);
+	game->ui.render();
+
+	SDL_GL_SwapWindow(game->window);
+}
+
 void LevelGenerator::generateHeights(Noise* noise1, Noise* noise2, Noise* noise3)
 {
+	render("Generating World", "Generating height-map...");
+
 	for (int z = 0; z < game->level.depth; z++)
 	{
 		for (int x = 0; x < game->level.width; x++)
@@ -49,6 +65,8 @@ void LevelGenerator::generateHeights(Noise* noise1, Noise* noise2, Noise* noise3
 
 void LevelGenerator::generateBase(Noise* noise3)
 {
+	render("Generating World", "Generating dirt, stone, and lava blocks...");
+
 	for (int z = 0; z < game->level.depth; z++)
 	{ 
 		for (int x = 0; x < game->level.width; x++)
@@ -77,6 +95,8 @@ void LevelGenerator::generateBase(Noise* noise3)
 
 void LevelGenerator::generateWater()
 {
+	render("Generating World", "Generating water blocks...");
+
 	for (int z = 0; z < game->level.depth; z++)
 	{
 		for (int x = 0; x < game->level.width; x++)
@@ -96,6 +116,8 @@ void LevelGenerator::generateWater()
 
 void LevelGenerator::generateCaves()
 {
+	render("Generating World", "Generating caves...");
+
 	int size = (game->level.width * game->level.depth * game->level.height) / 256 / 64 << 1;
 
 	for (int i = 0; i < size; i++) 
@@ -177,6 +199,8 @@ void LevelGenerator::generateCaves()
 
 void LevelGenerator::generateOre(Block::Type blockType, int amount)
 {
+	render("Generating World", "Generating ore blocks...");
+
 	int size = game->level.width * game->level.depth * game->level.height / 256 / 64 * amount / 100;
 
 	for (int i = 0; i < size; i++) 
@@ -230,6 +254,8 @@ void LevelGenerator::generateOre(Block::Type blockType, int amount)
 
 void LevelGenerator::generateGrassSandGravel(Noise* noise1, Noise* noise2)
 {
+	render("Generating World", "Generating gravel and sand blocks...");
+
 	for (int z = 0; z < game->level.depth; z++)
 	{
 		for (int x = 0; x < game->level.width; x++)
@@ -263,6 +289,8 @@ void LevelGenerator::generateGrassSandGravel(Noise* noise1, Noise* noise2)
 
 void LevelGenerator::generateFlowers()
 {
+	render("Generating World", "Generating flower blocks...");
+
 	int size = game->level.width * game->level.depth / 3000;
 
 	for (int i = 0; i < size; i++) 
@@ -298,6 +326,8 @@ void LevelGenerator::generateFlowers()
 
 void LevelGenerator::generateMushrooms()
 {
+	render("Generating World", "Generating mushroom blocks...");
+
 	int size = game->level.width * game->level.depth * game->level.height / 2000;
 
 	for (int i = 0; i < size; i++) 
@@ -335,6 +365,8 @@ void LevelGenerator::generateMushrooms()
 
 void LevelGenerator::generateTrees()
 {
+	render("Generating World", "Generating tree blocks...");
+
 	for (int z = 4; z < game->level.depth - 4; z += 5)
 	{
 		for (int x = 4; x < game->level.width - 4; x += 5)
@@ -381,6 +413,8 @@ void LevelGenerator::generateTrees()
 
 void LevelGenerator::generateSpawnPosition()
 {
+	render("Generating World", "Finding a spawn position...");
+
 	int maxX = -1;
 	int maxY = -1;
 	int maxZ = -1;
@@ -406,9 +440,9 @@ void LevelGenerator::generateSpawnPosition()
 
 	if (maxX != -1 && maxY != -1 && maxZ != -1)
 	{
-		game->level.spawnX = maxX + 0.5f;
-		game->level.spawnY = maxY + 2.0f;
-		game->level.spawnZ = maxZ + 0.5f;
+		game->level.spawn.x = maxX + 0.5f;
+		game->level.spawn.y = maxY + 2.0f;
+		game->level.spawn.z = maxZ + 0.5f;
 	}
 }
 
@@ -445,10 +479,9 @@ void LevelGenerator::generate()
 	generateSpawnPosition();
 
 	game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);
-	game->localPlayer.setPosition(game->level.spawnX, game->level.spawnY, game->level.spawnZ);
-	game->level.spawnX = game->localPlayer.position.x;
-	game->level.spawnY = game->localPlayer.position.y;
-	game->level.spawnZ = game->localPlayer.position.z;
+	game->localPlayer.setPosition(game->level.spawn.x, game->level.spawn.y, game->level.spawn.z);
+
+	game->level.spawn = game->localPlayer.position;
 
 	delete[] heights;
 }

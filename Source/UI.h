@@ -28,23 +28,29 @@ public:
 	bool input(const SDL_Event& event);
 	void update();
 	void render();
+	void log(const std::string& text);
 
 	void openMenu(UI::State state);
+	void openStatusMenu(const char* title, const char* description, bool closeable = false);
 	void closeMenu();
 
 	UI::State state;
-
 	UI::MouseState mouseState;
+
 	glm::vec2 mousePosition;
+
 private:
-	struct Button 
+	struct Log 
 	{
-		UI::MouseState mouseState;
+		uint64_t created;
+		std::string text;
 	};
 
 	void drawHUD();
 	void drawHotbar();
 	void drawBlock(unsigned char blockType, float x, float y, float scale);
+	
+	bool drawStatusMenu();
 
 	bool drawSelectBlockMenu();
 	bool drawSelectBlockButton(unsigned char blockType, unsigned char& selectedBlockType, float x, float y, float width, float height);
@@ -69,6 +75,12 @@ private:
 		3, 6, 6, 6, 6, 6, 5, 6, 6, 2, 6, 5, 3, 6, 6, 6,
 		6, 6, 6, 6, 4, 6, 6, 6, 6, 6, 6, 5, 2, 5, 7, 6,
 	};
+
+	std::vector<Log> logs;
+
+	std::string statusTitle;
+	std::string statusDescription;
+	bool statusCloseable;
 
 	VertexList fontVertices;
 	GLuint fontTexture;

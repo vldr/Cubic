@@ -12,6 +12,7 @@
 #include "SelectedBlock.h"
 #include "UI.h"
 #include "Frustum.h"
+#include "Network.h"
 
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
@@ -39,6 +40,7 @@ public:
 	Timer timer;
 	UI ui;
 	Frustum frustum;
+	Network network;
 
 	GLuint shader;
 	GLuint atlasTexture;
