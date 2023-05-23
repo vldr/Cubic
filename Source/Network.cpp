@@ -362,6 +362,8 @@ void Network::onMessage(const std::string& text)
 
 #ifdef EMSCRIPTEN
         set_hash(id.c_str());
+#else
+        printf("Room: %s\n", id.c_str());
 #endif
 
         game->ui.log("Connected! Invite friends by sharing the link.");
@@ -385,7 +387,7 @@ void Network::onMessage(const std::string& text)
                 sendBinary((unsigned char*)levelPacket.get(), sizeof(*levelPacket));
             } 
 
-            game->ui.log("A player has joined.");
+            game->ui.log("A player has connected to the room.");
         }
         else
         {
@@ -424,7 +426,7 @@ void Network::onMessage(const std::string& text)
             game->ui.openStatusMenu("Migrating Host", "Attempting to migrate the host...");
         }
 
-        game->ui.log("A player has left.");
+        game->ui.log("A player has left the room.");
     }
 }
 

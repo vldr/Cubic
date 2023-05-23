@@ -304,9 +304,9 @@ void UI::drawHUD()
 		}
 		else
 		{
+			drawInterface(1.4f, game->scaledHeight - 35.0f - index * 10.0f, game->scaledWidth / 2 + 18.0f, 10.0f, 183, 0, 16, 16, 0.12f);
 			drawInterface(0, game->scaledHeight - 35.0f - index * 10.0f, 1.5f, 10.0f, 183, 0, 16, 16, 1.0f);
-			drawInterface(1.5f, game->scaledHeight - 35.0f - index * 10.0f, game->scaledWidth / 2 + 18.0f, 10.0f, 183, 0, 16, 16, 0.12f);
-			drawShadowedFont(log->text.c_str(), 3.25f, game->scaledHeight - 34.f - index * 10.0f, 1.0f);
+			drawFont(log->text.c_str(), 3.30f, game->scaledHeight - 33.8f - index * 10.0f, 1.0f);
 
 			log++;
 		}

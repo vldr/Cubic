@@ -59,7 +59,7 @@ static const GLchar* vertexSource = R""""(#version 100
 
     void main()
     {
-        fragmentPosition = position;
+        fragmentPosition = (Model * vec4(position, 1.0)).xyz;
         fragmentTextureCoordinate = uv;
         fragmentShade = shade;
 
