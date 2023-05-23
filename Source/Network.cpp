@@ -330,7 +330,21 @@ void Network::onOpen()
     
     std::free((void*)hash);
 #else
-    create();
+    char input[255];
+
+    printf("Enter a room identifier to join (leave blank to create a room): ");
+    fgets(input, sizeof(input), stdin);
+
+    input[strcspn(input, "\n")] = '\0';
+
+    if (strlen(input) == 0) 
+    {
+        create();
+    }
+    else 
+    {
+        join(input);
+    }
 #endif
 }
 
@@ -459,7 +473,7 @@ void Network::onBinaryMessage(const unsigned char* data)
     {
         SetBlockPacket* setBlockPacket = (SetBlockPacket*)data;
 
-        auto blockType = game->level.getTile(
+        auto previousBlockType = game->level.getTile(
             setBlockPacket->position.x,
             setBlockPacket->position.y,
             setBlockPacket->position.z
@@ -467,6 +481,19 @@ void Network::onBinaryMessage(const unsigned char* data)
 
         if (isHost())
         {
+            if (game->level.isWaterTile(setBlockPacket->blockType) || game->level.isLavaTile(setBlockPacket->blockType))
+            {
+                setBlock(
+                    setBlockPacket->position.x,
+                    setBlockPacket->position.y,
+                    setBlockPacket->position.z,
+                    previousBlockType
+                );
+
+                printf("network error: attempted to place a forbidden block.\n");
+                return;
+            }
+
             game->level.setTileWithNeighborChange(
                 setBlockPacket->position.x, 
                 setBlockPacket->position.y, 
@@ -490,13 +517,18 @@ void Network::onBinaryMessage(const unsigned char* data)
             );
         }
 
-        if (!game->level.isAirTile(blockType) && !game->level.isWaterTile(blockType) && game->level.isAirTile(setBlockPacket->blockType))
+        if (
+            !game->level.isAirTile(previousBlockType) && 
+            !game->level.isWaterTile(previousBlockType) &&
+            !game->level.isLavaTile(previousBlockType) &&
+            game->level.isAirTile(setBlockPacket->blockType)
+        )
         {
             game->particleManager.spawn(
                 (float)setBlockPacket->position.x,
                 (float)setBlockPacket->position.y,
                 (float)setBlockPacket->position.z,
-                blockType
+                previousBlockType
             );
         }
     }

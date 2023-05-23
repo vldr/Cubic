@@ -539,10 +539,14 @@ bool Level::setTileWithNoNeighborChange(int x, int y, int z, unsigned char tile)
 
 void Level::setTileWithRender(int x, int y, int z, unsigned char tile)
 {
-	setTile(x, y, z, tile);
-	calculateLightDepths(x, z, 1, 1);
+	auto previousTile = getTile(x, y, z);
+	if (previousTile != tile)
+	{
+		setTile(x, y, z, tile);
+		calculateLightDepths(x, z, 1, 1);
 
-	game->levelRenderer.loadChunks(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1);
+		game->levelRenderer.loadChunks(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1);
+	}
 }
 
 void Level::setTile(int x, int y, int z, unsigned char value)

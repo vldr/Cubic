@@ -12,10 +12,10 @@ public:
 	void init(Game* game, int size = 0);
 	void render(const char* title, const char* description);
 	void generate();
-
+	
 private:
-	void generateHeights(Noise* noise1, Noise* noise2, Noise* noise3);
-	void generateBase(Noise* noise3);
+	void generateHeightMap(Noise* noise1, Noise* noise2, Noise* noise3);
+	void generateDirtStoneLava(Noise* noise3);
 	void generateWater();
 	void generateCaves();
 	void generateOre(Block::Type blockType, int amount);

@@ -31,10 +31,8 @@ void LevelGenerator::render(const char* title, const char* description)
 	SDL_GL_SwapWindow(game->window);
 }
 
-void LevelGenerator::generateHeights(Noise* noise1, Noise* noise2, Noise* noise3)
+void LevelGenerator::generateHeightMap(Noise* noise1, Noise* noise2, Noise* noise3)
 {
-	render("Generating World", "Generating height-map...");
-
 	for (int z = 0; z < game->level.depth; z++)
 	{
 		for (int x = 0; x < game->level.width; x++)
@@ -63,10 +61,8 @@ void LevelGenerator::generateHeights(Noise* noise1, Noise* noise2, Noise* noise3
 	}
 }
 
-void LevelGenerator::generateBase(Noise* noise3)
+void LevelGenerator::generateDirtStoneLava(Noise* noise3)
 {
-	render("Generating World", "Generating dirt, stone, and lava blocks...");
-
 	for (int z = 0; z < game->level.depth; z++)
 	{ 
 		for (int x = 0; x < game->level.width; x++)
@@ -95,8 +91,6 @@ void LevelGenerator::generateBase(Noise* noise3)
 
 void LevelGenerator::generateWater()
 {
-	render("Generating World", "Generating water blocks...");
-
 	for (int z = 0; z < game->level.depth; z++)
 	{
 		for (int x = 0; x < game->level.width; x++)
@@ -116,8 +110,6 @@ void LevelGenerator::generateWater()
 
 void LevelGenerator::generateCaves()
 {
-	render("Generating World", "Generating caves...");
-
 	int size = (game->level.width * game->level.depth * game->level.height) / 256 / 64 << 1;
 
 	for (int i = 0; i < size; i++) 
@@ -199,8 +191,6 @@ void LevelGenerator::generateCaves()
 
 void LevelGenerator::generateOre(Block::Type blockType, int amount)
 {
-	render("Generating World", "Generating ore blocks...");
-
 	int size = game->level.width * game->level.depth * game->level.height / 256 / 64 * amount / 100;
 
 	for (int i = 0; i < size; i++) 
@@ -254,8 +244,6 @@ void LevelGenerator::generateOre(Block::Type blockType, int amount)
 
 void LevelGenerator::generateGrassSandGravel(Noise* noise1, Noise* noise2)
 {
-	render("Generating World", "Generating gravel and sand blocks...");
-
 	for (int z = 0; z < game->level.depth; z++)
 	{
 		for (int x = 0; x < game->level.width; x++)
@@ -289,8 +277,6 @@ void LevelGenerator::generateGrassSandGravel(Noise* noise1, Noise* noise2)
 
 void LevelGenerator::generateFlowers()
 {
-	render("Generating World", "Generating flower blocks...");
-
 	int size = game->level.width * game->level.depth / 3000;
 
 	for (int i = 0; i < size; i++) 
@@ -326,8 +312,6 @@ void LevelGenerator::generateFlowers()
 
 void LevelGenerator::generateMushrooms()
 {
-	render("Generating World", "Generating mushroom blocks...");
-
 	int size = game->level.width * game->level.depth * game->level.height / 2000;
 
 	for (int i = 0; i < size; i++) 
@@ -365,8 +349,6 @@ void LevelGenerator::generateMushrooms()
 
 void LevelGenerator::generateTrees()
 {
-	render("Generating World", "Generating tree blocks...");
-
 	for (int z = 4; z < game->level.depth - 4; z += 5)
 	{
 		for (int x = 4; x < game->level.width - 4; x += 5)
@@ -413,8 +395,6 @@ void LevelGenerator::generateTrees()
 
 void LevelGenerator::generateSpawnPosition()
 {
-	render("Generating World", "Finding a spawn position...");
-
 	int maxX = -1;
 	int maxY = -1;
 	int maxZ = -1;
@@ -465,22 +445,41 @@ void LevelGenerator::generate()
 	auto noise2 = CombinedNoise(&oct[2], &oct[3]);
 	auto noise3 = OctaveNoise(random, 6);
 
-	generateHeights(&noise1, &noise2, &noise3);
-	generateBase(&noise3);
+	render("Generating World", "Generating height-map...");
+	generateHeightMap(&noise1, &noise2, &noise3);
+
+	render("Generating World", "Generating dirt, stone, and lava...");
+	generateDirtStoneLava(&noise3);
+
+	render("Generating World", "Generating water...");
 	generateWater();
+
+	render("Generating World", "Generating caves...");
 	generateCaves();
+
+	render("Generating World", "Generating ore blocks...");
 	generateOre(Block::Type::BLOCK_COAL_ORE, 90);
 	generateOre(Block::Type::BLOCK_IRON_ORE, 70);
 	generateOre(Block::Type::BLOCK_GOLD_ORE, 50);
+
+	render("Generating World", "Generating gravel and sand blocks...");
 	generateGrassSandGravel(&noise1, &noise2);
+
+	render("Generating World", "Generating flower blocks...");
 	generateFlowers();
+
+	render("Generating World", "Generating mushroom blocks...");
 	generateMushrooms();
+
+	render("Generating World", "Generating tree blocks...");
 	generateTrees();
+
+	render("Generating World", "Generating a spawn position...");
 	generateSpawnPosition();
 
 	game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);
-	game->localPlayer.setPosition(game->level.spawn.x, game->level.spawn.y, game->level.spawn.z);
 
+	game->localPlayer.setPosition(game->level.spawn.x, game->level.spawn.y, game->level.spawn.z);
 	game->level.spawn = game->localPlayer.position;
 
 	delete[] heights;
