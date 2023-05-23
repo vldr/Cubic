@@ -78,7 +78,7 @@ void Entity::turn(float ry, float rx)
 	rotation.y += ry * 0.15f;
 	rotation.x = rotation.x < -90.0f ? -89.9f : (rotation.x > 90.0f ? 89.9f : rotation.x);
 
-	oldRotation.x += rotation.x - orx;
+	oldRotation.x += rotation.x - orx; 
 	oldRotation.y += rotation.y - ory;
 }
 

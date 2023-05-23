@@ -179,6 +179,10 @@ void Network::tick()
                 player->move(positionPacket.position.x, positionPacket.position.y, positionPacket.position.z);
             }
         }
+        else
+        {
+            printf("network error: index out of bounds for position packet.\n");
+        }
     }
 
     positionPackets.clear();
