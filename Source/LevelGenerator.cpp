@@ -18,19 +18,6 @@ void LevelGenerator::init(Game* game, int size)
 	this->game->level.init(game, 128 << size, 128 << size);
 }
 
-void LevelGenerator::render(const char* title, const char* description)
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glUniform1f(game->fogEnableUniform, 1.0f);
-	glUniformMatrix4fv(game->viewMatrixUniform, 1, GL_FALSE, glm::value_ptr(game->identityMatrix));
-	glUniformMatrix4fv(game->projectionMatrixUniform, 1, GL_FALSE, glm::value_ptr(game->orthographicProjectionMatrix));
-
-	game->ui.openStatusMenu(title, description);
-	game->ui.render();
-
-	SDL_GL_SwapWindow(game->window);
-}
-
 void LevelGenerator::generateHeightMap(Noise* noise1, Noise* noise2, Noise* noise3)
 {
 	for (int z = 0; z < game->level.depth; z++)
@@ -445,36 +432,17 @@ void LevelGenerator::generate()
 	auto noise2 = CombinedNoise(&oct[2], &oct[3]);
 	auto noise3 = OctaveNoise(random, 6);
 
-	render("Generating World", "Generating height-map...");
 	generateHeightMap(&noise1, &noise2, &noise3);
-
-	render("Generating World", "Generating dirt, stone, and lava...");
 	generateDirtStoneLava(&noise3);
-
-	render("Generating World", "Generating water...");
 	generateWater();
-
-	render("Generating World", "Generating caves...");
 	generateCaves();
-
-	render("Generating World", "Generating ore blocks...");
 	generateOre(Block::Type::BLOCK_COAL_ORE, 90);
 	generateOre(Block::Type::BLOCK_IRON_ORE, 70);
 	generateOre(Block::Type::BLOCK_GOLD_ORE, 50);
-
-	render("Generating World", "Generating gravel and sand blocks...");
 	generateGrassSandGravel(&noise1, &noise2);
-
-	render("Generating World", "Generating flower blocks...");
 	generateFlowers();
-
-	render("Generating World", "Generating mushroom blocks...");
 	generateMushrooms();
-
-	render("Generating World", "Generating tree blocks...");
 	generateTrees();
-
-	render("Generating World", "Generating a spawn position...");
 	generateSpawnPosition();
 
 	game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);

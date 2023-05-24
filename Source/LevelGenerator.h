@@ -10,7 +10,6 @@ class LevelGenerator
 {
 public:
 	void init(Game* game, int size = 0);
-	void render(const char* title, const char* description);
 	void generate();
 	
 private:
