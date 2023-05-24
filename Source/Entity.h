@@ -40,7 +40,6 @@ protected:
 	bool collision;
 	bool horizontalCollision;
 	bool slide;
-	bool makeStepSound;
 
 	float heightOffset;
 	float aabbWidth;
@@ -48,7 +47,5 @@ protected:
 	float fallDistance;
 	float slideOffset;
 	float footSize;
-
-	int nextStep;
 };
 

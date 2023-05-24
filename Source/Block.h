@@ -4,13 +4,6 @@
 class Block 
 {
 public:
-	enum class SoundType 
-	{
-		SOUND_NONE, SOUND_WOOD, SOUND_GRAVEL, SOUND_GRASS,
-		SOUND_STONE, SOUND_METAL, SOUND_GLASS, SOUND_CLOTH,
-		SOUND_SAND, SOUND_SNOW, SOUND_COUNT
-	};
-
 	enum class DrawType 
 	{
 		DRAW_OPAQUE,     
@@ -26,7 +19,7 @@ public:
 	{
 		COLLIDE_NONE,         
 		COLLIDE_LIQUID,       
-		COLLIDE_SOLID,  
+		COLLIDE_SOLID, 
 	};
 
 	enum class Type 
@@ -85,13 +78,14 @@ public:
 
 	struct Definition 
 	{
-		unsigned char topTexture, sideTexture, bottomTexture;
+		unsigned char topTexture;
+		unsigned char sideTexture;
+		unsigned char bottomTexture;
 		float height;
 		const AABB boundingBox; 
-		bool fullBright, blocksLight;
+		bool blocksLight;
 		DrawType draw; 
 		CollideType collide;
-		SoundType digSound, stepSound;
 	};
 
 	const static Definition Definitions[50];

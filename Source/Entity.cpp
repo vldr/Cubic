@@ -14,9 +14,7 @@ void Entity::init(Game* game)
 	this->aabbHeight = 1.8f;
 	this->oldWalkDistance = 0.0f;
 	this->walkDistance = 0.0f;
-	this->makeStepSound = true;
 	this->fallDistance = 0.0f;
-	this->nextStep = 1;
 	this->slideOffset = 0.0f;
 	this->footSize = 0.0f;
 	this->noPhysics = false;

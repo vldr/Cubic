@@ -22,7 +22,6 @@ void Particle::init(
 	this->index = index;
 	this->isValid = true;
 	this->heightOffset = aabbHeight / 2.0f;
-	this->makeStepSound = false;
 
 	this->velocity.x = xd + float(game->random.uniform() * 2.0f - 1.0f) * 0.4f;
 	this->velocity.y = yd + float(game->random.uniform() * 2.0f - 1.0f) * 0.4f;
