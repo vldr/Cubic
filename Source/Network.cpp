@@ -463,6 +463,7 @@ void Network::onBinaryMessage(const unsigned char* data)
         memcpy(game->level.blocks, levelPacket->level, sizeof(levelPacket->level));
 
         game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);
+        game->levelRenderer.loadChunks(0, 0, 0, game->level.width, game->level.height, game->level.depth);
 
         if (levelPacket->respawn)
         {
