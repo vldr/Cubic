@@ -71,7 +71,7 @@ void Game::init(SDL_Window* sdlWindow)
 {
     this->window = sdlWindow;
     this->random.init(std::time(nullptr));
-    this->timer.init(this, tickRate);
+    this->timer.init(this, TICK_RATE);
     this->localPlayer.init(this);
     this->frustum.init(this);
     this->network.init(this);
@@ -104,7 +104,7 @@ void Game::init(SDL_Window* sdlWindow)
     projectionMatrixUniform = glGetUniformLocation(shader, "Projection");
     viewMatrixUniform = glGetUniformLocation(shader, "View");
     modelMatrixUniform = glGetUniformLocation(shader, "Model");
-    glUniformMatrix4fv(modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(identityMatrix));
+    glUniformMatrix4fv(modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(IDENTITY_MATRIX));
 
     levelGenerator.generate();
     network.connect();
@@ -150,7 +150,7 @@ void Game::run()
 
     glClear(GL_DEPTH_BUFFER_BIT);
     glUniform1f(fogEnableUniform, 1.0f);
-    glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, glm::value_ptr(identityMatrix));
+    glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, glm::value_ptr(IDENTITY_MATRIX));
 
     heldBlock.render();
 
@@ -211,10 +211,10 @@ void Game::resize()
 
     orthographicProjectionMatrix = glm::ortho(0.0f, scaledWidth, scaledHeight, 0.0f, -1000.0f, 1000.0f);
     perspectiveProjectionMatrix = glm::perspective(
-        glm::radians(fieldOfView),
+        glm::radians(FIELD_OF_VIEW),
         GLfloat(width) / GLfloat(height),
-        nearPlane,
-        farPlane
+        NEAR_PLANE,
+        FAR_PLANE
     );
 
     ui.update();

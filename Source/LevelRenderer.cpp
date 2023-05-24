@@ -17,9 +17,9 @@ void LevelRenderer::init(Game* game)
 
     skybox.init(game);
 
-    xChunks = game->level.width / Chunk::width;
-    yChunks = game->level.height / Chunk::height;
-    zChunks = game->level.depth / Chunk::depth;
+    xChunks = game->level.width / Chunk::WIDTH;
+    yChunks = game->level.height / Chunk::HEIGHT;
+    zChunks = game->level.depth / Chunk::DEPTH;
     chunks = new Chunk[xChunks * yChunks * zChunks];
 
     for (int x = 0; x < xChunks; x++)

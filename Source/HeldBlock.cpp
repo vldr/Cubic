@@ -168,7 +168,7 @@ void HeldBlock::render()
     float bob = game->localPlayer.oldBobbing + (game->localPlayer.bobbing - game->localPlayer.oldBobbing) * game->timer.delta;
     float tilt = game->localPlayer.oldTilt + (game->localPlayer.tilt - game->localPlayer.oldTilt) * game->timer.delta;
     
-    auto matrix = game->identityMatrix;
+    auto matrix = game->IDENTITY_MATRIX;
     matrix = glm::translate(matrix, glm::vec3(0.45f, -0.55f - (0.25f * (1.0f - height)), -0.8f));
     matrix = glm::translate(matrix, glm::vec3(glm::sin(walk * M_PI) * bob * 0.5, -glm::abs(glm::cos(walk * M_PI) * bob), 0.0));
     matrix = glm::translate(matrix, glm::vec3(0, glm::radians(tilt), 0));
@@ -196,5 +196,5 @@ void HeldBlock::render()
     glBindTexture(GL_TEXTURE_2D, game->atlasTexture);
     vertices.render();
 
-    glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(game->identityMatrix));
+    glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(game->IDENTITY_MATRIX));
 }

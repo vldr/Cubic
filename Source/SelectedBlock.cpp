@@ -12,7 +12,7 @@ void SelectedBlock::init(Game* game)
 
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, bufferSize * sizeof(glm::vec3), NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, BUFFER_SIZE * sizeof(glm::vec3), NULL, GL_DYNAMIC_DRAW);
 
     glEnableVertexAttribArray(0);
 
@@ -38,7 +38,7 @@ void SelectedBlock::renderPost()
                 aabb = aabb.move((float)game->localPlayer.selected.x, (float)game->localPlayer.selected.y, (float)game->localPlayer.selected.z);
                 aabb = aabb.grow(0.002f, 0.002f, 0.002f);
 
-                float vertices[bufferSize * 3] =
+                float vertices[BUFFER_SIZE * 3] =
                 {
                     aabb.x0, aabb.y0, aabb.z0,
                     aabb.x0, aabb.y0, aabb.z1,
@@ -72,7 +72,7 @@ void SelectedBlock::renderPost()
                 game->localPlayer.selectedIndex = game->localPlayer.selected.index;
             }
 
-            glDrawArrays(GL_LINES, 0, (GLsizei)bufferSize);
+            glDrawArrays(GL_LINES, 0, (GLsizei)BUFFER_SIZE);
         }
     }
 }

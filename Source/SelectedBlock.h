@@ -10,7 +10,7 @@ public:
 	void renderPost();
 
 private:
-	const static int bufferSize = 24;
+	const static int BUFFER_SIZE = 24;
 
 	GLuint vao;
 	GLuint buffer;

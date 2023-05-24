@@ -41,11 +41,11 @@ bool Chunk::shouldRenderFace(const Block::Definition& current, const Block::Defi
 
 void Chunk::update()
 {
-    for (int x = position.x; x < (position.x + width); x++)
+    for (int x = position.x; x < (position.x + WIDTH); x++)
     {
-        for (int y = position.y; y < (position.y + height); y++)
+        for (int y = position.y; y < (position.y + HEIGHT); y++)
         {
-            for (int z = position.z; z < (position.z + depth); z++)
+            for (int z = position.z; z < (position.z + DEPTH); z++)
             {
                 auto blockType = game->level.getRenderTile(x, y, z);
                 if (blockType != (unsigned char)Block::Type::BLOCK_AIR)

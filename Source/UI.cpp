@@ -394,7 +394,7 @@ void UI::drawBlock(unsigned char blockType, float x, float y, float scale)
 	{
 		VertexList::Vertex* vertex = &vertices[i];
 
-		auto matrix = game->identityMatrix;
+		auto matrix = game->IDENTITY_MATRIX;
 		matrix = glm::translate(matrix, glm::vec3(x, y, 15.0f));
 
 		if (blockDefinition.draw == Block::DrawType::DRAW_SPRITE)
@@ -467,7 +467,7 @@ void UI::drawCenteredFont(const char* text, float x, float y, float shade)
 	const auto length = std::strlen(text);
 	for (auto i = 0; i < length; i++)
 	{
-		width += fontWidths[int(text[i])];
+		width += FONT_WIDTHS[int(text[i])];
 	}
 
 	drawShadowedFont(text, x - width / 2, y, shade);
@@ -493,6 +493,6 @@ void UI::drawFont(const char* text, float x, float y, float shade)
 		fontVertices.push(VertexList::Vertex(x + width + height, y + height, 1.0f, (u + height) / 128.0f, (v + height) / 128.0f, shade));
 		fontVertices.push(VertexList::Vertex(x + width + height, y, 1.0f, (u + height) / 128.0f, v / 128.0f, shade));
 
-		width += fontWidths[int(text[index])];
+		width += FONT_WIDTHS[int(text[index])];
 	}
 }

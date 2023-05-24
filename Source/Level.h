@@ -58,16 +58,17 @@ public:
 	bool containsLiquid(AABB box, Block::Type blockType);
 	AABBPosition clip(glm::vec3 start, glm::vec3 end, const glm::ivec3* expected = nullptr);
 
-	Game* game;
-	std::queue<Level::Tile> liquidUpdates;
-
 	int width;
 	int height;
 	int depth;
 	int groundLevel;
 	int waterLevel;
-	int* lightDepths;
 
 	glm::vec3 spawn;
 	unsigned char* blocks;
+
+private:
+	Game* game;
+	std::queue<Level::Tile> liquidUpdates;
+	int* lightDepths;
 };

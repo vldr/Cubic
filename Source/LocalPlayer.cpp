@@ -30,11 +30,11 @@ void LocalPlayer::update()
 
     viewPosition = oldPosition + ((position - oldPosition) * game->timer.delta);
 
-    game->viewMatrix = glm::lookAt(viewPosition, viewPosition + lookAt, up);
+    game->viewMatrix = glm::lookAt(viewPosition, viewPosition + lookAt, UP);
 
     /////////////////////////////////////////////////////
 
-    if (game->level.isRenderWaterTile(viewPosition.x, viewPosition.y + cameraOffset, viewPosition.z))
+    if (game->level.isRenderWaterTile(viewPosition.x, viewPosition.y + CAMERA_OFFSET, viewPosition.z))
     {
         game->fogColor.r = 0.02f;
         game->fogColor.g = 0.02f;
@@ -42,7 +42,7 @@ void LocalPlayer::update()
         game->fogColor.a = 1.0f;
         game->fogDistance = 20.f;
     }
-    else if (game->level.isLavaTile(viewPosition.x, viewPosition.y + cameraOffset, viewPosition.z))
+    else if (game->level.isLavaTile(viewPosition.x, viewPosition.y + CAMERA_OFFSET, viewPosition.z))
     {
         game->fogColor.r = 0.6f;
         game->fogColor.g = 0.0f;
@@ -61,7 +61,7 @@ void LocalPlayer::update()
 
     /////////////////////////////////////////////////////
      
-    selected = game->level.clip(viewPosition, viewPosition + lookAt * reach); 
+    selected = game->level.clip(viewPosition, viewPosition + lookAt * REACH); 
  
     if (!selected.isValid && onGround)
     {
@@ -74,7 +74,7 @@ void LocalPlayer::update()
             !game->level.isLavaTile(groundBlockType)
         )
         {
-            selected = game->level.clip(viewPosition, viewPosition + lookAt * reach, &ground);
+            selected = game->level.clip(viewPosition, viewPosition + lookAt * REACH, &ground);
         }
     }
 
@@ -89,7 +89,7 @@ void LocalPlayer::update()
         if (interactState & Interact::Interact_Right) { interactRight = true; }
     }
 
-    if (game->timer.ticks - lastClick >= game->timer.ticksPerSecond / buildSpeed)
+    if (game->timer.ticks - lastClick >= game->timer.ticksPerSecond / BUILD_SPEED)
     {
         if (interactLeft)
         {
@@ -219,7 +219,7 @@ void LocalPlayer::tick()
         if (sprinting) { speed *= 4; }
 
         velocity = moveY * speed * lookAt;
-        velocity -= moveX * speed * glm::normalize(glm::cross(lookAt, up));
+        velocity -= moveX * speed * glm::normalize(glm::cross(lookAt, UP));
 
         if (jumping) { velocity.y = speed; }
 

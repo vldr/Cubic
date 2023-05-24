@@ -17,10 +17,6 @@ public:
 	void update();
 	float distanceToPlayer() const;
 
-	static const int width = 16;
-	static const int height = 16;
-	static const int depth = 16;
-
 	bool isVisible;
 	bool isLoaded;
 
@@ -30,6 +26,10 @@ public:
 	{
 		bool operator()(const Chunk* a, const Chunk* b) const;
 	};
+
+	static const int WIDTH = 16;
+	static const int HEIGHT = 16;
+	static const int DEPTH = 16;
 
 private:
 	bool shouldRenderFace(const Block::Definition& current, const Block::Definition& neighbor, bool isBottom = false);

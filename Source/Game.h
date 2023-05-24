@@ -76,9 +76,9 @@ public:
 	glm::mat4 perspectiveProjectionMatrix;
 	glm::mat4 viewMatrix;
 
-	const glm::mat4 identityMatrix = glm::mat4(1.0f);
-	const float fieldOfView = 70.0f;
-	const float nearPlane = 0.01f;
-	const float farPlane = 1000.0f;
-	const float tickRate = 20.0f;
+	const glm::mat4 IDENTITY_MATRIX = glm::mat4(1.0f);
+	const float FIELD_OF_VIEW = 70.0f;
+	const float NEAR_PLANE = 0.01f;
+	const float FAR_PLANE = 1000.0f;
+	const float TICK_RATE = 20.0f;
 }; 

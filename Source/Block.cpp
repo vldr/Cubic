@@ -11,8 +11,8 @@ const Block::Definition Block::Definitions[] = {
 	{  4,  4,  4, 1.0f,  DEFAULT_BOUNDING_BOX,  true, Block::DrawType::DRAW_OPAQUE, Block::CollideType::COLLIDE_SOLID, }, /* WOOD */
 	{ 15, 15, 15, 1.0f,  DEFAULT_BOUNDING_BOX, false, Block::DrawType::DRAW_SPRITE, Block::CollideType::COLLIDE_NONE,  }, /* SAPLING */
 	{ 17, 17, 17, 1.0f,  DEFAULT_BOUNDING_BOX,  true, Block::DrawType::DRAW_OPAQUE, Block::CollideType::COLLIDE_SOLID, }, /* BEDROCK */
-	{ 14, 14, 14, 1.0f,  DEFAULT_BOUNDING_BOX,  true, Block::DrawType::DRAW_TRANSLUCENT, Block::CollideType::COLLIDE_LIQUID, },/* WATER */
-	{ 14, 14, 14, 1.0f,  DEFAULT_BOUNDING_BOX,  true, Block::DrawType::DRAW_TRANSLUCENT, Block::CollideType::COLLIDE_LIQUID, },/* STILL_WATER */
+	{ 14, 14, 14, 1.0f,  DEFAULT_BOUNDING_BOX,  true, Block::DrawType::DRAW_TRANSLUCENT, Block::CollideType::COLLIDE_LIQUID, }, /* WATER */
+	{ 14, 14, 14, 1.0f,  DEFAULT_BOUNDING_BOX,  true, Block::DrawType::DRAW_TRANSLUCENT, Block::CollideType::COLLIDE_LIQUID, }, /* STILL_WATER */
 	{ 30, 30, 30, 1.0f,  DEFAULT_BOUNDING_BOX,  true, Block::DrawType::DRAW_TRANSLUCENT, Block::CollideType::COLLIDE_LIQUID, }, /* LAVA */
 	{ 30, 30, 30, 1.0f,  DEFAULT_BOUNDING_BOX,  true, Block::DrawType::DRAW_TRANSLUCENT, Block::CollideType::COLLIDE_LIQUID, }, /* STILL_LAVA */
 	{ 18, 18, 18, 1.0f,  DEFAULT_BOUNDING_BOX,  true, Block::DrawType::DRAW_OPAQUE, Block::CollideType::COLLIDE_SOLID, }, /* SAND */

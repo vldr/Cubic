@@ -65,7 +65,7 @@ private:
 	void drawShadowedFont(const char* text, float x, float y, float shade);
 	void drawCenteredFont(const char* text, float x, float y, float shade);
 
-	const float fontWidths[128] = {
+	const float FONT_WIDTHS[128] = {
 		1, 8, 8, 8, 8, 8, 8, 1, 8, 1, 8, 8, 1, 8, 8, 8,
 		8, 8, 1, 1, 8, 8, 1, 8, 1, 1, 8, 8, 8, 8, 8, 8,
 		4, 2, 5, 6, 6, 7, 7, 3, 5, 5, 8, 6, 2, 6, 2, 6,

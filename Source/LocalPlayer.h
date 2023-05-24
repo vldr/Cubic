@@ -70,9 +70,9 @@ private:
 	unsigned int moveState = Move::Move_None;
 	unsigned int interactState = Interact::Interact_None;
 
-	const float cameraOffset = 0.10f;
-	const float buildSpeed = 5.0f;
-	const float reach = 5.0f;
-	const glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);
+	const float CAMERA_OFFSET = 0.10f;
+	const float BUILD_SPEED = 5.0f;
+	const float REACH = 5.0f;
+	const glm::vec3 UP = glm::vec3(0.0, 1.0, 0.0);
 };
 

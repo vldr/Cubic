@@ -74,9 +74,9 @@ bool Frustum::contains(Chunk* chunk)
 	float startX = float(chunk->position.x); 
 	float startY = float(chunk->position.y);
 	float startZ = float(chunk->position.z);
-	float endX = float(chunk->position.x + chunk->width);
-	float endY = float(chunk->position.y + chunk->height);
-	float endZ = float(chunk->position.z + chunk->depth);
+	float endX = float(chunk->position.x + chunk->WIDTH);
+	float endY = float(chunk->position.y + chunk->HEIGHT);
+	float endZ = float(chunk->position.z + chunk->DEPTH);
 
 	for (int plane = 0; plane < 6; plane++) 
 	{
