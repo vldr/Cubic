@@ -6,15 +6,15 @@
 
 A multiplayer WebGL voxel sandbox game written in C++, inspired by the classic version of Minecraft.
 
-## Try it out
-You can play around with the game by navigating to: https://cubic.vldr.org/
+## [Try it out](https://cubic.vldr.org/)
+You can play around with the game by clicking the above link.
 
 ## Controls
 
-`W` and `S` to move forward and backward. 
-`A` and `D` to move left and right.
-`V` toggles fly-mode.
-`E` or `B` opens the build menu.
+`W` and `S` to move forward and backward.   
+`A` and `D` to move left and right.  
+`V` toggles fly-mode.  
+`E` or `B` opens the build menu.  
 
 ## Building
 
