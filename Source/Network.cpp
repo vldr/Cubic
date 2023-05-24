@@ -396,6 +396,7 @@ void Network::onMessage(const std::string& text)
             {
                 std::unique_ptr<LevelPacket> levelPacket = std::make_unique<LevelPacket>();
                 levelPacket->index = (unsigned int)players.size() - 1;
+                levelPacket->respawn = true;
 
                 memcpy(levelPacket->level, game->level.blocks, sizeof(levelPacket->level));
                 sendBinary((unsigned char*)levelPacket.get(), sizeof(*levelPacket));
@@ -431,6 +432,7 @@ void Network::onMessage(const std::string& text)
         {
             std::unique_ptr<LevelPacket> levelPacket = std::make_unique<LevelPacket>();
             levelPacket->index = UCHAR_MAX;
+            levelPacket->respawn = false;
 
             memcpy(levelPacket->level, game->level.blocks, sizeof(levelPacket->level));
             sendBinary((unsigned char*)levelPacket.get(), sizeof(*levelPacket));
@@ -461,7 +463,11 @@ void Network::onBinaryMessage(const unsigned char* data)
         memcpy(game->level.blocks, levelPacket->level, sizeof(levelPacket->level));
 
         game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);
-        game->levelRenderer.loadChunks(0, 0, 0, game->level.width, game->level.height, game->level.depth);
+
+        if (levelPacket->respawn)
+        {
+            game->level.calculateSpawnPosition();
+        }
 
         game->ui.closeMenu();
     }

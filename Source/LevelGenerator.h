@@ -10,6 +10,7 @@ class LevelGenerator
 {
 public:
 	void init(Game* game, int size = 0);
+
 	void generate();
 	
 private:
@@ -22,7 +23,6 @@ private:
 	void generateFlowers();
 	void generateMushrooms();
 	void generateTrees();
-	void generateSpawnPosition();
 
 	int* heights;
 	Game* game;

@@ -380,39 +380,6 @@ void LevelGenerator::generateTrees()
 	}
 }
 
-void LevelGenerator::generateSpawnPosition()
-{
-	int maxX = -1;
-	int maxY = -1;
-	int maxZ = -1;
-
-	for (int z = 0; z < game->level.depth; z++)
-	{
-		for (int x = 0; x < game->level.width; x++)
-		{
-			int y = heights[x + z * game->level.width];
-
-			if (
-				y > maxY && 
-				game->level.getTile(x, y + 1, z) == (unsigned char)Block::Type::BLOCK_AIR &&
-				game->level.getTile(x, y + 2, z) == (unsigned char)Block::Type::BLOCK_AIR 
-			)
-			{
-				maxX = x;
-				maxY = y;
-				maxZ = z;
-			}
-		}
-	}
-
-	if (maxX != -1 && maxY != -1 && maxZ != -1)
-	{
-		game->level.spawn.x = maxX + 0.5f;
-		game->level.spawn.y = maxY + 2.0f;
-		game->level.spawn.z = maxZ + 0.5f;
-	}
-}
-
 void LevelGenerator::generate()
 {
 	heights = new int[game->level.width * game->level.depth];
@@ -443,12 +410,9 @@ void LevelGenerator::generate()
 	generateFlowers();
 	generateMushrooms();
 	generateTrees();
-	generateSpawnPosition();
-
+	
 	game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);
-
-	game->localPlayer.setPosition(game->level.spawn.x, game->level.spawn.y, game->level.spawn.z);
-	game->level.spawn = game->localPlayer.position;
+	game->level.calculateSpawnPosition();
 
 	delete[] heights;
 }

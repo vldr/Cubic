@@ -348,6 +348,41 @@ bool Level::containsLiquid(AABB box, Block::Type blockType)
 	return false;
 }
 
+void Level::calculateSpawnPosition()
+{
+	glm::vec3 maxPosition = glm::vec3(-INFINITY, -INFINITY, -INFINITY);
+
+	for (int x = 0; x < width; x++)
+	{
+		for (int z = 0; z < depth; z++)
+		{
+			int y = lightDepths[x + z * width];
+
+			unsigned char blockType = getTile(x, y, z);
+
+			if (
+				getTile(x, y + 1, z) == (unsigned char)Block::Type::BLOCK_AIR &&
+				getTile(x, y + 2, z) == (unsigned char)Block::Type::BLOCK_AIR
+			)
+			{
+				if (y > maxPosition.y)
+				{
+					maxPosition.x = float(x);
+					maxPosition.y = float(y);
+					maxPosition.z = float(z);
+				}
+			}
+		}
+	}
+
+	game->level.spawn.x = maxPosition.x + 0.5f;
+	game->level.spawn.y = maxPosition.y + 2.0f;
+	game->level.spawn.z = maxPosition.z + 0.5f;
+
+	game->localPlayer.setPosition(game->level.spawn.x, game->level.spawn.y, game->level.spawn.z);
+	game->level.spawn = game->localPlayer.position;
+}
+
 void Level::calculateLightDepths(int x, int z, int offsetX, int offsetZ)
 {
 	for (int i = x; i < x + offsetX; i++)

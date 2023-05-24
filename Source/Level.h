@@ -53,7 +53,9 @@ public:
 	unsigned int getTileAABBCount(AABB box);
 	std::vector<AABB> getTileAABB(AABB box);
 
+	void calculateSpawnPosition();
 	void calculateLightDepths(int x, int z, int offsetX, int offsetZ);
+
 	bool containsAnyLiquid(AABB box);
 	bool containsLiquid(AABB box, Block::Type blockType);
 	AABBPosition clip(glm::vec3 start, glm::vec3 end, const glm::ivec3* expected = nullptr);

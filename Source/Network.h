@@ -56,6 +56,7 @@ private:
         const PacketType type = PacketType::Level;
 
         unsigned char level[128 * 64 * 128];
+        bool respawn;
     };
 #pragma pack(pop)
 
