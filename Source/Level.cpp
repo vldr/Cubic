@@ -358,8 +358,6 @@ void Level::calculateSpawnPosition()
 		{
 			int y = lightDepths[x + z * width];
 
-			unsigned char blockType = getTile(x, y, z);
-
 			if (
 				getTile(x, y + 1, z) == (unsigned char)Block::Type::BLOCK_AIR &&
 				getTile(x, y + 2, z) == (unsigned char)Block::Type::BLOCK_AIR
