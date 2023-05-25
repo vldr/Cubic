@@ -20,10 +20,9 @@ public:
 	void init(Game* game, int width, int depth);
 	void tick();
 
-	void setTile(int x, int y, int z, unsigned char value);
-	bool setTileWithNeighborChange(int x, int y, int z, unsigned char value);
-	bool setTileWithNoNeighborChange(int x, int y, int z, unsigned char tile);
-	void setTileWithRender(int x, int y, int z, unsigned char value);
+	void setTile(int x, int y, int z, unsigned char blockType, bool mode = false);
+	bool setTileWithNeighborChange(int x, int y, int z, unsigned char blockType, bool mode = false);
+	bool setTileWithNoNeighborChange(int x, int y, int z, unsigned char blockType, bool mode = false);
 
 	void addedTile(int x, int y, int z, unsigned char tile);
 	void removedTile(int x, int y, int z, unsigned char tile);

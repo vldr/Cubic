@@ -14,13 +14,12 @@ public:
 	void tick();
 	void render();
 
+    void sendLevel(unsigned char index, bool respawn);
+    void sendSetBlock(int x, int y, int z, unsigned char blockType, bool mode = false);
+
     void join(const std::string& id);
     void create();
-    void setBlock(int x, int y, int z, unsigned char blockType);
-
-    void send(const std::string& text);
-    void sendBinary(unsigned char* data, size_t size);
-
+    
     bool isConnected();
     bool isHost();
 
@@ -30,6 +29,10 @@ public:
     void onBinaryMessage(const unsigned char* data);
 
 private:
+
+    void send(const std::string& text);
+    void sendBinary(unsigned char* data, size_t size);
+
 #ifdef EMSCRIPTEN
     const char* URI = "wss://vldr.org:1235";
 #else
@@ -75,8 +78,9 @@ private:
     {
         const PacketType type = PacketType::SetBlock;
 
-        unsigned char blockType;
         glm::ivec3 position;
+        unsigned char blockType;
+        bool mode;
     };
 #pragma pack(pop)
 

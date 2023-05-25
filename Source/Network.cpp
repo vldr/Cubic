@@ -247,6 +247,51 @@ void Network::sendBinary(unsigned char* data, size_t size)
 #endif
 }
 
+void Network::sendLevel(unsigned char index, bool respawn)
+{
+    if (isConnected() && players.size() > 1)
+    {
+        LevelPacket* levelPacket = new LevelPacket();
+        levelPacket->index = index;
+        levelPacket->respawn = respawn;
+
+        std::memcpy(levelPacket->level, game->level.blocks, sizeof(levelPacket->level));
+
+        sendBinary(
+            (unsigned char*)levelPacket,
+            sizeof(*levelPacket)
+        );
+
+        delete levelPacket;
+    }
+}
+
+void Network::sendSetBlock(int x, int y, int z, unsigned char blockType, bool mode)
+{
+    if (isConnected() && players.size() > 1)
+    {
+        SetBlockPacket setBlockPacket = SetBlockPacket();
+
+        if (isHost())
+        {
+            setBlockPacket.index = UCHAR_MAX;
+        }
+        else
+        {
+            setBlockPacket.index = 0;
+        }
+
+        setBlockPacket.position = glm::ivec3(x, y, z);
+        setBlockPacket.blockType = blockType;
+        setBlockPacket.mode = mode;
+
+        sendBinary(
+            (unsigned char*)&setBlockPacket,
+            sizeof(setBlockPacket)
+        );
+    }
+}
+
 bool Network::isConnected()
 {
     return connected;
@@ -287,28 +332,6 @@ void Network::create()
         message["size"] = UCHAR_MAX - 1;
 
         send(message.dump());
-    }
-}
-
-void Network::setBlock(int x, int y, int z, unsigned char blockType)
-{
-    if (isConnected() && players.size() > 1)
-    {
-        SetBlockPacket setBlockPacket = SetBlockPacket();
-
-        if (isHost())
-        {
-            setBlockPacket.index = UCHAR_MAX;
-        }
-        else
-        {
-            setBlockPacket.index = 0;
-        }
-
-        setBlockPacket.blockType = blockType;
-        setBlockPacket.position = glm::ivec3(x, y, z);
-
-        sendBinary((unsigned char*)&setBlockPacket, sizeof(setBlockPacket));
     }
 }
 
@@ -394,12 +417,10 @@ void Network::onMessage(const std::string& text)
 
             if (isHost())
             {
-                std::unique_ptr<LevelPacket> levelPacket = std::make_unique<LevelPacket>();
-                levelPacket->index = (unsigned int)players.size() - 1;
-                levelPacket->respawn = true;
-
-                memcpy(levelPacket->level, game->level.blocks, sizeof(levelPacket->level));
-                sendBinary((unsigned char*)levelPacket.get(), sizeof(*levelPacket));
+                sendLevel(
+                    unsigned char(players.size() - 1), 
+                    true
+                );
             } 
 
             game->ui.log("A player has connected to the room.");
@@ -430,12 +451,10 @@ void Network::onMessage(const std::string& text)
 
         if (isHost())
         {
-            std::unique_ptr<LevelPacket> levelPacket = std::make_unique<LevelPacket>();
-            levelPacket->index = UCHAR_MAX;
-            levelPacket->respawn = false;
-
-            memcpy(levelPacket->level, game->level.blocks, sizeof(levelPacket->level));
-            sendBinary((unsigned char*)levelPacket.get(), sizeof(*levelPacket));
+            sendLevel(
+                UCHAR_MAX, 
+                false
+            );
         }
         else if (!index)
         {
@@ -460,7 +479,8 @@ void Network::onBinaryMessage(const unsigned char* data)
         }
 
         LevelPacket* levelPacket = (LevelPacket*)data;
-        memcpy(game->level.blocks, levelPacket->level, sizeof(levelPacket->level));
+
+        std::memcpy(game->level.blocks, levelPacket->level, sizeof(levelPacket->level));
 
         game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);
         game->levelRenderer.loadChunks(0, 0, 0, game->level.width, game->level.height, game->level.depth);
@@ -478,22 +498,18 @@ void Network::onBinaryMessage(const unsigned char* data)
     } 
     else if (type == (unsigned char)PacketType::SetBlock)
     {
-        SetBlockPacket* setBlockPacket = (SetBlockPacket*)data;
+        SetBlockPacket* packet = (SetBlockPacket*)data;
 
-        auto previousBlockType = game->level.getTile(
-            setBlockPacket->position.x,
-            setBlockPacket->position.y,
-            setBlockPacket->position.z
-        );
+        auto previousBlockType = game->level.getTile(packet->position.x, packet->position.y, packet->position.z);
 
         if (isHost())
         {
-            if (game->level.isWaterTile(setBlockPacket->blockType) || game->level.isLavaTile(setBlockPacket->blockType))
+            if (game->level.isWaterTile(packet->blockType) || game->level.isLavaTile(packet->blockType))
             {
-                setBlock(
-                    setBlockPacket->position.x,
-                    setBlockPacket->position.y,
-                    setBlockPacket->position.z,
+                sendSetBlock(
+                    packet->position.x,
+                    packet->position.y,
+                    packet->position.z,
                     previousBlockType
                 );
 
@@ -501,11 +517,31 @@ void Network::onBinaryMessage(const unsigned char* data)
                 return;
             }
 
+            bool mode = false;
+
+            if (
+                !game->level.isAirTile(previousBlockType) &&
+                !game->level.isWaterTile(previousBlockType) &&
+                !game->level.isLavaTile(previousBlockType) &&
+                game->level.isAirTile(packet->blockType)
+            )
+            {
+                game->particleManager.spawn(
+                    (float)packet->position.x,
+                    (float)packet->position.y,
+                    (float)packet->position.z,
+                    previousBlockType
+                );
+
+                mode = true;
+            }
+
             game->level.setTileWithNeighborChange(
-                setBlockPacket->position.x, 
-                setBlockPacket->position.y, 
-                setBlockPacket->position.z, 
-                setBlockPacket->blockType
+                packet->position.x,
+                packet->position.y,
+                packet->position.z,
+                packet->blockType,
+                mode
             );
         }
         else
@@ -516,27 +552,24 @@ void Network::onBinaryMessage(const unsigned char* data)
                 return;
             }
 
-            game->level.setTileWithRender(
-                setBlockPacket->position.x,
-                setBlockPacket->position.y,
-                setBlockPacket->position.z,
-                setBlockPacket->blockType
-            );
-        }
-
-        if (
-            !game->level.isAirTile(previousBlockType) && 
-            !game->level.isWaterTile(previousBlockType) &&
-            !game->level.isLavaTile(previousBlockType) &&
-            game->level.isAirTile(setBlockPacket->blockType)
-        )
-        {
-            game->particleManager.spawn(
-                (float)setBlockPacket->position.x,
-                (float)setBlockPacket->position.y,
-                (float)setBlockPacket->position.z,
-                previousBlockType
-            );
+            if (
+                game->level.setTileWithNoNeighborChange(
+                    packet->position.x,
+                    packet->position.y,
+                    packet->position.z,
+                    packet->blockType
+                ) 
+                &&
+                packet->mode
+            )
+            {
+                game->particleManager.spawn(
+                    (float)packet->position.x,
+                    (float)packet->position.y,
+                    (float)packet->position.z,
+                    previousBlockType
+                );
+            }
         }
     }
 }

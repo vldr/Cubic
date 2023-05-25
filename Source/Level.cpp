@@ -431,54 +431,57 @@ unsigned char Level::getRenderTile(int x, int y, int z)
 
 void Level::updateTile(int x, int y, int z, unsigned char tile)
 {
-	if (isInBounds(x, y, z))
+	if (!game->network.isConnected() || game->network.isHost())
 	{
-		auto blockType = getTile(x, y, z);
-
-		if (isMovingWaterTile(x, y, z) || isMovingLavaTile(x, y, z))
+		if (isInBounds(x, y, z))
 		{
-			if (
-				Block::Definitions[getTile(x - 1, y, z)].collide == Block::CollideType::COLLIDE_NONE ||
-				Block::Definitions[getTile(x + 1, y, z)].collide == Block::CollideType::COLLIDE_NONE ||
-				Block::Definitions[getTile(x, y - 1, z)].collide == Block::CollideType::COLLIDE_NONE ||
-				Block::Definitions[getTile(x, y, z - 1)].collide == Block::CollideType::COLLIDE_NONE ||
-				Block::Definitions[getTile(x, y, z + 1)].collide == Block::CollideType::COLLIDE_NONE
-			)
-			{
-				liquidUpdates.push({ x, y, z, blockType });
-			}
+			auto blockType = getTile(x, y, z);
 
-			if (
-				(isMovingWaterTile(x, y, z) && isMovingLavaTile(tile)) ||
-				(isMovingLavaTile(x, y, z) && isMovingWaterTile(tile))
-			)
+			if (isMovingWaterTile(x, y, z) || isMovingLavaTile(x, y, z))
 			{
-				setTileWithNeighborChange(x, y, z, (unsigned char)Block::Type::BLOCK_OBSIDIAN);
-			}
-		}
-		else if (blockType == (unsigned char)Block::Type::BLOCK_SAND || blockType == (unsigned char)Block::Type::BLOCK_GRAVEL)
-		{
-			int height = 1;
-			while (
-				Block::Definitions[getTile(x, y - height, z)].collide != Block::CollideType::COLLIDE_SOLID &&
-				isInBounds(x, y - height, z)
-			)
-			{
-				height++;
-			}
+				if (
+					Block::Definitions[getTile(x - 1, y, z)].collide == Block::CollideType::COLLIDE_NONE ||
+					Block::Definitions[getTile(x + 1, y, z)].collide == Block::CollideType::COLLIDE_NONE ||
+					Block::Definitions[getTile(x, y - 1, z)].collide == Block::CollideType::COLLIDE_NONE ||
+					Block::Definitions[getTile(x, y, z - 1)].collide == Block::CollideType::COLLIDE_NONE ||
+					Block::Definitions[getTile(x, y, z + 1)].collide == Block::CollideType::COLLIDE_NONE
+					)
+				{
+					liquidUpdates.push({ x, y, z, blockType });
+				}
 
-			if (height > 1)
+				if (
+					(isMovingWaterTile(x, y, z) && isMovingLavaTile(tile)) ||
+					(isMovingLavaTile(x, y, z) && isMovingWaterTile(tile))
+				)
+				{
+					setTileWithNeighborChange(x, y, z, (unsigned char)Block::Type::BLOCK_OBSIDIAN);
+				}
+			}
+			else if (blockType == (unsigned char)Block::Type::BLOCK_SAND || blockType == (unsigned char)Block::Type::BLOCK_GRAVEL)
 			{
-				setTileWithNoNeighborChange(x, y - height + 1, z, blockType);
-				setTileWithNeighborChange(x, y, z, (unsigned char)Block::Type::BLOCK_AIR);
+				int height = 1;
+				while (
+					Block::Definitions[getTile(x, y - height, z)].collide != Block::CollideType::COLLIDE_SOLID &&
+					isInBounds(x, y - height, z)
+					)
+				{
+					height++;
+				}
+
+				if (height > 1)
+				{
+					setTileWithNoNeighborChange(x, y - height + 1, z, blockType);
+					setTileWithNeighborChange(x, y, z, (unsigned char)Block::Type::BLOCK_AIR);
+				}
 			}
 		}
 	}
 }
 
-bool Level::setTileWithNeighborChange(int x, int y, int z, unsigned char blockType)
+bool Level::setTileWithNeighborChange(int x, int y, int z, unsigned char blockType, bool mode)
 {
-	if (setTileWithNoNeighborChange(x, y, z, blockType))
+	if (setTileWithNoNeighborChange(x, y, z, blockType, mode))
 	{
 		updateTile(x - 1, y, z, blockType);
 		updateTile(x + 1, y, z, blockType);
@@ -494,9 +497,9 @@ bool Level::setTileWithNeighborChange(int x, int y, int z, unsigned char blockTy
 	return false;
 }
 
-void Level::addedTile(int x, int y, int z, unsigned char tile)
+void Level::addedTile(int x, int y, int z, unsigned char blockType)
 {
-	if (tile == (unsigned char)Block::Type::BLOCK_SPONGE)
+	if (blockType == (unsigned char)Block::Type::BLOCK_SPONGE)
 	{
 		for (int i = x - 2; i <= x + 2; i++)
 		{
@@ -512,19 +515,19 @@ void Level::addedTile(int x, int y, int z, unsigned char tile)
 			}
 		}
 	}
-	else if (tile == (unsigned char)Block::Type::BLOCK_SLAB)
+	else if (blockType == (unsigned char)Block::Type::BLOCK_SLAB)
 	{
 		if (getTile(x, y - 1, z) == (unsigned char)Block::Type::BLOCK_SLAB)
 		{
-			setTileWithNeighborChange(x, y, z, (unsigned char)Block::Type::BLOCK_AIR);
-			setTileWithNeighborChange(x, y - 1, z, (unsigned char)Block::Type::BLOCK_DOUBLE_SLAB);
+			setTileWithNoNeighborChange(x, y, z, (unsigned char)Block::Type::BLOCK_AIR);
+			setTileWithNoNeighborChange(x, y - 1, z, (unsigned char)Block::Type::BLOCK_DOUBLE_SLAB);
 		}
 	}
 }
 
-void Level::removedTile(int x, int y, int z, unsigned char tile)
+void Level::removedTile(int x, int y, int z, unsigned char blockType)
 {
-	if (tile == (unsigned char)Block::Type::BLOCK_SPONGE)
+	if (blockType == (unsigned char)Block::Type::BLOCK_SPONGE)
 	{
 		for (int i = x - 3; i <= x + 3; i++)
 		{
@@ -539,15 +542,15 @@ void Level::removedTile(int x, int y, int z, unsigned char tile)
 	}
 }
 
-bool Level::setTileWithNoNeighborChange(int x, int y, int z, unsigned char tile)
+bool Level::setTileWithNoNeighborChange(int x, int y, int z, unsigned char blockType, bool mode)
 {
 	if (x < 0 || y < 0 || z < 0 || x >= width || y >= height || z >= depth)
 	{
 		return false;
 	}
 
-	auto previousTile = getTile(x, y, z);
-	if (previousTile == tile)
+	auto previousBlockType = getTile(x, y, z);
+	if (previousBlockType == blockType)
 	{
 		return false;
 	}
@@ -556,41 +559,39 @@ bool Level::setTileWithNoNeighborChange(int x, int y, int z, unsigned char tile)
 		(x == 0 || z == 0 || x == width - 1 || z == depth - 1) &&
 		y >= groundLevel &&
 		y < waterLevel &&
-		tile == (unsigned char)Block::Type::BLOCK_AIR
+		blockType == (unsigned char)Block::Type::BLOCK_AIR
 	)
 	{
-		tile = (unsigned char)Block::Type::BLOCK_WATER;
+		blockType = (unsigned char)Block::Type::BLOCK_WATER;
 	}
 
-	setTileWithRender(x, y, z, tile);
+	setTile(x, y, z, blockType, mode);
+	calculateLightDepths(x, z, 1, 1);
 
-	if (previousTile != (unsigned char)Block::Type::BLOCK_AIR) { removedTile(x, y, z, previousTile); }
-	if (tile != (unsigned char)Block::Type::BLOCK_AIR) { addedTile(x, y, z, tile); }
+	game->levelRenderer.loadChunks(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1);
+
+	if (previousBlockType != (unsigned char)Block::Type::BLOCK_AIR) 
+	{ 
+		removedTile(x, y, z, previousBlockType);
+	}
+
+	if (blockType != (unsigned char)Block::Type::BLOCK_AIR) 
+	{ 
+		addedTile(x, y, z, blockType); 
+	}
 
 	return true;
 }
 
-void Level::setTileWithRender(int x, int y, int z, unsigned char tile)
-{
-	auto previousTile = getTile(x, y, z);
-	if (previousTile != tile)
-	{
-		setTile(x, y, z, tile);
-		calculateLightDepths(x, z, 1, 1);
-
-		game->levelRenderer.loadChunks(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1);
-	}
-}
-
-void Level::setTile(int x, int y, int z, unsigned char value)
+void Level::setTile(int x, int y, int z, unsigned char blockType, bool mode)
 {
 	if (isInBounds(x, y, z))
 	{
-		blocks[(z * height + y) * width + x] = value;
+		blocks[(z * height + y) * width + x] = blockType;
 
 		if (game->network.isConnected() && game->network.isHost())
 		{
-			game->network.setBlock(x, y, z, value);
+			game->network.sendSetBlock(x, y, z, blockType, mode);
 		}
 	}
 }
