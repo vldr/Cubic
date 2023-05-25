@@ -58,11 +58,14 @@ private:
 
 	void drawInterface(float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1, float shade, float z);
 	void drawInterface(float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1, float shade);
+	void drawInterface(float x0, float y0, float x1, float y1, float u, float v, float shade, float z);
 	void drawInterface(float x0, float y0, float x1, float y1, float u, float v, float shade);
 	void drawInterface(float x0, float y0, float x1, float y1, float u, float v);
 
-	void drawFont(const char* text, float x, float y, float shade);
+	void drawFont(const char* text, float x, float y, float shade, float z);
+	void drawShadowedFont(const char* text, float x, float y, float shade, float z);
 	void drawShadowedFont(const char* text, float x, float y, float shade);
+	void drawCenteredFont(const char* text, float x, float y, float shade, float z);
 	void drawCenteredFont(const char* text, float x, float y, float shade);
 
 	const float FONT_WIDTHS[128] = {

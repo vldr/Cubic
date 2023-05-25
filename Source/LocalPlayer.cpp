@@ -388,7 +388,7 @@ void LocalPlayer::input(const SDL_Event& event)
             };
 
             auto hash = crc32(game->level.blocks, game->level.width * game->level.height * game->level.depth);
-            game->ui.log("CRC32 snapshot: " + std::to_string(hash));
+            game->ui.log("CRC32 checksum: " + std::to_string(hash));
         }     
     }
     else if (event.type == SDL_MOUSEBUTTONDOWN)

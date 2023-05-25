@@ -146,11 +146,13 @@ void UI::render()
 {
 	blockVertices.render();
 
+	glBindTexture(GL_TEXTURE_2D, fontTexture);
+	fontVertices.render();
+
 	glBindTexture(GL_TEXTURE_2D, interfaceTexture);
 	interfaceVertices.render();
 
-	glBindTexture(GL_TEXTURE_2D, fontTexture);
-	fontVertices.render();
+
 }
 
 void UI::log(const std::string& text)
@@ -171,7 +173,7 @@ bool UI::drawStatusMenu()
 	{
 		for (int j = 0; j < y; j++)
 		{
-			drawInterface(i * 16.0f, j * 16.0f, 240.0f, 0.0f, 16.0f, 16.0f, 0.25f);
+			drawInterface(i * 16.0f, j * 16.0f, 240.0f, 0.0f, 16.0f, 16.0f, 0.25f, 0.9f);
 		}
 	}
 
@@ -202,7 +204,7 @@ bool UI::drawSelectBlockMenu()
 	float left = game->scaledWidth / 2.0f - 196.0f / 2.0f;
 	float top = game->scaledHeight / 2.0f - 143.0f / 2.0f;
 
-	drawInterface(left, top, 196, 143, 183, 0, 16, 16, 0.12f);
+	drawInterface(left, top, 196, 143, 183, 0, 16, 16, 0.12f, 2.0f);
 
 	for (unsigned char blockType = 0, selectedBlockType = 0, index = 0; blockType < std::size(Block::Definitions); blockType++)
 	{
@@ -244,7 +246,7 @@ bool UI::drawSelectBlockButton(unsigned char blockType, unsigned char& selectedB
 
 	if (selectedBlockType == 0 && hover)
 	{	
-		drawInterface(hoverX, hoverY, width, height, 183, 0, 16, 16, 0.7f);
+		drawInterface(hoverX, hoverY, width, height, 183, 0, 16, 16, 0.7f, 2.0f);
 		drawBlock(blockType, x - 1.2f, y + 1.0f, 12.0f);
 
 		selectedBlockType = blockType;
@@ -275,8 +277,8 @@ bool UI::drawButton(float x, float y, const char* text)
 	int state = 1;
 	if (hover) { state = 2; }
 
-	drawInterface(x, y, 0.0f, 46.0f + state * 19.99f, width / 2, height);
-	drawInterface(x + width / 2, y, 200 - width / 2, 46.0f + state * 19.99f, width / 2, height);
+	drawInterface(x, y, 0.0f, 46.0f + state * 19.99f, width / 2, height, 1.0f, 0.9f);
+	drawInterface(x + width / 2, y, 200 - width / 2, 46.0f + state * 19.99f, width / 2, height, 1.0f, 0.9f);
 	drawCenteredFont(text, x + width / 2, y + (height - 8) / 2, 1.0f);
 
 	return hover && clicked;
@@ -304,9 +306,22 @@ void UI::drawHUD()
 		}
 		else
 		{
-			drawInterface(1.4f, game->scaledHeight - 35.0f - index * 10.0f, game->scaledWidth / 2 + 18.0f, 10.0f, 183, 0, 16, 16, 0.12f);
+			float maxWidth = game->scaledWidth / 2 + 18.0f;
+			float width = 0.0f;
+
+			for (auto i = 0; i < log->text.length(); i++)
+			{
+				width += FONT_WIDTHS[int(log->text[i])];
+			}
+
+			if (width > maxWidth)
+			{
+				maxWidth = width + 4.0f;
+			}
+
+			drawInterface(1.4f, game->scaledHeight - 35.0f - index * 10.0f, maxWidth, 10.0f, 183, 0, 16, 16, 0.12f);
 			drawInterface(0, game->scaledHeight - 35.0f - index * 10.0f, 1.5f, 10.0f, 183, 0, 16, 16, 1.0f);
-			drawFont(log->text.c_str(), 3.30f, game->scaledHeight - 33.8f - index * 10.0f, 1.0f);
+			drawFont(log->text.c_str(), 3.30f, game->scaledHeight - 33.8f - index * 10.0f, 1.0f, 1.1f);
 
 			log++;
 		}
@@ -436,17 +451,22 @@ void UI::drawInterface(float x0, float y0, float x1, float y1, float u0, float v
 	drawInterface(x0, y0, x1, y1, u0, v0, u1, v1, shade, 1.0f);
 }
 
-void UI::drawInterface(float x0, float y0, float x1, float y1, float u, float v, float shade)
+void UI::drawInterface(float x0, float y0, float x1, float y1, float u, float v, float shade, float z)
 {
 	float size = 0.00390625;
 
-	interfaceVertices.push(VertexList::Vertex(x0, y0, 1.0f, x1 * size, y1 * size, shade));
-	interfaceVertices.push(VertexList::Vertex(x0, y0 + v, 1.0f, x1 * size, (y1 + v) * size, shade));
-	interfaceVertices.push(VertexList::Vertex(x0 + u, y0 + v, 1.0f, (x1 + u) * size, (y1 + v) * size, shade));
+	interfaceVertices.push(VertexList::Vertex(x0, y0, z, x1 * size, y1 * size, shade));
+	interfaceVertices.push(VertexList::Vertex(x0, y0 + v, z, x1 * size, (y1 + v) * size, shade));
+	interfaceVertices.push(VertexList::Vertex(x0 + u, y0 + v, z, (x1 + u) * size, (y1 + v) * size, shade));
 
-	interfaceVertices.push(VertexList::Vertex(x0, y0, 1.0f, x1 * size, y1 * size, shade));
-	interfaceVertices.push(VertexList::Vertex(x0 + u, y0 + v, 1.0f, (x1 + u) * size, (y1 + v) * size, shade));
-	interfaceVertices.push(VertexList::Vertex(x0 + u, y0, 1.0f, (x1 + u) * size, y1 * size, shade));
+	interfaceVertices.push(VertexList::Vertex(x0, y0, z, x1 * size, y1 * size, shade));
+	interfaceVertices.push(VertexList::Vertex(x0 + u, y0 + v, z, (x1 + u) * size, (y1 + v) * size, shade));
+	interfaceVertices.push(VertexList::Vertex(x0 + u, y0, z, (x1 + u) * size, y1 * size, shade));
+}
+
+void UI::drawInterface(float x0, float y0, float x1, float y1, float u, float v, float shade)
+{
+	drawInterface(x0, y0, x1, y1, u, v, shade, 1.0f);
 }
 
 void UI::drawInterface(float x0, float y0, float x1, float y1, float u, float v)
@@ -454,13 +474,18 @@ void UI::drawInterface(float x0, float y0, float x1, float y1, float u, float v)
 	drawInterface(x0, y0, x1, y1, u, v, 1.0f);
 }
 
-void UI::drawShadowedFont(const char* text, float x, float y, float shade)
+void UI::drawShadowedFont(const char* text, float x, float y, float shade, float z)
 {
-	drawFont(text, x + 1.0f, y + 1.0f, 0.3f * shade);
-	drawFont(text, x, y, shade);
+	drawFont(text, x + 1.0f, y + 1.0f, 0.3f * shade, z);
+	drawFont(text, x, y, shade, z);
 }
 
-void UI::drawCenteredFont(const char* text, float x, float y, float shade)
+void UI::drawShadowedFont(const char* text, float x, float y, float shade)
+{
+	drawShadowedFont(text, x, y, shade, 1.0f);
+}
+
+void UI::drawCenteredFont(const char* text, float x, float y, float shade, float z)
 {
 	float width = 0.0f;
 
@@ -473,7 +498,12 @@ void UI::drawCenteredFont(const char* text, float x, float y, float shade)
 	drawShadowedFont(text, x - width / 2, y, shade);
 }
 
-void UI::drawFont(const char* text, float x, float y, float shade)
+void UI::drawCenteredFont(const char* text, float x, float y, float shade)
+{
+	drawCenteredFont(text, x, y, shade, 1.0f);
+}
+
+void UI::drawFont(const char* text, float x, float y, float shade, float z)
 {
 	float width = 0.0f;
 
@@ -485,13 +515,13 @@ void UI::drawFont(const char* text, float x, float y, float shade)
 
 		float height = 7.98f;
 
-		fontVertices.push(VertexList::Vertex(x + width, y, 1.0f, u / 128.0f, v / 128.0f, shade));
-		fontVertices.push(VertexList::Vertex(x + width, y + height, 1.0f, u / 128.0f, (v + height) / 128.0f, shade));
-		fontVertices.push(VertexList::Vertex(x + width + height, y + height, 1.0f, (u + height) / 128.0f, (v + height) / 128.0f, shade));
+		fontVertices.push(VertexList::Vertex(x + width, y, z, u / 128.0f, v / 128.0f, shade));
+		fontVertices.push(VertexList::Vertex(x + width, y + height, z, u / 128.0f, (v + height) / 128.0f, shade));
+		fontVertices.push(VertexList::Vertex(x + width + height, y + height, z, (u + height) / 128.0f, (v + height) / 128.0f, shade));
 
-		fontVertices.push(VertexList::Vertex(x + width, y, 1.0f, u / 128.0f, v / 128.0f, shade));
-		fontVertices.push(VertexList::Vertex(x + width + height, y + height, 1.0f, (u + height) / 128.0f, (v + height) / 128.0f, shade));
-		fontVertices.push(VertexList::Vertex(x + width + height, y, 1.0f, (u + height) / 128.0f, v / 128.0f, shade));
+		fontVertices.push(VertexList::Vertex(x + width, y, z, u / 128.0f, v / 128.0f, shade));
+		fontVertices.push(VertexList::Vertex(x + width + height, y + height, z, (u + height) / 128.0f, (v + height) / 128.0f, shade));
+		fontVertices.push(VertexList::Vertex(x + width + height, y, z, (u + height) / 128.0f, v / 128.0f, shade));
 
 		width += FONT_WIDTHS[int(text[index])];
 	}
