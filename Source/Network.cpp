@@ -251,18 +251,18 @@ void Network::sendLevel(unsigned char index, bool respawn)
 {
     if (isConnected() && players.size() > 1)
     {
-        LevelPacket* levelPacket = new LevelPacket();
-        levelPacket->index = index;
-        levelPacket->respawn = respawn;
+        LevelPacket* packet = new LevelPacket();
+        packet->index = index;
+        packet->respawn = respawn;
 
-        std::memcpy(levelPacket->level, game->level.blocks, sizeof(levelPacket->level));
+        std::memcpy(packet->level, game->level.blocks, sizeof(packet->level));
 
         sendBinary(
-            (unsigned char*)levelPacket,
-            sizeof(*levelPacket)
+            (unsigned char*)packet,
+            sizeof(*packet)
         );
 
-        delete levelPacket;
+        delete packet;
     }
 }
 
@@ -270,24 +270,24 @@ void Network::sendSetBlock(int x, int y, int z, unsigned char blockType, bool mo
 {
     if (isConnected() && players.size() > 1)
     {
-        SetBlockPacket setBlockPacket = SetBlockPacket();
+        SetBlockPacket packet = SetBlockPacket();
 
         if (isHost())
         {
-            setBlockPacket.index = UCHAR_MAX;
+            packet.index = UCHAR_MAX;
         }
         else
         {
-            setBlockPacket.index = 0;
+            packet.index = 0;
         }
 
-        setBlockPacket.position = glm::ivec3(x, y, z);
-        setBlockPacket.blockType = blockType;
-        setBlockPacket.mode = mode;
+        packet.position = glm::ivec3(x, y, z);
+        packet.blockType = blockType;
+        packet.mode = mode;
 
         sendBinary(
-            (unsigned char*)&setBlockPacket,
-            sizeof(setBlockPacket)
+            (unsigned char*)&packet,
+            sizeof(packet)
         );
     }
 }
@@ -418,7 +418,7 @@ void Network::onMessage(const std::string& text)
             if (isHost())
             {
                 sendLevel(
-                    unsigned char(players.size() - 1), 
+                    (unsigned char)players.size() - 1, 
                     true
                 );
             } 
@@ -478,14 +478,14 @@ void Network::onBinaryMessage(const unsigned char* data)
             return;
         }
 
-        LevelPacket* levelPacket = (LevelPacket*)data;
+        LevelPacket* packet = (LevelPacket*)data;
 
-        std::memcpy(game->level.blocks, levelPacket->level, sizeof(levelPacket->level));
+        std::memcpy(game->level.blocks, packet->level, sizeof(packet->level));
 
         game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);
         game->levelRenderer.loadChunks(0, 0, 0, game->level.width, game->level.height, game->level.depth);
 
-        if (levelPacket->respawn)
+        if (packet->respawn)
         {
             game->level.calculateSpawnPosition();
         }
