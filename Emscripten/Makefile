@@ -20,6 +20,7 @@ Build/:
 
 build: $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(OUTPUT) --shell-file Shell.html --embed-file ../Assets/ $(OBJS)
+	mv favicon.ico Build/favicon.ico
 
 Objects/%.o: ../Source/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
