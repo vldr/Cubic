@@ -200,11 +200,11 @@ bool UI::drawStatusMenu()
 }
 
 bool UI::drawSelectBlockMenu()
-{
+{ 
 	float left = game->scaledWidth / 2.0f - 196.0f / 2.0f;
 	float top = game->scaledHeight / 2.0f - 143.0f / 2.0f;
 
-	drawInterface(left, top, 196, 143, 183, 0, 16, 16, 0.12f, 2.0f);
+	drawInterface(left - 4.0f, top - 3.5f, 0, 106, 204, 150, 1.0f, 2.0f);
 
 	for (unsigned char blockType = 0, selectedBlockType = 0, index = 0; blockType < std::size(Block::Definitions); blockType++)
 	{
