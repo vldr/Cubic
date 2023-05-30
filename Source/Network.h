@@ -34,7 +34,7 @@ private:
     void sendBinary(unsigned char* data, size_t size);
 
 #ifdef EMSCRIPTEN
-    const char* URI = "wss://vldr.org:1235";
+    const char* URI = "wss://vldr.org:8080/relay";
 #else
     const char* URI = "ws://vldr.org:1234";
 #endif

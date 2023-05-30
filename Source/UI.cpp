@@ -151,8 +151,6 @@ void UI::render()
 
 	glBindTexture(GL_TEXTURE_2D, interfaceTexture);
 	interfaceVertices.render();
-
-
 }
 
 void UI::log(const std::string& text)
