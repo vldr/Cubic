@@ -162,6 +162,8 @@ void UI::log(const std::string& text)
 	log.text = text;
 
 	logs.push_back(log);
+
+	update();
 }
 
 bool UI::drawStatusMenu()
