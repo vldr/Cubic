@@ -223,11 +223,6 @@
       <DeploymentContent>false</DeploymentContent>
       <FileType>Document</FileType>
     </CopyFileToFolders>
-    <Content Include="..\Assets\**\*.*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <DeploymentContent>true</DeploymentContent>
-      <Link>Assets\%(RecursiveDir)\%(Filename)%(Extension)</Link>
-    </Content>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

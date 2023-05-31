@@ -1,4 +1,3 @@
-#pragma once
 #include "Resources.h"
 
 const unsigned char bedrockResourceTexture[213] = {

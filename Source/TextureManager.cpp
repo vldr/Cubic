@@ -8,6 +8,12 @@ GLuint TextureManager::load(const unsigned char* data, size_t length)
     unsigned width, height;
     unsigned error = lodepng::decode(image, width, height, data, length);
 
+    if (error)
+    {
+        printf("Failed to load texture: %d\n", error);
+        exit(0);
+    }
+
     GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
