@@ -1,43 +1,23 @@
 #include "TextureManager.h"
 #include "Lodepng.h"
 
-GLuint TextureManager::load(const char* path, std::vector<unsigned char>& image)
-{
-    if (textures.find(path) == textures.end())
-    {
-        unsigned width, height;
-        unsigned error = lodepng::decode(image, width, height, path);
-
-        if (error) 
-        {
-            printf("Failed to load texture '%s'\n", path);
-            exit(0);
-        }
-
-        GLuint texture;
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &image[0]);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-        textures[path] = texture;
-
-        return texture;
-    }
-    else
-    {
-        return textures[path];
-    }
-}
-
-GLuint TextureManager::load(const char* path)
+GLuint TextureManager::load(const unsigned char* data, size_t length)
 {
     std::vector<unsigned char> image;
 
-    return load(path, image);
+    unsigned width, height;
+    unsigned error = lodepng::decode(image, width, height, data, length);
+
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &image[0]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    return texture;
 }
 
 GLuint TextureManager::generateSolidColor(float r, float g, float b)

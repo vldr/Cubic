@@ -173,6 +173,7 @@
     <ClCompile Include="..\Source\PerlinNoise.cpp" />
     <ClCompile Include="..\Source\Player.cpp" />
     <ClCompile Include="..\Source\Random.cpp" />
+    <ClCompile Include="..\Source\Resources.cpp" />
     <ClCompile Include="..\Source\SelectedBlock.cpp" />
     <ClCompile Include="..\Source\ShaderManager.cpp" />
     <ClCompile Include="..\Source\Skybox.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="..\Source\PerlinNoise.h" />
     <ClInclude Include="..\Source\Player.h" />
     <ClInclude Include="..\Source\Random.h" />
+    <ClInclude Include="..\Source\Resources.h" />
     <ClInclude Include="..\Source\SelectedBlock.h" />
     <ClInclude Include="..\Source\ShaderManager.h" />
     <ClInclude Include="..\Source\Skybox.h" />

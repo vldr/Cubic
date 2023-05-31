@@ -2,6 +2,7 @@
 #include "Level.h"
 #include "Game.h"
 #include "TextureManager.h"
+#include "Resources.h"
 
 #include <vector>
 
@@ -17,7 +18,7 @@ void Skybox::init(Game* game)
 
 void Skybox::initBedrock()
 {
-    bedrockTexture = game->textureManager.load("Assets/bedrock.png");
+    bedrockTexture = game->textureManager.load(bedrockResourceTexture, sizeof(bedrockResourceTexture));
     bedrockVertices.init();
 
     const float ground = (float)game->level.groundLevel;
@@ -84,7 +85,7 @@ void Skybox::initBedrock()
 
 void Skybox::initWater()
 {
-    waterTexture = game->textureManager.load("Assets/water.png");
+    waterTexture = game->textureManager.load(waterResourceTexture, sizeof(waterResourceTexture));
     waterVertices.init();
 
     const float water = (float)game->level.waterLevel;
@@ -123,7 +124,7 @@ void Skybox::initWater()
 
 void Skybox::initClouds()
 {
-    cloudsTexture = game->textureManager.load("Assets/clouds.png");
+    cloudsTexture = game->textureManager.load(cloudsResourceTexture, sizeof(cloudsResourceTexture));
     cloudsVertices.init();
 
     float y = game->level.height + 2.0f;

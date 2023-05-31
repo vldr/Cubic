@@ -6,6 +6,7 @@
 #include "ShaderManager.h"
 #include "Random.h"
 #include "Timer.h"
+#include "Resources.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -83,7 +84,7 @@ void Game::init(SDL_Window* sdlWindow)
     this->levelRenderer.init(this);
     this->lastTick = timer.milliTime();
     this->frameRate = 0;
-    this->atlasTexture = textureManager.load("Assets/terrain.png");
+    this->atlasTexture = textureManager.load(terrainResourceTexture, sizeof(terrainResourceTexture));
     this->shader = shaderManager.load(vertexSource, fragmentSource);
 
     SDL_GetWindowSize(window, &width, &height);

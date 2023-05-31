@@ -1,6 +1,7 @@
 #include "UI.h"
 #include "Game.h"
 #include "Block.h"
+#include "Resources.h"
 
 #include <cstdio>
 #include <glm/gtc/matrix_transform.hpp>
@@ -19,10 +20,10 @@ void UI::init(Game* game)
 	this->blockVertices.init();
 
 	this->fontVertices.init();
-	this->fontTexture = game->textureManager.load("Assets/font.png");
+	this->fontTexture = game->textureManager.load(fontResourceTexture, sizeof(fontResourceTexture));
 
 	this->interfaceVertices.init();
-	this->interfaceTexture = game->textureManager.load("Assets/interface.png");
+	this->interfaceTexture = game->textureManager.load(interfaceResourceTexture, sizeof(interfaceResourceTexture));
 }
 
 void UI::openMenu(UI::State newState)

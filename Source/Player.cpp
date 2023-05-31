@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Game.h"
+#include "Resources.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -24,7 +25,7 @@ void Player::init(Game* game)
 
 	if (!initialized)
 	{
-		playerTexture = game->textureManager.load("Assets/player.png");
+		playerTexture = game->textureManager.load(playerResourceTexture, sizeof(playerResourceTexture));
 
 		head.init(36);
 		body.init(36);

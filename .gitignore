@@ -166,6 +166,9 @@ AutoTest.Net/
 # Web workbench (sass)
 .sass-cache/
 
+# Textures 
+Assets/
+
 # Installshield output folder
 [Ee]xpress/
 
