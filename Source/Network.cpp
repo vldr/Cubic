@@ -163,15 +163,7 @@ void Network::tick()
     socket_client.poll();
 #endif
 
-    if (isConnected() && players.size() > 1)
-    {
-        PositionPacket positionPacket = PositionPacket();
-        positionPacket.index = UCHAR_MAX;
-        positionPacket.position = game->localPlayer.position;
-        positionPacket.rotation = game->localPlayer.viewAngles;
-
-        sendBinary((unsigned char*)&positionPacket, sizeof(positionPacket));
-    }
+    sendPosition(game->localPlayer.position, game->localPlayer.viewAngles);
 
     for (const auto& positionPacket : positionPackets)
     {
@@ -245,6 +237,19 @@ void Network::sendBinary(unsigned char* data, size_t size)
         return;
     }
 #endif
+}
+
+void Network::sendPosition(const glm::vec3& position, const glm::vec2& rotation)
+{
+    if (isConnected() && players.size() > 1)
+    {
+        PositionPacket packet = PositionPacket();
+        packet.index = UCHAR_MAX;
+        packet.position = position;
+        packet.rotation = rotation;
+
+        sendBinary((unsigned char*)&packet, sizeof(packet));
+    }
 }
 
 void Network::sendLevel(unsigned char index, bool respawn)
@@ -455,6 +460,8 @@ void Network::onMessage(const std::string& text)
                 UCHAR_MAX, 
                 false
             );
+
+            game->ui.closeMenu();
         }
         else if (!index)
         {

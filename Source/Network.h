@@ -14,6 +14,7 @@ public:
 	void tick();
 	void render();
 
+    void sendPosition(const glm::vec3& position, const glm::vec2& rotation);
     void sendLevel(unsigned char index, bool respawn);
     void sendSetBlock(int x, int y, int z, unsigned char blockType, bool mode = false);
 
