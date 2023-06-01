@@ -1,0 +1,36 @@
+name: Build and Publish (windows)
+
+on:
+  push:
+    branches: ["master"]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    concurrency: ci-${{ github.ref }}
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+        with:
+          vs-version: '[16.10,16.11)'
+          msbuild-architecture: x64
+
+      - name: Build
+        run: |
+          cd Windows
+          msbuild Cubic.sln /p:Configuration=Release
+          
+      - name: Publish
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: Windows/x64/Release/Cubic.exe
+          asset_name: Cubic.exe
+          tag: Stable
+          overwrite: true
