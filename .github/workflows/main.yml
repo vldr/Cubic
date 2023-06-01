@@ -34,10 +34,10 @@ jobs:
 
       - name: Build
         run: |
-          cd Emscripten
+          cd Web
           make -j4
           
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: Emscripten/Build
+          folder: Web/Build

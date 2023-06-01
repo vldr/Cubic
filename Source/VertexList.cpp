@@ -1,6 +1,7 @@
 #include "VertexList.h"
 
 #include <glm/glm.hpp>
+#include <cstdlib>
 
 void VertexList::init(size_t capacity)
 {
