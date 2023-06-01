@@ -18,7 +18,6 @@ jobs:
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v1.1
         with:
-          vs-version: '[16.10,16.11)'
           msbuild-architecture: x64
 
       - name: Build
