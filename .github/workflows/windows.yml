@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   build-and-deploy:
-    concurrency: ci-${{ github.ref }}
+    concurrency: ci-windows-${{ github.ref }}
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -24,12 +24,19 @@ jobs:
         run: |
           cd Windows
           msbuild Cubic.sln /p:Configuration=Release
+
+      - name: Compress
+        run: |
+          copy Windows\Libraries\SDL2.dll .
+          copy Windows\Libraries\glew32.dll .
+          copy Windows\x64\Release\Cubic.exe .
+          tar.exe -a -c -f Cubic.zip Cubic.exe glew32.dll SDL2.dll
           
       - name: Publish
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Windows/x64/Release/Cubic.exe
-          asset_name: Cubic.exe
+          file: Cubic.zip
+          asset_name: Cubic.zip
           tag: Stable
           overwrite: true
