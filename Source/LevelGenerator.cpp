@@ -157,14 +157,7 @@ void LevelGenerator::generateCaves()
 										game->level.getTile(blockX, blockY, blockZ) == (unsigned char)Block::Type::BLOCK_STONE
 									)
 									{
-										if (blockY < 15)
-										{
-											game->level.setTile(blockX, blockY, blockZ, (unsigned char)Block::Type::BLOCK_LAVA);
-										}
-										else
-										{
-											game->level.setTile(blockX, blockY, blockZ, (unsigned char)Block::Type::BLOCK_AIR);
-										}
+										game->level.setTile(blockX, blockY, blockZ, (unsigned char)Block::Type::BLOCK_AIR);
 									}
 								}
 							}

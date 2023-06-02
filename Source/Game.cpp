@@ -184,6 +184,10 @@ void Game::input(const SDL_Event& event)
 
             resize();
         }
+    } 
+    else if (event.type == SDL_QUIT) 
+    {
+        exit(0);
     }
 
     if (ui.input(event))
