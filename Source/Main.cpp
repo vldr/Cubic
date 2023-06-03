@@ -5,6 +5,7 @@
 
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
+#include <emscripten/html5.h>
 #endif
 
 Game game;
@@ -30,8 +31,6 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    SDL_SetRelativeMouseMode(SDL_TRUE);
-
     auto window = SDL_CreateWindow("Cubic", 
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
         1280, 720, 
@@ -48,33 +47,44 @@ int main(int argc, char** argv)
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
 #ifdef EMSCRIPTEN
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+    EmscriptenWebGLContextAttributes attributes;
+    emscripten_webgl_init_context_attributes(&attributes);
+    attributes.alpha           = false;
+    attributes.stencil         = false;
+    attributes.depth           = true;
+    attributes.antialias       = false;
+    attributes.majorVersion    = 2;
+    attributes.powerPreference = EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
+
+    auto context = emscripten_webgl_create_context("#canvas", &attributes);
+    if (!context) 
+    {
+        attributes.majorVersion = 1;
+
+        context = emscripten_webgl_create_context("#canvas", &attributes);
+    }
+
+    if (!context) 
+    {
+        printf("emscripten_webgl_create_context failed\n");
+        return EXIT_FAILURE;
+    }
+
+    emscripten_webgl_make_context_current(context);
+
 #else
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-#endif
 
     auto context = SDL_GL_CreateContext(window);
-
-#ifdef EMSCRIPTEN
-    if (!context)
-    {
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-
-        context = SDL_GL_CreateContext(window);
-    }
-#endif
 
     if (!context)
     {
         printf("SDL_GL_CreateContext failed: %s\n", SDL_GetError());
         return EXIT_FAILURE;
     }
+#endif
 
     glewInit();
     game.init(window);
@@ -87,10 +97,6 @@ int main(int argc, char** argv)
         loop();
     }
 #endif
-
-    SDL_GL_DeleteContext(context);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
 
     return 0;
 }

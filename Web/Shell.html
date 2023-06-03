@@ -11,6 +11,20 @@
         <script type='text/javascript'>
             var canvas = document.getElementById('canvas');
             var Module = {canvas};
+
+            const _getContext = canvas.getContext;
+            const _getContextCustom = (contextType, contextAttributes) => {
+                canvas.getContext = _getContext;
+
+                contextAttributes.desynchronized = true;
+                const context = canvas.getContext(contextType, contextAttributes);
+
+                canvas.getContext = _getContextCustom;
+
+                return context;
+            };
+
+            canvas.getContext = _getContextCustom;
         </script>
         
         {{{ SCRIPT }}}
