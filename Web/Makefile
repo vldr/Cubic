@@ -1,7 +1,7 @@
 OUTPUT = Build/index.html
 CXX = emcc
 CXXFLAGS = -Wall --closure 1 -Wno-unused-command-line-argument -sEVAL_CTORS -flto -fno-rtti -fno-exceptions -IIncludes \
-		   -ffast-math -sFILESYSTEM=0 -lwebsocket.js -sENVIRONMENT=web -sGL_UNSAFE_OPTS -sMAX_WEBGL_VERSION=2 -LLibraries \
+		   -ffast-math -sFILESYSTEM=0 -lwebsocket.js -sENVIRONMENT=web -sGL_UNSAFE_OPTS -sMAX_WEBGL_VERSION=1 -LLibraries \
 		   -lSDL2 -sALLOW_MEMORY_GROWTH=1 -sWASM=1 -O3
 
 SRCS = $(wildcard ../Source/*.cpp)
