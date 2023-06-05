@@ -5,6 +5,7 @@
 
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
+#include <emscripten/html5.h>
 #endif
 
 Game game;
@@ -46,22 +47,36 @@ int main(int argc, char** argv)
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
 #ifdef EMSCRIPTEN
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+	EmscriptenWebGLContextAttributes attributes;
+	emscripten_webgl_init_context_attributes(&attributes);
+	attributes.alpha = false;
+	attributes.stencil = false;
+	attributes.depth = true;
+	attributes.antialias = false;
+	attributes.majorVersion = 1;
+	attributes.powerPreference = EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
+
+	auto context = emscripten_webgl_create_context("#canvas", &attributes);
+	if (!context)
+	{
+		printf("emscripten_webgl_create_context failed\n");
+		return EXIT_FAILURE;
+	}
+
+	emscripten_webgl_make_context_current(context);
 #else
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+
+    auto context = SDL_GL_CreateContext(window);
+
+    if (!context)
+    {
+        printf("SDL_GL_CreateContext failed: %s\n", SDL_GetError());
+        return EXIT_FAILURE;
+    }
 #endif
-
-	auto context = SDL_GL_CreateContext(window);
-
-	if (!context)
-	{
-		printf("SDL_GL_CreateContext failed: %s\n", SDL_GetError());
-		return EXIT_FAILURE;
-	}
 
     glewInit();
     game.init(window);
