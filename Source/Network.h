@@ -31,13 +31,13 @@ public:
 
 private:
 
-    void send(const std::string& text);
-    void sendBinary(unsigned char* data, size_t size);
+	void send(const std::string& text);
+	void sendBinary(unsigned char* data, size_t size);
 
 #ifdef EMSCRIPTEN
-    const char* URI = "wss://vldr.org:8080/relay";
+	const char* URI = "wss://vldr.org:8080/relay";
 #else
-    const char* URI = "ws://vldr.org:1234";
+	const char* URI = "ws://vldr.org:1234";
 #endif
 
     enum class PacketType : unsigned char

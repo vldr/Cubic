@@ -165,6 +165,11 @@ void UI::log(const std::string& text)
 	update();
 }
 
+void UI::logMotd()
+{
+	game->ui.log("Connected! Invite friends by sharing the link.");
+}
+
 bool UI::drawStatusMenu()
 {
 	int x = int(glm::ceil(game->scaledWidth / 16));
@@ -287,9 +292,10 @@ bool UI::drawButton(float x, float y, const char* text)
 
 void UI::drawHUD()
 {
-	static char fps[100];
-	std::snprintf(fps, sizeof(fps), "%lld fps, %lld chunk updates", game->lastFrameRate, game->lastChunkUpdates);
-	drawShadowedFont(fps, 3.0f, 3.0f, 1.0f);
+	static char info[255];
+	std::snprintf(info, sizeof(info), "%lld fps, %lld chunk updates", game->lastFrameRate, game->lastChunkUpdates);
+
+	drawShadowedFont(info, 3.0f, 3.0f, 1.0f);
 
 	drawInterface(game->scaledWidth / 2 - 91, game->scaledHeight - 22, 0, 0, 182, 22);
 	drawInterface(game->scaledWidth / 2 - 92 + float(game->localPlayer.inventoryIndex) * 20, game->scaledHeight - 23, 0, 22, 24, 22);
@@ -315,14 +321,13 @@ void UI::drawHUD()
 				width += FONT_WIDTHS[int(log->text[i])];
 			}
 
-			if (width > maxWidth)
+			if (width > maxWidth) 
 			{
 				maxWidth = width + 4.0f;
 			}
 
-			drawInterface(1.4f, game->scaledHeight - 35.0f - index * 10.0f, maxWidth, 10.0f, 183, 0, 16, 16, 0.12f);
-			drawInterface(0, game->scaledHeight - 35.0f - index * 10.0f, 1.5f, 10.0f, 183, 0, 16, 16, 1.0f);
-			drawFont(log->text.c_str(), 3.30f, game->scaledHeight - 33.8f - index * 10.0f, 1.0f, 1.1f);
+			drawInterface(0.0f, game->scaledHeight - 35.0f - index * 10.0f, maxWidth, 10.0f, 183, 0, 16, 16, 0.12f);
+			drawFont(log->text.c_str(), 1.8f, game->scaledHeight - 33.8f - index * 10.0f, 1.0f, 1.1f);
 
 			log++;
 		}

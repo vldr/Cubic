@@ -37,7 +37,7 @@ int main(int argc, char** argv)
         SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
     );
 
-    if (!window)
+    if (!window) 
     {
         printf("SDL_CreateWindow failed: %s\n", SDL_GetError());
         return EXIT_FAILURE;
@@ -71,7 +71,6 @@ int main(int argc, char** argv)
     }
 
     emscripten_webgl_make_context_current(context);
-
 #else
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);

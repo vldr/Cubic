@@ -408,7 +408,7 @@ void Network::onMessage(const std::string& text)
         printf("Room: %s\n", id.c_str());
 #endif
 
-        game->ui.log("Connected! Invite friends by sharing the link.");
+        game->ui.logMotd();
         game->ui.closeMenu();
     }
     else if (message["type"] == "join")
@@ -444,7 +444,7 @@ void Network::onMessage(const std::string& text)
 
             players.push_back(nullptr);
 
-            game->ui.log("Connected! Invite friends by sharing the link.");
+            game->ui.logMotd();
         }
     }
     else if (message["type"] == "leave")

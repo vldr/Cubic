@@ -28,7 +28,9 @@ public:
 	bool input(const SDL_Event& event);
 	void update();
 	void render();
+
 	void log(const std::string& text);
+	void logMotd();
 
 	void openMenu(UI::State state);
 	void openStatusMenu(const char* title, const char* description, bool closeable = false);
