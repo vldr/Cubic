@@ -53,10 +53,17 @@ int main(int argc, char** argv)
 	attributes.stencil = false;
 	attributes.depth = true;
 	attributes.antialias = false;
-	attributes.majorVersion = 1;
+	attributes.majorVersion = 2;
 	attributes.powerPreference = EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
 
 	auto context = emscripten_webgl_create_context("#canvas", &attributes);
+	if (!context)
+	{
+		attributes.majorVersion = 1;
+
+		context = emscripten_webgl_create_context("#canvas", &attributes);
+	}
+
 	if (!context)
 	{
 		printf("emscripten_webgl_create_context failed\n");
