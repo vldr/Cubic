@@ -53,15 +53,15 @@ int main(int argc, char** argv)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-
-    auto context = SDL_GL_CreateContext(window);
-
-    if (!context)
-    {
-        printf("SDL_GL_CreateContext failed: %s\n", SDL_GetError());
-        return EXIT_FAILURE;
-    }
 #endif
+
+	auto context = SDL_GL_CreateContext(window);
+
+	if (!context)
+	{
+		printf("SDL_GL_CreateContext failed: %s\n", SDL_GetError());
+		return EXIT_FAILURE;
+	}
 
     glewInit();
     game.init(window);
