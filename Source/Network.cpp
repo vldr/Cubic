@@ -393,6 +393,14 @@ void Network::onClose()
     set_hash("");
 #endif
 
+	for (auto iterator = players.begin(); iterator != players.end(); iterator = players.erase(iterator))
+	{
+		if (*iterator)
+		{
+            delete *iterator;
+		}
+	}
+
     game->ui.openStatusMenu("Disconnected", "The connection was closed.", true);
 }
 
