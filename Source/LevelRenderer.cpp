@@ -30,8 +30,6 @@ void LevelRenderer::init(Game* game)
             {
                 auto chunk = getChunk(x, y, z);
                 chunk->init(game, x << 4, y << 4, z << 4);
-
-                chunksQueue.push(chunk);
             }
         }
     }
@@ -209,6 +207,17 @@ void LevelRenderer::updateLavaTexture()
     glTexSubImage2D(GL_TEXTURE_2D, 0, texture % 16 << 4, texture / 16 << 4, 16, 16, GL_RGBA, GL_UNSIGNED_BYTE, lavaTextureData);
 }
 
+void LevelRenderer::initChunks()
+{
+    for (int i = 0; i < xChunks * yChunks * zChunks; i++)
+    {
+        Chunk* chunk = &chunks[i];
+		chunk->isLoaded = false;
+
+		chunksQueue.push(chunk);
+    }	
+}
+
 void LevelRenderer::loadChunks(int x0, int y0, int z0, int x1, int y1, int z1)
 {
     x0 /= 16;
@@ -260,6 +269,7 @@ void LevelRenderer::loadChunks(int x0, int y0, int z0, int x1, int y1, int z1)
                 if (chunk->isLoaded)
                 {
                     chunk->isLoaded = false;
+
                     chunksQueue.push(chunk);
                 }
             }

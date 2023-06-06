@@ -109,6 +109,24 @@ void Network::init(Game* game)
     this->connected = false;
 
     network = this;
+
+#ifndef EMSCRIPTEN
+	try
+	{
+		socket_client.set_access_channels(websocketpp::log::alevel::none);
+		socket_client.clear_access_channels(websocketpp::log::alevel::none);
+
+		socket_client.init_asio();
+		socket_client.set_message_handler(bind(&websocketpp_on_message, &socket_client, ::_1, ::_2));
+		socket_client.set_fail_handler(bind(&websocketpp_on_close, &socket_client, ::_1));
+		socket_client.set_close_handler(bind(&websocketpp_on_close, &socket_client, ::_1));
+		socket_client.set_open_handler(bind(&websocketpp_on_open, &socket_client, ::_1));
+	}
+	catch (websocketpp::exception const& e)
+	{
+		std::cout << e.what() << std::endl;
+	}
+#endif
 }
 
 void Network::connect()
@@ -130,15 +148,6 @@ void Network::connect()
 #else
     try
     {
-        socket_client.set_access_channels(websocketpp::log::alevel::none);
-        socket_client.clear_access_channels(websocketpp::log::alevel::none);
-
-        socket_client.init_asio();
-        socket_client.set_message_handler(bind(&websocketpp_on_message, &socket_client, ::_1, ::_2));
-        socket_client.set_fail_handler(bind(&websocketpp_on_close, &socket_client, ::_1));
-        socket_client.set_close_handler(bind(&websocketpp_on_close, &socket_client, ::_1));
-        socket_client.set_open_handler(bind(&websocketpp_on_open, &socket_client, ::_1));
-
         websocketpp::lib::error_code error_code;
         websocketpp_client::connection_ptr con = socket_client.get_connection(URI, error_code);
 
@@ -358,21 +367,21 @@ void Network::onOpen()
     
     std::free((void*)hash);
 #else
-    char input[255];
+	char input[255];
 
-    printf("Enter a room identifier to join (leave blank to create a room): ");
-    fgets(input, sizeof(input), stdin);
+	printf("Enter a room identifier to join (leave blank to create a room): ");
+	fgets(input, sizeof(input), stdin);
 
-    input[strcspn(input, "\n")] = '\0';
+	input[strcspn(input, "\n")] = '\0';
 
-    if (strlen(input) == 0) 
-    {
-        create();
-    }
-    else 
-    {
-        join(input);
-    }
+	if (strlen(input) == 0)
+	{
+		create();
+	}
+	else
+	{
+		join(input);
+	}
 #endif
 }
 

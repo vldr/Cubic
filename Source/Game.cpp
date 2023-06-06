@@ -14,7 +14,7 @@
 #include <cstdio>
 
 static const GLchar* fragmentSource = R""""(#version 100
-    precision mediump float;
+    precision highp float;
 
     uniform sampler2D TextureSample;
     uniform vec2 FragmentOffset;
@@ -106,9 +106,6 @@ void Game::init(SDL_Window* sdlWindow)
     viewMatrixUniform = glGetUniformLocation(shader, "View");
     modelMatrixUniform = glGetUniformLocation(shader, "Model");
     glUniformMatrix4fv(modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(IDENTITY_MATRIX));
-
-    levelGenerator.generate();
-    network.connect();
 }
 
 void Game::run()
@@ -130,24 +127,25 @@ void Game::run()
     glClearColor(fogColor.r, fogColor.g, fogColor.b, fogColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, glm::value_ptr(perspectiveProjectionMatrix));
-    glUniform3fv(playerPositionUniform, 1, glm::value_ptr(localPlayer.position));
+	glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, glm::value_ptr(perspectiveProjectionMatrix));
+	glUniform3fv(playerPositionUniform, 1, glm::value_ptr(localPlayer.position));
 
-    glUniform1f(fogEnableUniform, 0.0f);
-    glUniform1f(fogDistanceUniform, fogDistance);
-    glUniform4fv(fogColorUniform, 1, glm::value_ptr(fogColor));
+	glUniform1f(fogEnableUniform, 0.0f);
+	glUniform1f(fogDistanceUniform, fogDistance);
+	glUniform4fv(fogColorUniform, 1, glm::value_ptr(fogColor));
 
-    localPlayer.update();
-    frustum.update();
+	levelGenerator.update();
+	localPlayer.update();
+	frustum.update();
 
-    glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+	glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 
-    levelRenderer.render();
-    particleManager.render();
-    network.render();
+	levelRenderer.render();
+	particleManager.render();
+	network.render();
 
-    selectedBlock.renderPost();
-    levelRenderer.renderPost();
+	selectedBlock.renderPost();
+	levelRenderer.renderPost();
 
     glClear(GL_DEPTH_BUFFER_BIT);
     glUniform1f(fogEnableUniform, 1.0f);

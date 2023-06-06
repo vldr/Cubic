@@ -16,6 +16,8 @@ public:
 	void render();
 	void renderPost();
 	void tick();
+
+	void initChunks();
 	void loadChunks(int x0, int y0, int z0, int x1, int y1, int z1);
 
 	Chunk* getChunk(int x, int y, int z);

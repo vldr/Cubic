@@ -16,6 +16,8 @@ void LevelGenerator::init(Game* game, int size)
 {
 	this->game = game;
 	this->game->level.init(game, 128 << size, 128 << size);
+
+	this->state = State::Init;
 }
 
 void LevelGenerator::generateHeightMap(Noise* noise1, Noise* noise2, Noise* noise3)
@@ -373,39 +375,115 @@ void LevelGenerator::generateTrees()
 	}
 }
 
-void LevelGenerator::generate()
+void LevelGenerator::update()
 {
-	heights = new int[game->level.width * game->level.depth];
+	switch (state)
+	{
+	case State::Init:
+		game->ui.openStatusMenu("Generating World", "Generating height map...");
 
-	random = new Random();
-	random->init(std::time(nullptr));
+		heights = new int[game->level.width * game->level.depth];
 
-	OctaveNoise oct[] = 
-	{ 
-		OctaveNoise(random, 8), 
-		OctaveNoise(random, 8),
-		OctaveNoise(random, 8),
-		OctaveNoise(random, 8)
-	};
+		random = new Random();
+		random->init(std::time(nullptr));
 
-	auto noise1 = CombinedNoise(&oct[0], &oct[1]);
-	auto noise2 = CombinedNoise(&oct[2], &oct[3]);
-	auto noise3 = OctaveNoise(random, 6);
+		octaves[0] = new OctaveNoise(random, 8);
+		octaves[1] = new OctaveNoise(random, 8);
+		octaves[2] = new OctaveNoise(random, 8);
+		octaves[3] = new OctaveNoise(random, 8);
 
-	generateHeightMap(&noise1, &noise2, &noise3);
-	generateDirtStoneLava(&noise3);
-	generateWater();
-	generateCaves();
-	generateOre(Block::Type::BLOCK_COAL_ORE, 90);
-	generateOre(Block::Type::BLOCK_IRON_ORE, 70);
-	generateOre(Block::Type::BLOCK_GOLD_ORE, 50);
-	generateGrassSandGravel(&noise1, &noise2);
-	generateFlowers();
-	generateMushrooms();
-	generateTrees();
-	
-	game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);
-	game->level.calculateSpawnPosition();
+		noise1 = new CombinedNoise(octaves[0], octaves[1]);
+		noise2 = new CombinedNoise(octaves[2], octaves[3]);
+		noise3 = new OctaveNoise(random, 6);
 
-	delete[] heights;
+		state = State::HeightMap;
+		break;
+	case State::HeightMap:
+		game->ui.openStatusMenu("Generating World", "Generating dirt, stone and lava...");
+
+		generateHeightMap(noise1, noise2, noise3);
+
+		state = State::DirtStoneLava;
+		break;
+	case State::DirtStoneLava:
+		game->ui.openStatusMenu("Generating World", "Generating water...");
+
+		generateDirtStoneLava(noise3);
+
+		state = State::Water;
+		break;
+	case State::Water:
+		game->ui.openStatusMenu("Generating World", "Generating caves...");
+
+		generateWater();
+
+		state = State::Caves;
+		break;
+	case State::Caves:
+		game->ui.openStatusMenu("Generating World", "Generating ores...");
+
+		generateCaves();
+
+		state = State::Ore;
+		break;
+	case State::Ore:
+		game->ui.openStatusMenu("Generating World", "Generating grass, sand and gravel...");
+
+		generateOre(Block::Type::BLOCK_COAL_ORE, 90);
+		generateOre(Block::Type::BLOCK_IRON_ORE, 70);
+		generateOre(Block::Type::BLOCK_GOLD_ORE, 50);
+
+		state = State::GrassSandGravel;
+		break;
+	case State::GrassSandGravel:
+		game->ui.openStatusMenu("Generating World", "Generating flowers...");
+
+		generateGrassSandGravel(noise1, noise2);
+
+		state = State::Flowers;
+		break;
+	case State::Flowers:
+		game->ui.openStatusMenu("Generating World", "Generating mushrooms...");
+
+		generateFlowers();
+
+		state = State::Mushrooms;
+		break;
+	case State::Mushrooms:
+		game->ui.openStatusMenu("Generating World", "Generating trees...");
+
+		generateMushrooms();
+
+		state = State::Trees;
+		break;
+	case State::Trees:
+		game->ui.openStatusMenu("Generating World", "Generating light depths...");
+
+		generateTrees();
+
+		state = State::Destroy;
+		break;
+	case State::Destroy:
+		game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);
+		game->level.calculateSpawnPosition();
+
+		game->levelRenderer.initChunks();
+
+		game->network.connect();
+
+		delete[] heights;
+		delete octaves[0];
+		delete octaves[1];
+		delete octaves[2];
+		delete octaves[3];
+		delete random;
+		delete noise1;
+		delete noise2;
+		delete noise3;
+
+		state = State::Finished;
+		break;
+	case State::Finished:
+		return;
+	}
 }

@@ -205,7 +205,7 @@ bool UI::drawStatusMenu()
 	return false;
 }
 
-bool UI::drawSelectBlockMenu()
+bool UI::drawSelectBlockMenu() 
 { 
 	float left = game->scaledWidth / 2.0f - 196.0f / 2.0f;
 	float top = game->scaledHeight / 2.0f - 143.0f / 2.0f;
@@ -217,8 +217,8 @@ bool UI::drawSelectBlockMenu()
 		if (!game->level.isAirTile(blockType) && !game->level.isWaterTile(blockType) && !game->level.isLavaTile(blockType))
 		{
 			float x = 10.0f + left + 23.0f * (index % 8);
-			float y = 24.0f + top + 21.0f * (index / 8);
-
+			float y = 23.5f + top + 21.0f * (index / 8);
+			 
 			float width = 23.5f;
 			float height = 23.0f;
 
