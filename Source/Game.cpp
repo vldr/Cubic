@@ -182,6 +182,13 @@ void Game::input(const SDL_Event& event)
 
             resize();
         }
+		else if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
+		{
+			if (ui.state == UI::State::None)
+			{
+                ui.openMainMenu();
+			}
+		}
     } 
     else if (event.type == SDL_QUIT) 
     {

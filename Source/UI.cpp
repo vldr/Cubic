@@ -52,6 +52,13 @@ void UI::openStatusMenu(const char* title, const char* description, bool closeab
 	openMenu(State::StatusMenu);
 }
 
+void UI::openMainMenu()
+{
+	mainMenuCopied = false;
+
+	openMenu(State::MainMenu);
+}
+
 void UI::closeMenu()
 {
 	SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -66,6 +73,25 @@ bool UI::input(const SDL_Event& event)
 {
 	if (event.type == SDL_KEYUP)
 	{
+		if (event.key.keysym.sym == SDLK_ESCAPE)
+		{
+			if (state == State::None)
+			{
+				openMainMenu();
+				return false;
+			}
+			else if (state == State::SaveMenu || state == State::LoadMenu)
+			{
+				openMainMenu();
+				return false;
+			}
+			else if (state == State::MainMenu)
+			{
+				closeMenu();
+				return false;
+			}
+		}
+
 		if (event.key.keysym.sym == SDLK_b || event.key.keysym.sym == SDLK_e)
 		{
 			if (state == State::SelectBlockMenu)
@@ -136,6 +162,14 @@ void UI::update()
 		{
 			return;
 		}
+
+		if (state == State::MainMenu)
+		{
+			if (drawMainMenu())
+			{
+				return;
+			}
+		}
 	}
 
 	fontVertices.update();
@@ -205,6 +239,37 @@ bool UI::drawStatusMenu()
 	return false;
 }
 
+bool UI::drawMainMenu() 
+{
+	const float offset = 73.0f;
+	const float optionsOffset = 72.0f;
+
+	drawInterface(0.0f, 0.0f, game->scaledWidth, game->scaledHeight, 183, 0, 16, 16, 0.05f, 64.0f);
+	drawCenteredFont("Main Menu", game->scaledWidth / 2, game->scaledHeight / 2 - offset, 1.0f, 65.0f);
+
+	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16, 65.0f, "Back to Game"))
+	{
+		closeMenu();
+		return true;
+	}
+
+	drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 40, 65.0f, "Load", game->network.isHost() || !game->network.isConnected(), 98.0f);
+	drawButton(game->scaledWidth / 2, game->scaledHeight / 2 - offset + 40, 65.0f, "Save", game->network.isHost() || !game->network.isConnected(), 100.0f);
+
+	drawCenteredFont("Invite your friends by sharing the link", game->scaledWidth / 2, game->scaledHeight / 2 - offset + optionsOffset, 1.0f, 65.0f);
+	drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + optionsOffset + 16, 65.0f, game->network.url.c_str(), 0);
+
+	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + optionsOffset + 24 + 16, 65.0f, mainMenuCopied ? "Copied!" : "Copy"))
+	{
+		SDL_SetClipboardText(game->network.url.c_str());
+		mainMenuCopied = true;
+
+		return true;
+	}
+
+	return false;
+}
+
 bool UI::drawSelectBlockMenu() 
 { 
 	float left = game->scaledWidth / 2.0f - 196.0f / 2.0f;
@@ -260,6 +325,58 @@ bool UI::drawSelectBlockButton(unsigned char blockType, unsigned char& selectedB
 	else
 	{
 		drawBlock(blockType, x, y, 10.0f);
+	}
+
+	return hover && clicked;
+}
+
+bool UI::drawButton(float x, float y, float z, const char* text, int state, float width)
+{
+	float height = 20;
+
+	bool clicked = mouseState == MouseState::Down;
+
+	float hoverX = x;
+	float hoverY = y;
+
+	bool hover = mousePosition.x >= hoverX &&
+		mousePosition.x <= hoverX + width &&
+		mousePosition.y >= hoverY &&
+		mousePosition.y <= hoverY + height;
+
+	if (state && hover) { state = 2; }
+
+	drawInterface(x, y, 0.0f, 46.0f + state * 19.99f, width / 2, height, 1.0f, z);
+	drawInterface(x + width / 2, y, 200 - width / 2, 46.0f + state * 19.99f, width / 2, height, 1.0f, z);
+
+	if (state)
+	{
+		drawCenteredFont(text, x + width / 2, y + (height - 8) / 2, 1.0f, z + 100.0f);
+	}
+	else
+	{
+		float size = 0.0f;
+		int index = 0;
+
+		const auto length = std::strlen(text);
+		for (auto i = 0; i < length; i++)
+		{
+			size += FONT_WIDTHS[int(text[i])];
+			index = i;
+
+			if (size > width - 15.0f)
+			{
+				break;
+			}
+		}
+
+		auto truncatedText = std::string(text);
+		if (index < length - 1)
+		{
+			truncatedText = truncatedText.substr(0, index) + "...";
+		}
+
+		drawCenteredFont(truncatedText.c_str(), x + width / 2, y + (height - 8) / 2, 0.7f, z + 100.0f);
 	}
 
 	return hover && clicked;
@@ -501,7 +618,7 @@ void UI::drawCenteredFont(const char* text, float x, float y, float shade, float
 		width += FONT_WIDTHS[int(text[i])];
 	}
 
-	drawShadowedFont(text, x - width / 2, y, shade);
+	drawShadowedFont(text, x - width / 2, y, shade, z);
 }
 
 void UI::drawCenteredFont(const char* text, float x, float y, float shade)

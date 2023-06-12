@@ -29,10 +29,12 @@ public:
     void onMessage(const std::string& text);
     void onBinaryMessage(const unsigned char* data);
 
+    std::string url;
 private:
-
 	void send(const std::string& text);
 	void sendBinary(unsigned char* data, size_t size);
+
+    const char* BASE_URL = "https://cubic.vldr.org/#";
 
 #ifdef EMSCRIPTEN
 	const char* URI = "wss://vldr.org:8080/relay";

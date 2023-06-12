@@ -332,6 +332,8 @@ void Network::join(const std::string& id)
         message["id"] = id;
 
         send(message.dump());
+
+		url = BASE_URL + id;
     }
 }
 
@@ -341,7 +343,7 @@ void Network::create()
     {
         game->ui.openStatusMenu("Creating Room", "Attempting to create room...");
 
-        nlohmann::json message;
+		nlohmann::json message;
         message["type"] = "create";
         message["size"] = UCHAR_MAX - 1;
 
@@ -393,6 +395,8 @@ void Network::onClose()
     set_hash("");
 #endif
 
+    url = "Disconnected...";
+
 	for (auto iterator = players.begin(); iterator != players.end(); iterator = players.erase(iterator))
 	{
 		if (*iterator)
@@ -424,6 +428,8 @@ void Network::onMessage(const std::string& text)
 #else
         printf("Room: %s\n", id.c_str());
 #endif
+
+        url = BASE_URL + id;
 
         game->ui.logMotd();
         game->ui.closeMenu();

@@ -10,41 +10,61 @@
 
 Game game;
 
+#ifdef EMSCRIPTEN
+EM_BOOL pointer_lock_change(int eventType, const EmscriptenPointerlockChangeEvent* pointerlockChangeEvent, void* userData)
+{
+	static bool previousIsActive = false;
+
+	if (!pointerlockChangeEvent->isActive && pointerlockChangeEvent->isActive != previousIsActive)
+	{
+		SDL_Event event;
+		event.type = SDL_WINDOWEVENT;
+		event.window.event = SDL_WINDOWEVENT_FOCUS_LOST;
+
+		game.input(event);
+	}
+
+	previousIsActive = pointerlockChangeEvent->isActive;
+
+	return true;
+}
+#endif
+
 void loop()
 {
-    SDL_Event event;
-    while (SDL_PollEvent(&event))
-    {
-        game.input(event);
-    }
-     
-    game.run();
+	SDL_Event event;
+	while (SDL_PollEvent(&event))
+	{
+		game.input(event);
+	}
 
-    SDL_GL_SwapWindow(game.window);
+	game.run();
+
+	SDL_GL_SwapWindow(game.window);
 }
 
-int main(int argc, char** argv) 
+int main(int argc, char** argv)
 {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
-    {
-        printf("SDL_Init failed: %s\n", SDL_GetError());
-        return EXIT_FAILURE;
-    }
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	{
+		printf("SDL_Init failed: %s\n", SDL_GetError());
+		return EXIT_FAILURE;
+	}
 
-    auto window = SDL_CreateWindow("Cubic", 
-        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
-        1280, 720, 
-        SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
-    );
+	auto window = SDL_CreateWindow("Cubic",
+		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		1280, 720,
+		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
+	);
 
-    if (!window) 
-    {
-        printf("SDL_CreateWindow failed: %s\n", SDL_GetError());
-        return EXIT_FAILURE;
-    }
+	if (!window)
+	{
+		printf("SDL_CreateWindow failed: %s\n", SDL_GetError());
+		return EXIT_FAILURE;
+	}
 
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
 #ifdef EMSCRIPTEN
 	EmscriptenWebGLContextAttributes attributes;
@@ -71,31 +91,32 @@ int main(int argc, char** argv)
 	}
 
 	emscripten_webgl_make_context_current(context);
+	emscripten_set_pointerlockchange_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, nullptr, false, pointer_lock_change);
 #else
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
-    auto context = SDL_GL_CreateContext(window);
+	auto context = SDL_GL_CreateContext(window);
 
-    if (!context)
-    {
-        printf("SDL_GL_CreateContext failed: %s\n", SDL_GetError());
-        return EXIT_FAILURE;
-    }
+	if (!context)
+	{
+		printf("SDL_GL_CreateContext failed: %s\n", SDL_GetError());
+		return EXIT_FAILURE;
+	}
 #endif
 
-    glewInit();
-    game.init(window);
+	glewInit();
+	game.init(window);
 
 #ifdef EMSCRIPTEN
-    emscripten_set_main_loop(loop, 0, true);
+	emscripten_set_main_loop(loop, 0, true);
 #else
-    for (;;)
-    {
-        loop();
-    }
+	for (;;)
+	{
+		loop();
+	}
 #endif
 
-    return 0;
+	return 0;
 }

@@ -14,8 +14,11 @@ public:
 	enum class State 
 	{
 		None,
-		SelectBlockMenu,
 		StatusMenu,
+		SelectBlockMenu,
+		MainMenu,
+		SaveMenu,
+		LoadMenu,
 	};
 
 	enum class MouseState 
@@ -34,6 +37,7 @@ public:
 
 	void openMenu(UI::State state);
 	void openStatusMenu(const char* title, const char* description, bool closeable = false);
+	void openMainMenu();
 	void closeMenu();
 
 	UI::State state;
@@ -52,10 +56,13 @@ private:
 	void drawHotbar();
 	void drawBlock(unsigned char blockType, float x, float y, float scale);
 	
+	bool drawMainMenu();
 	bool drawStatusMenu();
 
 	bool drawSelectBlockMenu();
 	bool drawSelectBlockButton(unsigned char blockType, unsigned char& selectedBlockType, float x, float y, float width, float height);
+
+	bool drawButton(float x, float y, float z, const char* text, int state = 1, float width = 200.0f);
 	bool drawButton(float x, float y, const char* text);
 
 	void drawInterface(float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1, float shade, float z);
@@ -86,6 +93,8 @@ private:
 	std::string statusTitle;
 	std::string statusDescription;
 	bool statusCloseable;
+
+	bool mainMenuCopied;
 
 	VertexList fontVertices;
 	GLuint fontTexture;
