@@ -9,6 +9,10 @@
 
 #ifdef EMSCRIPTEN
 #include <emscripten/html5.h>
+
+EM_JS(void, copy_to_clipboard, (const char* text), { 
+	navigator.clipboard.writeText(UTF8ToString(text));
+});
 #endif
 
 void UI::init(Game* game)
@@ -241,7 +245,7 @@ bool UI::drawStatusMenu()
 
 bool UI::drawMainMenu() 
 {
-	const float offset = 73.0f;
+	const float offset = 73.5f;
 	const float optionsOffset = 72.0f;
 
 	drawInterface(0.0f, 0.0f, game->scaledWidth, game->scaledHeight, 183, 0, 16, 16, 0.05f, 64.0f);
@@ -261,9 +265,13 @@ bool UI::drawMainMenu()
 
 	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + optionsOffset + 24 + 16, 65.0f, mainMenuCopied ? "Copied!" : "Copy"))
 	{
+#ifdef EMSCRIPTEN
+		copy_to_clipboard(game->network.url.c_str());
+#else
 		SDL_SetClipboardText(game->network.url.c_str());
-		mainMenuCopied = true;
+#endif
 
+		mainMenuCopied = true;
 		return true;
 	}
 
