@@ -475,8 +475,7 @@ bool UI::drawMainMenu()
 		return true;
 	}
 
-
-	drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + optionsOffset - 10.0f, 65.0f, "", 0, 200.0f, 1.0f);
+	drawInterface(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + optionsOffset - 10.0f, 200.0f, 1.5f, 183, 0, 16, 16, 0.0f, 64.0f);
 
 	drawCenteredFont("Invite your friends by sharing the link", game->scaledWidth / 2, game->scaledHeight / 2 - offset + optionsOffset, 1.0f, 65.0f);
 	drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + optionsOffset + 16, 65.0f, game->network.url.c_str(), 0);
