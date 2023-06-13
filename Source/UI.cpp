@@ -363,7 +363,7 @@ bool UI::drawLoadMenu()
 {
 	const float offset = 73.5f;
 
-	drawInterface(0.0f, 0.0f, game->scaledWidth, game->scaledHeight, 183, 0, 16, 16, 0.05f, 64.0f);
+	drawInterface(0.0f, 0.0f, game->scaledWidth, game->scaledHeight, 183, 0, 16, 16, 0.08f, 64.0f);
 	drawCenteredFont("Load Level", game->scaledWidth / 2, game->scaledHeight / 2 - offset, 1.0f, 65.0f);
 
 	if (drawButton(game->scaledWidth / 2 - 130.0f, game->scaledHeight / 2 - offset + 16 + 24 + 24 - 10.0f, 65.0f, "<", page > 0, 20.0f))
@@ -382,36 +382,15 @@ bool UI::drawLoadMenu()
 		return true;
 	}
 
-	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16, 65.0f, saves.size() >= 1 + 4 * page ? saves[0 + 4 * page].name.c_str() : "-", saves.size() >= 1))
+	for (int i = 0; i < 4; i++)
 	{
-		load(0 + 4 * page);
+		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 * i, 65.0f, saves.size() >= i + 1 + 4 * page ? saves[i + 4 * page].name.c_str() : "-", saves.size() >= i + 1 + 4 * page))
+		{
+			load(i + 4 * page);
 
-		closeMenu();
-		return true;
-	}
-
-	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24, 65.0f, saves.size() >= 2 + 4 * page ? saves[1 + 4 * page].name.c_str() : "-", saves.size() >= 2))
-	{
-		load(1 + 4 * page);
-
-		closeMenu();
-		return true;
-	}
-
-	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 + 24, 65.0f, saves.size() >= 3 + 4 * page ? saves[2 + 4 * page].name.c_str() : "-", saves.size() >= 3))
-	{
-		load(2 + 4 * page);
-
-		closeMenu();
-		return true;
-	}
-
-	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 + 24 + 24, 65.0f, saves.size() >= 4 + 4 * page ? saves[3 + 4 * page].name.c_str() : "-", saves.size() >= 4))
-	{
-		load(3 + 4 * page);
-
-		closeMenu();
-		return true;
+			closeMenu();
+			return true;
+		}
 	}
 
 	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 + 24 + 24 + 36, 65.0f, "Back to Menu"))
@@ -427,7 +406,7 @@ bool UI::drawSaveMenu()
 {
 	const float offset = 73.5f;
 
-	drawInterface(0.0f, 0.0f, game->scaledWidth, game->scaledHeight, 183, 0, 16, 16, 0.05f, 64.0f);
+	drawInterface(0.0f, 0.0f, game->scaledWidth, game->scaledHeight, 183, 0, 16, 16, 0.08f, 64.0f);
 	drawCenteredFont("Save Level", game->scaledWidth / 2, game->scaledHeight / 2 - offset, 1.0f, 65.0f);
 
 	if (drawButton(game->scaledWidth / 2 - 130.0f, game->scaledHeight / 2 - offset + 16 + 24 + 24 - 10.0f, 65.0f, "<", page > 0, 20.0f))
@@ -446,36 +425,15 @@ bool UI::drawSaveMenu()
 		return true;
 	}
 
-	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16, 65.0f, saves.size() >= 1 + 4 * page ? saves[0 + 4 * page].name.c_str() : "-"))
+	for (int i = 0; i < 4; i++)
 	{
-		save(0 + 4 * page);
+		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 * i, 65.0f, saves.size() >= i + 1 + 4 * page ? saves[i + 4 * page].name.c_str() : "-"))
+		{
+			save(i + 4 * page);
 
-		openMainMenu();
-		return true;
-	}
-
-	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24, 65.0f, saves.size() >= 2 + 4 * page ? saves[1 + 4 * page].name.c_str() : "-"))
-	{
-		save(1 + 4 * page);
-
-		openMainMenu();
-		return true;
-	}
-
-	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 + 24, 65.0f, saves.size() >= 3 + 4 * page ? saves[2 + 4 * page].name.c_str() : "-"))
-	{
-		save(2 + 4 * page);
-
-		openMainMenu();
-		return true;
-	}
-
-	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 + 24 + 24, 65.0f, saves.size() >= 4 + 4 * page ? saves[3 + 4 * page].name.c_str() : "-"))
-	{
-		save(3 + 4 * page);
-
-		openMainMenu();
-		return true;
+			openMainMenu();
+			return true;
+		}
 	}
 
 	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 + 24 + 24 + 36, 65.0f, "Back to Menu"))
@@ -490,9 +448,9 @@ bool UI::drawSaveMenu()
 bool UI::drawMainMenu() 
 {
 	const float offset = 73.5f;
-	const float optionsOffset = 72.0f;
+	const float optionsOffset = 80.0f;
 
-	drawInterface(0.0f, 0.0f, game->scaledWidth, game->scaledHeight, 183, 0, 16, 16, 0.05f, 64.0f);
+	drawInterface(0.0f, 0.0f, game->scaledWidth, game->scaledHeight, 183, 0, 16, 16, 0.08f, 64.0f);
 	drawCenteredFont("Main Menu", game->scaledWidth / 2, game->scaledHeight / 2 - offset, 1.0f, 65.0f);
 
 	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16, 65.0f, "Back to Game"))
@@ -516,6 +474,9 @@ bool UI::drawMainMenu()
 
 		return true;
 	}
+
+
+	drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + optionsOffset - 10.0f, 65.0f, "", 0, 200.0f, 1.0f);
 
 	drawCenteredFont("Invite your friends by sharing the link", game->scaledWidth / 2, game->scaledHeight / 2 - offset + optionsOffset, 1.0f, 65.0f);
 	drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + optionsOffset + 16, 65.0f, game->network.url.c_str(), 0);
@@ -594,10 +555,8 @@ bool UI::drawSelectBlockButton(unsigned char blockType, unsigned char& selectedB
 	return hover && clicked;
 }
 
-bool UI::drawButton(float x, float y, float z, const char* text, int state, float width)
+bool UI::drawButton(float x, float y, float z, const char* text, int state, float width, float height)
 {
-	float height = 20;
-
 	bool clicked = mouseState == MouseState::Down;
 
 	float hoverX = x;
@@ -617,7 +576,7 @@ bool UI::drawButton(float x, float y, float z, const char* text, int state, floa
 	{
 		drawCenteredFont(text, x + width / 2, y + (height - 8) / 2, 1.0f, z + 100.0f);
 	}
-	else
+	else 
 	{
 		float size = 0.0f;
 		int index = 0;
@@ -635,7 +594,7 @@ bool UI::drawButton(float x, float y, float z, const char* text, int state, floa
 		}
 
 		auto truncatedText = std::string(text);
-		if (index < length - 1)
+		if (length > 0 && index < length - 1)
 		{
 			truncatedText = truncatedText.substr(0, index) + "...";
 		}
