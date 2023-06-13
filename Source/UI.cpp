@@ -3,7 +3,12 @@
 #include "Block.h"
 #include "Resources.h"
 
+#include <ctime>
+#include <sstream>
+#include <iomanip>
+#include <string>
 #include <cstdio>
+#include <filesystem>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -58,9 +63,106 @@ void UI::openStatusMenu(const char* title, const char* description, bool closeab
 
 void UI::openMainMenu()
 {
-	mainMenuCopied = false;
+	mainMenuLastCopy = 0;
 
 	openMenu(State::MainMenu);
+}
+
+
+void UI::refresh()
+{
+	page = 0;
+
+	saves.clear();
+
+#ifdef EMSCRIPTEN
+	for (const auto& entry : std::filesystem::directory_iterator("saves/"))
+#else
+	for (const auto& entry : std::filesystem::directory_iterator("."))
+#endif
+	{
+		auto path = entry.path();
+		auto filename = path.filename();
+
+		if (filename.u8string().rfind("Save") == 0)
+		{
+			auto last_write_time = entry.last_write_time();
+			auto last_write_system_time = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+				last_write_time - std::filesystem::file_time_type::clock::now() + std::chrono::system_clock::now()
+			);
+
+			std::time_t time = std::chrono::system_clock::to_time_t(last_write_system_time);
+
+			std::stringstream name;
+			name << filename.u8string();
+			name << std::put_time(std::localtime(&time), " - %m/%d/%Y %H:%M:%S");
+
+			Save save;
+			save.name = name.str();
+			save.path = path.u8string();
+
+			saves.push_back(save);
+		}
+	}
+}
+
+void UI::load(int index)
+{
+	if (index >= saves.size())
+	{
+		return;
+	}
+
+	FILE* file;
+	file = fopen(saves[index].path.c_str(), "r");
+
+	if (file)
+	{
+		fread(game->level.blocks, 128 * 64 * 128, sizeof(unsigned char), file);
+		fclose(file);
+
+		game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);
+		game->levelRenderer.loadChunks(0, 0, 0, game->level.width, game->level.height, game->level.depth);
+
+		game->level.calculateSpawnPosition();
+		game->network.sendLevel(UCHAR_MAX, true);
+	}
+}
+
+void UI::save(int index)
+{
+	std::stringstream filename;
+
+#ifdef EMSCRIPTEN
+	filename << "saves/Save " << index;
+#else
+	filename << "Save " << index;
+#endif
+
+	FILE* file;
+
+	if (saves.size() > index)
+	{
+		file = fopen(saves[index].path.c_str(), "w");
+	}
+	else
+	{
+		file = fopen(filename.str().c_str(), "w");
+	}
+
+	if (file)
+	{
+		fwrite(game->level.blocks, 128 * 64 * 128, sizeof(unsigned char), file);
+		fclose(file);
+
+#ifdef EMSCRIPTEN
+	EM_ASM(
+		FS.syncfs(false, function(err) {
+			console.log(err);
+		});
+	);
+#endif
+	}
 }
 
 void UI::closeMenu()
@@ -174,6 +276,20 @@ void UI::update()
 				return;
 			}
 		}
+		else if (state == State::LoadMenu)
+		{
+			if (drawLoadMenu())
+			{
+				return;
+			}
+		}
+		else if (state == State::SaveMenu)
+		{
+			if (drawSaveMenu())
+			{
+				return;
+			}
+		}
 	}
 
 	fontVertices.update();
@@ -243,6 +359,134 @@ bool UI::drawStatusMenu()
 	return false;
 }
 
+bool UI::drawLoadMenu()
+{
+	const float offset = 73.5f;
+
+	drawInterface(0.0f, 0.0f, game->scaledWidth, game->scaledHeight, 183, 0, 16, 16, 0.05f, 64.0f);
+	drawCenteredFont("Load Level", game->scaledWidth / 2, game->scaledHeight / 2 - offset, 1.0f, 65.0f);
+
+	if (drawButton(game->scaledWidth / 2 - 130.0f, game->scaledHeight / 2 - offset + 16 + 24 + 24 - 10.0f, 65.0f, "<", page > 0, 20.0f))
+	{
+		page--;
+
+		openMenu(State::LoadMenu);
+		return true;
+	}
+
+	if (drawButton(game->scaledWidth / 2 + 110.0f, game->scaledHeight / 2 - offset + 16 + 24 + 24 - 10.0f, 65.0f, ">", page < (saves.size() / 4), 20.0f))
+	{
+		page++;
+
+		openMenu(State::LoadMenu);
+		return true;
+	}
+
+	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16, 65.0f, saves.size() >= 1 + 4 * page ? saves[0 + 4 * page].name.c_str() : "-", saves.size() >= 1))
+	{
+		load(0 + 4 * page);
+
+		closeMenu();
+		return true;
+	}
+
+	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24, 65.0f, saves.size() >= 2 + 4 * page ? saves[1 + 4 * page].name.c_str() : "-", saves.size() >= 2))
+	{
+		load(1 + 4 * page);
+
+		closeMenu();
+		return true;
+	}
+
+	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 + 24, 65.0f, saves.size() >= 3 + 4 * page ? saves[2 + 4 * page].name.c_str() : "-", saves.size() >= 3))
+	{
+		load(2 + 4 * page);
+
+		closeMenu();
+		return true;
+	}
+
+	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 + 24 + 24, 65.0f, saves.size() >= 4 + 4 * page ? saves[3 + 4 * page].name.c_str() : "-", saves.size() >= 4))
+	{
+		load(3 + 4 * page);
+
+		closeMenu();
+		return true;
+	}
+
+	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 + 24 + 24 + 36, 65.0f, "Back to Menu"))
+	{
+		openMainMenu();
+		return true;
+	}
+
+	return false;
+}
+
+bool UI::drawSaveMenu()
+{
+	const float offset = 73.5f;
+
+	drawInterface(0.0f, 0.0f, game->scaledWidth, game->scaledHeight, 183, 0, 16, 16, 0.05f, 64.0f);
+	drawCenteredFont("Save Level", game->scaledWidth / 2, game->scaledHeight / 2 - offset, 1.0f, 65.0f);
+
+	if (drawButton(game->scaledWidth / 2 - 130.0f, game->scaledHeight / 2 - offset + 16 + 24 + 24 - 10.0f, 65.0f, "<", page > 0, 20.0f))
+	{
+		page--;
+
+		openMenu(State::SaveMenu);
+		return true;
+	}
+
+	if (drawButton(game->scaledWidth / 2 + 110.0f, game->scaledHeight / 2 - offset + 16 + 24 + 24 - 10.0f, 65.0f, ">", page < (saves.size() / 4), 20.0f))
+	{
+		page++;
+
+		openMenu(State::SaveMenu);
+		return true;
+	}
+
+	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16, 65.0f, saves.size() >= 1 + 4 * page ? saves[0 + 4 * page].name.c_str() : "-"))
+	{
+		save(0 + 4 * page);
+
+		openMainMenu();
+		return true;
+	}
+
+	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24, 65.0f, saves.size() >= 2 + 4 * page ? saves[1 + 4 * page].name.c_str() : "-"))
+	{
+		save(1 + 4 * page);
+
+		openMainMenu();
+		return true;
+	}
+
+	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 + 24, 65.0f, saves.size() >= 3 + 4 * page ? saves[2 + 4 * page].name.c_str() : "-"))
+	{
+		save(2 + 4 * page);
+
+		openMainMenu();
+		return true;
+	}
+
+	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 + 24 + 24, 65.0f, saves.size() >= 4 + 4 * page ? saves[3 + 4 * page].name.c_str() : "-"))
+	{
+		save(3 + 4 * page);
+
+		openMainMenu();
+		return true;
+	}
+
+	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 + 24 + 24 + 36, 65.0f, "Back to Menu"))
+	{
+		openMainMenu();
+		return true;
+	}
+
+	return false;
+}
+
 bool UI::drawMainMenu() 
 {
 	const float offset = 73.5f;
@@ -257,21 +501,33 @@ bool UI::drawMainMenu()
 		return true;
 	}
 
-	drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 40, 65.0f, "Load", game->network.isHost() || !game->network.isConnected(), 98.0f);
-	drawButton(game->scaledWidth / 2, game->scaledHeight / 2 - offset + 40, 65.0f, "Save", game->network.isHost() || !game->network.isConnected(), 100.0f);
+	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 40, 65.0f, "Load Level", game->network.isHost() || !game->network.isConnected(), 98.0f))
+	{
+		refresh();
+		openMenu(State::LoadMenu);
+
+		return true;
+	}
+
+	if (drawButton(game->scaledWidth / 2, game->scaledHeight / 2 - offset + 40, 65.0f, "Save Level", 1, 100.0f))
+	{
+		refresh();
+		openMenu(State::SaveMenu);
+
+		return true;
+	}
 
 	drawCenteredFont("Invite your friends by sharing the link", game->scaledWidth / 2, game->scaledHeight / 2 - offset + optionsOffset, 1.0f, 65.0f);
 	drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + optionsOffset + 16, 65.0f, game->network.url.c_str(), 0);
 
-	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + optionsOffset + 24 + 16, 65.0f, mainMenuCopied ? "Copied!" : "Copy"))
+	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + optionsOffset + 24 + 16, 65.0f, game->timer.milliTime() - mainMenuLastCopy < 1000 ? "Copied!" : "Copy"))
 	{
 #ifdef EMSCRIPTEN
 		copy_to_clipboard(game->network.url.c_str());
 #else
 		SDL_SetClipboardText(game->network.url.c_str());
 #endif
-
-		mainMenuCopied = true;
+		mainMenuLastCopy = game->timer.milliTime();
 		return true;
 	}
 
@@ -387,7 +643,7 @@ bool UI::drawButton(float x, float y, float z, const char* text, int state, floa
 		drawCenteredFont(truncatedText.c_str(), x + width / 2, y + (height - 8) / 2, 0.7f, z + 100.0f);
 	}
 
-	return hover && clicked;
+	return state && hover && clicked;
 }
 
 bool UI::drawButton(float x, float y, const char* text)

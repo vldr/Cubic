@@ -92,6 +92,14 @@ int main(int argc, char** argv)
 
 	emscripten_webgl_make_context_current(context);
 	emscripten_set_pointerlockchange_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, nullptr, false, pointer_lock_change);
+
+	EM_ASM(
+		FS.mkdir('/saves');
+		FS.mount(IDBFS, {}, '/saves');
+		FS.syncfs(true, function(err) {
+			console.log(err);
+		});
+	);
 #else
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);

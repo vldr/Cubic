@@ -38,6 +38,7 @@ public:
 	void openMenu(UI::State state);
 	void openStatusMenu(const char* title, const char* description, bool closeable = false);
 	void openMainMenu();
+
 	void closeMenu();
 
 	UI::State state;
@@ -52,12 +53,25 @@ private:
 		std::string text;
 	};
 
+	struct Save 
+	{
+		std::string path;
+		std::string name;
+	};
+
+	void refresh();
+	void load(int index);
+	void save(int index);
+
 	void drawHUD();
 	void drawHotbar();
 	void drawBlock(unsigned char blockType, float x, float y, float scale);
 	
 	bool drawMainMenu();
 	bool drawStatusMenu();
+
+	bool drawLoadMenu();
+	bool drawSaveMenu();
 
 	bool drawSelectBlockMenu();
 	bool drawSelectBlockButton(unsigned char blockType, unsigned char& selectedBlockType, float x, float y, float width, float height);
@@ -90,11 +104,14 @@ private:
 
 	std::vector<Log> logs;
 
+	int page;
+	std::vector<Save> saves;
+
 	std::string statusTitle;
 	std::string statusDescription;
 	bool statusCloseable;
 
-	bool mainMenuCopied;
+	uint64_t mainMenuLastCopy;
 
 	VertexList fontVertices;
 	GLuint fontTexture;
