@@ -484,7 +484,10 @@ void Network::onMessage(const std::string& text)
                 false
             );
 
-            game->ui.closeMenu();
+            if (game->ui.state == UI::State::StatusMenu)
+            {
+				game->ui.closeMenu();
+            }
         }
         else if (!index)
         {
