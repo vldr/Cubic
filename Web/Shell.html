@@ -25,6 +25,18 @@
             };
 
             canvas.getContext = _getContextCustom;
+
+            const _requestPointerLock = canvas.requestPointerLock;
+            const _requestPointerLockCustom = () => {
+                canvas.requestPointerLock = _requestPointerLock;
+
+                const promise = canvas.requestPointerLock({ unadjustedMovement: true });
+
+                canvas.requestPointerLock = _requestPointerLockCustom;
+                return promise;
+            };
+
+            canvas.requestPointerLock = _requestPointerLockCustom;
         </script>
         
         {{{ SCRIPT }}}
