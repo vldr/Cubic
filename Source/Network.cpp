@@ -150,6 +150,7 @@ void Network::connect()
     {
         websocketpp::lib::error_code error_code;
         websocketpp_client::connection_ptr con = socket_client.get_connection(URI, error_code);
+        con->append_header("Origin", BASE_URL);
 
         if (error_code)
         {
