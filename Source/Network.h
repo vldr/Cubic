@@ -27,7 +27,7 @@ public:
     void onOpen();
     void onClose();
     void onMessage(const std::string& text);
-    void onBinaryMessage(const unsigned char* data);
+    void onBinaryMessage(const unsigned char* data, size_t size);
 
     std::string url;
 private:

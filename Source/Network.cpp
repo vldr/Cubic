@@ -29,7 +29,7 @@ EM_BOOL emscripten_on_message(int event_type, const EmscriptenWebSocketMessageEv
     }
     else
     {
-        network->onBinaryMessage(websocket_event->data);
+        network->onBinaryMessage(websocket_event->data, websocket_event->numBytes);
     }
 
     return EM_TRUE;
@@ -85,7 +85,8 @@ void websocketpp_on_message(websocketpp_client* socket, websocketpp_connection_h
     else if (message->get_opcode() == websocketpp::frame::opcode::binary)
     {
         network->onBinaryMessage(
-            reinterpret_cast<const unsigned char*>(message->get_payload().data())
+            reinterpret_cast<const unsigned char*>(message->get_payload().data()),
+            message->get_payload().size()
         );
     }
 }
@@ -499,13 +500,25 @@ void Network::onMessage(const std::string& text)
     }
 }
 
-void Network::onBinaryMessage(const unsigned char* data)
+void Network::onBinaryMessage(const unsigned char* data, size_t size)
 {
+    if (size < 2)
+    {
+		printf("network error: packet is too small.\n");
+		return;
+    }
+
     unsigned char index = data[0];
     unsigned char type = data[1];
 
     if (type == (unsigned char)PacketType::Level)
     {
+		if (size != sizeof(LevelPacket))
+		{
+			printf("network error: invalid level packet size.\n");
+			return;
+		}
+
         if (index)
         {
             printf("network error: cannot process level packet from a non-host.\n");
@@ -528,10 +541,22 @@ void Network::onBinaryMessage(const unsigned char* data)
     }
     else if (type == (unsigned char)PacketType::Position)
     {
+		if (size != sizeof(PositionPacket))
+		{
+			printf("network error: invalid position packet size.\n");
+			return;
+		}
+
         positionPackets.push_back(*(PositionPacket*)data);
     } 
     else if (type == (unsigned char)PacketType::SetBlock)
     {
+		if (size != sizeof(SetBlockPacket))
+		{
+			printf("network error: invalid set block packet size.\n");
+			return;
+		}
+
         SetBlockPacket* packet = (SetBlockPacket*)data;
 
         auto previousBlockType = game->level.getTile(packet->position.x, packet->position.y, packet->position.z);
