@@ -327,16 +327,16 @@ void LocalPlayer::input(const SDL_Event& event)
             }
         }
 
-        if (event.key.keysym.sym == SDLK_a)
+        if (event.key.keysym.sym == SDLK_a || event.key.keysym.sym == SDLK_LEFT)
             moveState |= Move::Move_Left;
 
-        if (event.key.keysym.sym == SDLK_d)
+        if (event.key.keysym.sym == SDLK_d || event.key.keysym.sym == SDLK_RIGHT)
             moveState |= Move::Move_Right;
 
-        if (event.key.keysym.sym == SDLK_w)
+        if (event.key.keysym.sym == SDLK_w || event.key.keysym.sym == SDLK_UP)
             moveState |= Move::Move_Forward;
 
-        if (event.key.keysym.sym == SDLK_s)
+        if (event.key.keysym.sym == SDLK_s || event.key.keysym.sym == SDLK_DOWN)
             moveState |= Move::Move_Backward;
 
         if (event.key.keysym.sym == SDLK_SPACE)
@@ -347,16 +347,16 @@ void LocalPlayer::input(const SDL_Event& event)
     }
     else if (event.type == SDL_KEYUP)
     {
-        if (event.key.keysym.sym == SDLK_a)
+        if (event.key.keysym.sym == SDLK_a || event.key.keysym.sym == SDLK_LEFT)
             moveState &= ~Move::Move_Left;
 
-        if (event.key.keysym.sym == SDLK_d)
+        if (event.key.keysym.sym == SDLK_d || event.key.keysym.sym == SDLK_RIGHT)
             moveState &= ~Move::Move_Right;
 
-        if (event.key.keysym.sym == SDLK_w)
+        if (event.key.keysym.sym == SDLK_w || event.key.keysym.sym == SDLK_UP)
             moveState &= ~Move::Move_Forward;
 
-        if (event.key.keysym.sym == SDLK_s)
+        if (event.key.keysym.sym == SDLK_s || event.key.keysym.sym == SDLK_DOWN)
             moveState &= ~Move::Move_Backward;
 
         if (event.key.keysym.sym == SDLK_SPACE)
