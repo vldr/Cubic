@@ -427,7 +427,7 @@ bool UI::drawSaveMenu()
 
 	for (int i = 0; i < 4; i++)
 	{
-		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 * i, 65.0f, saves.size() >= i + 1 + 4 * page ? saves[i + 4 * page].name.c_str() : "-"))
+		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 * i, 65.0f, saves.size() >= i + 1 + 4 * page ? saves[i + 4 * page].name.c_str() : "-", saves.size() >= i + 4 * page))
 		{
 			save(i + 4 * page);
 
