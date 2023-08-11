@@ -12,6 +12,7 @@ public:
 	void move(float x, float y, float z);
 	void render();
 
+	bool updated;
 private:
 	float bobbing;
 	float oldBobbing;

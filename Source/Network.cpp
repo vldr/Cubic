@@ -186,6 +186,8 @@ void Network::tick()
 
             if (player)
             {
+                player->updated = true;
+
                 player->rotate(positionPacket.rotation.x, positionPacket.rotation.y);
                 player->move(positionPacket.position.x, positionPacket.position.y, positionPacket.position.z);
             }
@@ -197,6 +199,24 @@ void Network::tick()
     }
 
     positionPackets.clear();
+
+    for (int index = 0; index < players.size(); index++)
+    {
+        Player* player = players[index];
+
+        if (player)
+        {
+            if (player->updated)
+            {
+                player->updated = false;
+            }
+            else
+            {
+                player->rotate(player->rotation.x, player->rotation.y);
+                player->move(player->position.x, player->position.y + 1.62f, player->position.z);
+            }
+        }
+    }
 }
 
 void Network::render()

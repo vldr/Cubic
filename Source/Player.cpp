@@ -22,6 +22,7 @@ void Player::init(Game* game)
 	this->footSize = 0.5f;
 	this->heightOffset = 1.62f;
 	this->noPhysics = true;
+	this->updated = false;
 
 	if (!initialized)
 	{
