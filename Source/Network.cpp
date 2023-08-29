@@ -1,5 +1,6 @@
 #include "Network.h"
 #include "Game.h"
+#include "FastLZ.h"
 
 #include <cstdlib>
 #include <json.hpp>
@@ -290,12 +291,11 @@ void Network::sendLevel(unsigned char index, bool respawn)
         LevelPacket* packet = new LevelPacket();
         packet->index = index;
         packet->respawn = respawn;
-
-        std::memcpy(packet->level, game->level.blocks, sizeof(packet->level));
+        packet->length = fastlz_compress(game->level.blocks, sizeof(packet->data) / 2, packet->data);
 
         sendBinary(
             (unsigned char*)packet,
-            sizeof(*packet)
+            sizeof(*packet) - sizeof(packet->data) + packet->length
         );
 
         delete packet;
@@ -533,7 +533,7 @@ void Network::onBinaryMessage(const unsigned char* data, size_t size)
 
     if (type == (unsigned char)PacketType::Level)
     {
-		if (size != sizeof(LevelPacket))
+		if (size > sizeof(LevelPacket))
 		{
 			printf("network error: invalid level packet size.\n");
 			return;
@@ -547,7 +547,11 @@ void Network::onBinaryMessage(const unsigned char* data, size_t size)
 
         LevelPacket* packet = (LevelPacket*)data;
 
-        std::memcpy(game->level.blocks, packet->level, sizeof(packet->level));
+        if (!fastlz_decompress(packet->data, packet->length, game->level.blocks, sizeof(packet->data) / 2))
+        {
+            printf("network error: failed to decompress level data.\n");
+            return;
+        }
 
         game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);
         game->levelRenderer.loadChunks(0, 0, 0, game->level.width, game->level.height, game->level.depth);

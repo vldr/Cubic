@@ -158,6 +158,7 @@
     <ClCompile Include="..\Source\Chunk.cpp" />
     <ClCompile Include="..\Source\CombinedNoise.cpp" />
     <ClCompile Include="..\Source\Entity.cpp" />
+    <ClCompile Include="..\Source\FastLZ.cpp" />
     <ClCompile Include="..\Source\Frustum.cpp" />
     <ClCompile Include="..\Source\HeldBlock.cpp" />
     <ClCompile Include="..\Source\Network.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="..\Source\Chunk.h" />
     <ClInclude Include="..\Source\CombinedNoise.h" />
     <ClInclude Include="..\Source\Entity.h" />
+    <ClInclude Include="..\Source\FastLZ.h" />
     <ClInclude Include="..\Source\Frustum.h" />
     <ClInclude Include="..\Source\HeldBlock.h" />
     <ClInclude Include="..\Source\Network.h" />

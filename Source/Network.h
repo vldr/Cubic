@@ -61,8 +61,10 @@ private:
     {
         const PacketType type = PacketType::Level;
 
-        unsigned char level[128 * 64 * 128];
         bool respawn;
+
+        int length;
+        unsigned char data[(128 * 64 * 128) * 2];
     };
 #pragma pack(pop)
 
