@@ -216,15 +216,7 @@ void Network::tick()
         {
             if (player->updates)
             {
-                if (player->updates > 2)
-                {
-                    player->flushUpdates = true;
-                }
-                else
-                {
-                    player->flushUpdates = false;
-                }
-
+                player->flushUpdates = player->updates > 3;
                 player->updates = 0;
             }
             else
@@ -510,6 +502,18 @@ void Network::onMessage(const std::string& text)
     else if (message["type"] == "leave")
     {
         unsigned int index = message["index"];
+
+        for (auto positionPacket = positionPackets.begin(); positionPacket != positionPackets.end();)
+        {
+            if (index == positionPacket->index)
+            {
+                positionPacket = positionPackets.erase(positionPacket);
+            }
+            else
+            {
+                positionPacket++;
+            }
+        }
 
         delete players[index];
         players.erase(players.begin() + index); 
