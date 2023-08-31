@@ -59,7 +59,7 @@ private:
 #pragma pack(push, 1)
     struct LevelPacket : Packet
     {
-        const PacketType type = PacketType::Level;
+        PacketType type = PacketType::Level;
 
         bool respawn;
 
@@ -71,7 +71,7 @@ private:
 #pragma pack(push, 1)
     struct PositionPacket : Packet
     {
-        const PacketType type = PacketType::Position;
+        PacketType type = PacketType::Position;
 
         glm::vec3 position;
         glm::vec2 rotation;
@@ -81,7 +81,7 @@ private:
 #pragma pack(push, 1)
     struct SetBlockPacket : Packet
     {
-        const PacketType type = PacketType::SetBlock;
+        PacketType type = PacketType::SetBlock;
 
         glm::ivec3 position;
         unsigned char blockType;

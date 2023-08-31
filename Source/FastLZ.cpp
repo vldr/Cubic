@@ -30,8 +30,6 @@
 #pragma warning(disable: 4244)
 #endif
 
-#define FLZ_ARCH64 1
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 
@@ -49,7 +47,7 @@
 /*
  * Specialize custom 64-bit implementation for speed improvements.
  */
-#if defined(__x86_64__) || defined(_M_X64) || defined(__aarch64__)
+#if defined(__x86_64__) || defined(_M_X64) || defined(__aarch64__) || defined(EMSCRIPTEN)
 #define FLZ_ARCH64
 #endif
 

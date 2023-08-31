@@ -177,9 +177,9 @@ void Network::tick()
 
     sendPosition(game->localPlayer.position, game->localPlayer.viewAngles);
 
-    for (const auto& positionPacket : positionPackets)
+    for (auto positionPacket = positionPackets.begin(); positionPacket != positionPackets.end();)
     {
-        const auto index = positionPacket.index;
+        const auto index = positionPacket->index;
 
         if (index < players.size())
         {
@@ -187,19 +187,26 @@ void Network::tick()
 
             if (player)
             {
-                player->updated = true;
+                player->updates++;
 
-                player->rotate(positionPacket.rotation.x, positionPacket.rotation.y);
-                player->move(positionPacket.position.x, positionPacket.position.y, positionPacket.position.z);
+                if (player->updates == 1 || player->flushUpdates)
+                {
+                    player->tick();
+                    player->rotate(positionPacket->rotation.x, positionPacket->rotation.y);
+                    player->move(positionPacket->position.x, positionPacket->position.y, positionPacket->position.z);
+
+                    positionPacket = positionPackets.erase(positionPacket);
+                    continue;
+                } 
             }
         }
         else
         {
             printf("network error: index out of bounds for position packet.\n");
         }
-    }
 
-    positionPackets.clear();
+        positionPacket++;
+    }
 
     for (int index = 0; index < players.size(); index++)
     {
@@ -207,14 +214,22 @@ void Network::tick()
 
         if (player)
         {
-            if (player->updated)
+            if (player->updates)
             {
-                player->updated = false;
+                if (player->updates > 2)
+                {
+                    player->flushUpdates = true;
+                }
+                else
+                {
+                    player->flushUpdates = false;
+                }
+
+                player->updates = 0;
             }
             else
             {
-                player->rotate(player->rotation.x, player->rotation.y);
-                player->move(player->position.x, player->position.y + 1.62f, player->position.z);
+                player->tick();
             }
         }
     }

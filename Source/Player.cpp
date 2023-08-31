@@ -22,7 +22,9 @@ void Player::init(Game* game)
 	this->footSize = 0.5f;
 	this->heightOffset = 1.62f;
 	this->noPhysics = true;
-	this->updated = false;
+
+	this->updates = 0;
+	this->flushUpdates = false;
 
 	if (!initialized)
 	{
@@ -268,26 +270,28 @@ void Player::init(Game* game)
 	}
 }
 
-void Player::rotate(float x, float y)
+void Player::tick()
 {
 	oldRotation = rotation;
+	oldBobbing = bobbing;
+	oldPosition = position;
+	oldWalkDistance = walkDistance;
+}
 
+void Player::rotate(float x, float y)
+{
 	rotation.x = x;
 	rotation.y = y;
 }
 
 void Player::move(float x, float y, float z)
 {
-	oldBobbing = bobbing;
-	oldPosition = position;
+	float distance = glm::sqrt((oldPosition.x - x) * (oldPosition.x - x) + (oldPosition.z - z) * (oldPosition.z - z));
 
 	position.x = x; 
 	position.y = y - 1.62f;
 	position.z = z;
 
-	float distance = glm::sqrt((oldPosition.x - x) * (oldPosition.x - x) + (oldPosition.z - z) * (oldPosition.z - z));
-
-	oldWalkDistance = walkDistance;
 	walkDistance += distance;
 
 	if (distance > 0.1f)
