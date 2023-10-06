@@ -1,13 +1,14 @@
 #pragma once
 #include "Noise.h"
 
+#include <memory>
+
 class CombinedNoise : public Noise {
 public:
-	CombinedNoise(Noise* noise1, Noise* noise2);
-	~CombinedNoise() override;
+	CombinedNoise(std::shared_ptr<Noise> noise1, std::shared_ptr<Noise> noise2);
 
 	float compute(float x, float y) override;
 private:
-	Noise* noise1;
-	Noise* noise2;
+	std::shared_ptr<Noise> noise1;
+	std::shared_ptr<Noise> noise2;
 };

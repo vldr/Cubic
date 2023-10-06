@@ -20,7 +20,7 @@ void LevelRenderer::init(Game* game)
     xChunks = game->level.width / Chunk::WIDTH;
     yChunks = game->level.height / Chunk::HEIGHT;
     zChunks = game->level.depth / Chunk::DEPTH;
-    chunks = new Chunk[xChunks * yChunks * zChunks];
+    chunks = std::make_unique<Chunk[]>(xChunks * yChunks * zChunks);
 
     for (int x = 0; x < xChunks; x++)
     {

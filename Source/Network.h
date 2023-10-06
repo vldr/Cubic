@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 class Game;
 
@@ -89,7 +90,7 @@ private:
     };
 #pragma pack(pop)
 
-	std::vector<Player*> players;
+	std::vector<std::unique_ptr<Player>> players;
     std::vector<PositionPacket> positionPackets;
 
     bool connected;

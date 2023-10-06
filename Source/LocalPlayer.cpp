@@ -387,7 +387,7 @@ void LocalPlayer::input(const SDL_Event& event)
                 return crc;
             };
 
-            auto hash = crc32(game->level.blocks, game->level.width * game->level.height * game->level.depth);
+            auto hash = crc32(game->level.blocks.get(), game->level.width * game->level.height * game->level.depth);
             game->ui.log("CRC32 checksum: " + std::to_string(hash));
         }     
     }

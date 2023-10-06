@@ -1,12 +1,13 @@
 #pragma once
 #include "Block.h"
+#include "OctaveNoise.h"
+#include "CombinedNoise.h"
+
+#include <memory>
 
 class Game;
 class Level;
-class Noise;
 class Random;
-class CombinedNoise;
-class OctaveNoise;
 
 class LevelGenerator
 {
@@ -30,12 +31,12 @@ private:
 		Finished,
 	};
 
-	void generateHeightMap(Noise* noise1, Noise* noise2, Noise* noise3);
-	void generateDirtStoneLava(Noise* noise3);
+	void generateHeightMap();
+	void generateDirtStoneLava();
 	void generateWater();
 	void generateCaves();
 	void generateOre(Block::Type blockType, int amount);
-	void generateGrassSandGravel(Noise* noise1, Noise* noise2);
+	void generateGrassSandGravel();
 	void generateFlowers();
 	void generateMushrooms();
 	void generateTrees();
@@ -43,11 +44,11 @@ private:
 	Game* game;
 	State state;
 
-	int* heights;
-	Random* random;
-	OctaveNoise* octaves[4];
-	CombinedNoise* noise1;
-	CombinedNoise* noise2;
-	OctaveNoise* noise3;
+	std::unique_ptr<int[]> heights;
+	std::unique_ptr<Random> random;
+	std::shared_ptr<OctaveNoise> octaves[4];
+	std::shared_ptr<CombinedNoise> noise1;
+	std::shared_ptr<CombinedNoise> noise2;
+	std::shared_ptr<OctaveNoise> noise3;
 };
 

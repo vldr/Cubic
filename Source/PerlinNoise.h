@@ -5,7 +5,7 @@ class Random;
 
 class PerlinNoise : public Noise {
 public:
-	PerlinNoise(Random* random);
+	PerlinNoise(Random& random);
 	~PerlinNoise() override;
 
 	float compute(float x, float y) override;

@@ -118,7 +118,7 @@ void UI::load(int index)
 
 	if (file)
 	{
-		fread(game->level.blocks, 128 * 64 * 128, sizeof(unsigned char), file);
+		fread(game->level.blocks.get(), 128 * 64 * 128, sizeof(unsigned char), file);
 		fclose(file);
 
 		game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);
@@ -152,7 +152,7 @@ void UI::save(int index)
 
 	if (file)
 	{
-		fwrite(game->level.blocks, 128 * 64 * 128, sizeof(unsigned char), file);
+		fwrite(game->level.blocks.get(), 128 * 64 * 128, sizeof(unsigned char), file);
 		fclose(file);
 
 #ifdef EMSCRIPTEN

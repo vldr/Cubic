@@ -2,11 +2,11 @@
 #include "Random.h"
 #include <glm/glm.hpp>
 
-PerlinNoise::PerlinNoise(Random* random) 
+PerlinNoise::PerlinNoise(Random& random) 
 {
 	for (int i = 0; i < 256; i++) { hash[i] = i; }
 	for (int i = 0; i < 256; i++) {
-		int r1 = (int)random->integerRange(0, 256 - i - 1) + i;
+		int r1 = (int)random.integerRange(0, 256 - i - 1) + i;
 		int r2 = hash[i];
 		hash[i] = hash[r1];
 		hash[r1] = r2;

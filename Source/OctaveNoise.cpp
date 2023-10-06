@@ -1,12 +1,12 @@
 #include "OctaveNoise.h"
 #include "PerlinNoise.h"
 
-OctaveNoise::OctaveNoise(Random* random, int octaveCount) : octaveCount(octaveCount) 
+OctaveNoise::OctaveNoise(Random& random, int octaveCount) : octaveCount(octaveCount)
 {
-	noises = new Noise*[octaveCount];
+	noises = std::make_unique<std::unique_ptr<Noise>[]>(octaveCount);
 
 	for (int i = 0; i < octaveCount; i++) {
-		noises[i] = new PerlinNoise(random);
+		noises[i] = std::make_unique<PerlinNoise>(random);
 	}
 }
 
@@ -22,14 +22,4 @@ float OctaveNoise::compute(float x, float y)
 	}
 
 	return a;
-}
-
-OctaveNoise::~OctaveNoise() 
-{
-	for (int i = 0; i < octaveCount; i++) 
-	{
-		delete noises[i];
-	}
-
-	delete[] noises;
 }

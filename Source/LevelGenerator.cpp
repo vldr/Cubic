@@ -20,7 +20,7 @@ void LevelGenerator::init(Game* game, int size)
 	this->state = State::Init;
 }
 
-void LevelGenerator::generateHeightMap(Noise* noise1, Noise* noise2, Noise* noise3)
+void LevelGenerator::generateHeightMap()
 {
 	for (int z = 0; z < game->level.depth; z++)
 	{
@@ -50,7 +50,7 @@ void LevelGenerator::generateHeightMap(Noise* noise1, Noise* noise2, Noise* nois
 	}
 }
 
-void LevelGenerator::generateDirtStoneLava(Noise* noise3)
+void LevelGenerator::generateDirtStoneLava()
 {
 	for (int z = 0; z < game->level.depth; z++)
 	{ 
@@ -224,7 +224,7 @@ void LevelGenerator::generateOre(Block::Type blockType, int amount)
 	}
 }
 
-void LevelGenerator::generateGrassSandGravel(Noise* noise1, Noise* noise2)
+void LevelGenerator::generateGrassSandGravel()
 {
 	for (int z = 0; z < game->level.depth; z++)
 	{
@@ -382,33 +382,33 @@ void LevelGenerator::update()
 	case State::Init:
 		game->ui.openStatusMenu("Generating World", "Generating height map...");
 
-		heights = new int[game->level.width * game->level.depth];
+		heights = std::make_unique<int[]>(game->level.width * game->level.depth);
 
-		random = new Random();
+		random = std::make_unique<Random>();
 		random->init(std::time(nullptr));
 
-		octaves[0] = new OctaveNoise(random, 8);
-		octaves[1] = new OctaveNoise(random, 8);
-		octaves[2] = new OctaveNoise(random, 8);
-		octaves[3] = new OctaveNoise(random, 8);
+		octaves[0] = std::make_shared<OctaveNoise>(*random, 8);
+		octaves[1] = std::make_shared<OctaveNoise>(*random, 8);
+		octaves[2] = std::make_shared<OctaveNoise>(*random, 8);
+		octaves[3] = std::make_shared<OctaveNoise>(*random, 8);
 
-		noise1 = new CombinedNoise(octaves[0], octaves[1]);
-		noise2 = new CombinedNoise(octaves[2], octaves[3]);
-		noise3 = new OctaveNoise(random, 6);
+		noise1 = std::make_unique<CombinedNoise>(octaves[0], octaves[1]);
+		noise2 = std::make_unique<CombinedNoise>(octaves[2], octaves[3]);
+		noise3 = std::make_unique<OctaveNoise>(*random, 6);
 
 		state = State::HeightMap;
 		break;
 	case State::HeightMap:
 		game->ui.openStatusMenu("Generating World", "Generating dirt, stone and lava...");
 
-		generateHeightMap(noise1, noise2, noise3);
+		generateHeightMap();
 
 		state = State::DirtStoneLava;
 		break;
 	case State::DirtStoneLava:
 		game->ui.openStatusMenu("Generating World", "Generating water...");
 
-		generateDirtStoneLava(noise3);
+		generateDirtStoneLava();
 
 		state = State::Water;
 		break;
@@ -438,7 +438,7 @@ void LevelGenerator::update()
 	case State::GrassSandGravel:
 		game->ui.openStatusMenu("Generating World", "Generating flowers...");
 
-		generateGrassSandGravel(noise1, noise2);
+		generateGrassSandGravel();
 
 		state = State::Flowers;
 		break;
@@ -466,20 +466,18 @@ void LevelGenerator::update()
 	case State::Destroy:
 		game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);
 		game->level.calculateSpawnPosition();
-
 		game->levelRenderer.initChunks();
-
 		game->network.connect();
 
-		delete[] heights;
-		delete octaves[0];
-		delete octaves[1];
-		delete octaves[2];
-		delete octaves[3];
-		delete random;
-		delete noise1;
-		delete noise2;
-		delete noise3;
+		heights.reset();
+		octaves[0].reset();
+		octaves[1].reset();
+		octaves[2].reset();
+		octaves[3].reset();
+		random.reset();
+		noise1.reset();
+		noise2.reset();
+		noise3.reset();
 
 		state = State::Finished;
 		break;

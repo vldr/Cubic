@@ -183,7 +183,7 @@ void Network::tick()
 
         if (index < players.size())
         {
-            Player* player = players[index];
+            auto& player = players[index];
 
             if (player)
             {
@@ -203,6 +203,9 @@ void Network::tick()
         else
         {
             printf("network error: index out of bounds for position packet.\n");
+
+            positionPacket = positionPackets.erase(positionPacket);
+            continue;
         }
 
         positionPacket++;
@@ -210,7 +213,7 @@ void Network::tick()
 
     for (int index = 0; index < players.size(); index++)
     {
-        Player* player = players[index];
+        auto& player = players[index];
 
         if (player)
         {
@@ -295,17 +298,15 @@ void Network::sendLevel(unsigned char index, bool respawn)
 {
     if (isConnected() && players.size() > 1)
     {
-        LevelPacket* packet = new LevelPacket();
+        auto packet = std::make_unique<LevelPacket>();
         packet->index = index;
         packet->respawn = respawn;
-        packet->length = fastlz_compress(game->level.blocks, sizeof(packet->data) / 2, packet->data);
+        packet->length = fastlz_compress(game->level.blocks.get(), sizeof(packet->data) / 2, packet->data);
 
         sendBinary(
-            (unsigned char*)packet,
+            (unsigned char*)packet.get(),
             sizeof(*packet) - sizeof(packet->data) + packet->length
         );
-
-        delete packet;
     }
 }
 
@@ -426,14 +427,7 @@ void Network::onClose()
 
     url = "Disconnected...";
 
-	for (auto iterator = players.begin(); iterator != players.end(); iterator = players.erase(iterator))
-	{
-		if (*iterator)
-		{
-            delete *iterator;
-		}
-	}
-
+    players.clear();
     game->ui.openStatusMenu("Disconnected", "The connection was closed.", true);
 }
 
@@ -467,10 +461,10 @@ void Network::onMessage(const std::string& text)
     {
         if (message["size"].is_null())
         {
-            Player* player = new Player();
+            auto player = std::make_unique<Player>();
             player->init(game);
 
-            players.push_back(player);
+            players.push_back(std::move(player));
 
             if (isHost())
             {
@@ -488,10 +482,10 @@ void Network::onMessage(const std::string& text)
 
             for (unsigned int i = 0; i < size; i++)
             {
-                Player* player = new Player();
+                auto player = std::make_unique<Player>();
                 player->init(game);
 
-                players.push_back(player);
+                players.push_back(std::move(player));
             }
 
             players.push_back(nullptr);
@@ -515,7 +509,6 @@ void Network::onMessage(const std::string& text)
             }
         }
 
-        delete players[index];
         players.erase(players.begin() + index); 
 
         if (isHost())
@@ -566,7 +559,7 @@ void Network::onBinaryMessage(const unsigned char* data, size_t size)
 
         LevelPacket* packet = (LevelPacket*)data;
 
-        if (!fastlz_decompress(packet->data, packet->length, game->level.blocks, sizeof(packet->data) / 2))
+        if (!fastlz_decompress(packet->data, packet->length, game->level.blocks.get(), sizeof(packet->data) / 2))
         {
             printf("network error: failed to decompress level data.\n");
             return;

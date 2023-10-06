@@ -1,15 +1,15 @@
 #pragma once
 #include "Noise.h"
+#include "Random.h"
 
-class Random;
+#include <memory>
 
 class OctaveNoise : public Noise {
 public:
-	OctaveNoise(Random* random, int octaveCount);
-	~OctaveNoise() override;
+	OctaveNoise(Random& random, int octaveCount);
 
 	float compute(float x, float y) override;
 private:
 	int octaveCount;
-	Noise** noises;
+	std::unique_ptr<std::unique_ptr<Noise>[]> noises;
 };

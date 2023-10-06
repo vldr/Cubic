@@ -14,13 +14,13 @@ void Level::init(Game* game, int width, int depth)
 	this->depth = depth;
 	this->waterLevel = height / 2;
 	this->groundLevel = this->waterLevel - 2;
-	this->blocks = new unsigned char[width * height * depth]();
+	this->blocks = std::make_unique<unsigned char[]>(width * height * depth);
 
 	this->spawn.x = this->width - 1.0f;
 	this->spawn.x = this->height - 1.0f;
 	this->spawn.x = this->depth - 1.0f;
 
-	this->lightDepths = new int[width * depth];
+	this->lightDepths = std::make_unique<int[]>(width * depth);
 	for (int i = 0; i < width * depth; i++)
 	{
 		this->lightDepths[i] = this->height - 1;

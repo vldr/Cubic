@@ -3,6 +3,7 @@
 #include "Chunk.h"
 
 #include <queue>
+#include <memory>
 #include <GL/glew.h>
 
 class Level;
@@ -33,7 +34,7 @@ private:
 	Skybox skybox;
 
 	Game* game;
-	Chunk* chunks;
+	std::unique_ptr<Chunk[]> chunks;
 
 	float waterTextureRed[256] = {0};
 	float waterTextureGreen[256] = {0};

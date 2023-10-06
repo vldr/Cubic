@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <queue>
+#include <memory>
 
 class Game;
 class AABB;
@@ -66,10 +67,10 @@ public:
 	int waterLevel;
 
 	glm::vec3 spawn;
-	unsigned char* blocks;
+	std::unique_ptr<unsigned char[]> blocks;
 
 private:
 	Game* game;
 	std::queue<Level::Tile> liquidUpdates;
-	int* lightDepths;
+	std::unique_ptr<int[]> lightDepths;
 };
