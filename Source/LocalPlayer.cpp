@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <sstream>
 
 void LocalPlayer::init(Game* game)
 {
@@ -389,7 +390,18 @@ void LocalPlayer::input(const SDL_Event& event)
 
             auto hash = crc32(game->level.blocks.get(), game->level.width * game->level.height * game->level.depth);
             game->ui.log("CRC32 checksum: " + std::to_string(hash));
-        }     
+        }  
+
+        if (event.key.keysym.sym == SDLK_F4)
+        {
+            std::stringstream log{};
+            log << "Build date: ";
+            log << __DATE__;
+            log << " ";
+            log << __TIME__;
+
+            game->ui.log(log.str());
+        }
     }
     else if (event.type == SDL_MOUSEBUTTONDOWN)
     {
