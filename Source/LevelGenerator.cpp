@@ -387,13 +387,8 @@ void LevelGenerator::update()
 		random = std::make_unique<Random>();
 		random->init(std::time(nullptr));
 
-		octaves[0] = std::make_shared<OctaveNoise>(*random, 8);
-		octaves[1] = std::make_shared<OctaveNoise>(*random, 8);
-		octaves[2] = std::make_shared<OctaveNoise>(*random, 8);
-		octaves[3] = std::make_shared<OctaveNoise>(*random, 8);
-
-		noise1 = std::make_unique<CombinedNoise>(octaves[0], octaves[1]);
-		noise2 = std::make_unique<CombinedNoise>(octaves[2], octaves[3]);
+		noise1 = std::make_unique<CombinedNoise>(std::make_unique<OctaveNoise>(*random, 8), std::make_unique<OctaveNoise>(*random, 8));
+		noise2 = std::make_unique<CombinedNoise>(std::make_unique<OctaveNoise>(*random, 8), std::make_unique<OctaveNoise>(*random, 8));
 		noise3 = std::make_unique<OctaveNoise>(*random, 6);
 
 		state = State::HeightMap;
@@ -470,10 +465,6 @@ void LevelGenerator::update()
 		game->network.connect();
 
 		heights.reset();
-		octaves[0].reset();
-		octaves[1].reset();
-		octaves[2].reset();
-		octaves[3].reset();
 		random.reset();
 		noise1.reset();
 		noise2.reset();

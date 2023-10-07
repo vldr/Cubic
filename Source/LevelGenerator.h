@@ -46,7 +46,6 @@ private:
 
 	std::unique_ptr<int[]> heights;
 	std::unique_ptr<Random> random;
-	std::shared_ptr<OctaveNoise> octaves[4];
 	std::shared_ptr<CombinedNoise> noise1;
 	std::shared_ptr<CombinedNoise> noise2;
 	std::shared_ptr<OctaveNoise> noise3;

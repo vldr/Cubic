@@ -1,6 +1,7 @@
 #include "CombinedNoise.h"
 
-CombinedNoise::CombinedNoise(std::shared_ptr<Noise> noise1, std::shared_ptr<Noise> noise2) : noise1(noise1), noise2(noise2)
+CombinedNoise::CombinedNoise(std::unique_ptr<Noise> noise1, std::unique_ptr<Noise> noise2) 
+	: noise1(std::move(noise1)), noise2(std::move(noise2))
 {
 }
 
