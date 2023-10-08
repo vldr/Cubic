@@ -366,6 +366,11 @@ void LocalPlayer::input(const SDL_Event& event)
         if (event.key.keysym.sym == SDLK_LSHIFT)
             moveState &= ~Move::Move_Sprint;
 
+        if (event.key.keysym.sym == SDLK_F2)
+        {
+            game->ui.log("Players: " + std::to_string(game->network.count()));
+        }
+
         if (event.key.keysym.sym == SDLK_F3)
         {
             auto crc32 = [](unsigned char* data, size_t length)

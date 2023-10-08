@@ -24,6 +24,7 @@ public:
     
     bool isConnected();
     bool isHost();
+    size_t count();
 
     void onOpen();
     void onClose();

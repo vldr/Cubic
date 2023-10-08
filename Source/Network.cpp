@@ -351,6 +351,11 @@ bool Network::isHost()
     return false;
 }
 
+size_t Network::count()
+{
+    return players.size();
+}
+
 void Network::join(const std::string& id)
 {
     if (isConnected())
