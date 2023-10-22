@@ -58,6 +58,9 @@ public:
 
 	int height;
 	int width;
+	float heightDPI;
+	float widthDPI;
+
 	float scaledHeight;
 	float scaledWidth;
 	int scaleFactor;

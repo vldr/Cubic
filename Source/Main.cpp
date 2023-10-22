@@ -3,6 +3,10 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
 #include <emscripten/html5.h>
@@ -45,6 +49,10 @@ void loop()
 
 int main(int argc, char** argv)
 {
+#ifdef _WIN32
+	SetProcessDPIAware();
+#endif
+
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
 		printf("SDL_Init failed: %s\n", SDL_GetError());
@@ -53,8 +61,8 @@ int main(int argc, char** argv)
 
 	auto window = SDL_CreateWindow("Cubic",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		1280, 720,
-		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
+		1280, 720, 
+		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE 
 	);
 
 	if (!window)

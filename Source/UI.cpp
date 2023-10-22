@@ -69,6 +69,88 @@ void UI::openMainMenu()
 }
 
 
+void UI::closeMenu()
+{
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+
+	mouseState = MouseState::Up;
+	state = State::None;
+
+	update();
+}
+
+bool UI::input(const SDL_Event& event)
+{
+	if (event.type == SDL_KEYUP)
+	{
+		if (event.key.keysym.sym == SDLK_ESCAPE)
+		{
+			if (state == State::None)
+			{
+				openMainMenu();
+				return false;
+			}
+			else if (state == State::SaveMenu || state == State::LoadMenu)
+			{
+				openMainMenu();
+				return false;
+			}
+			else if (state == State::MainMenu)
+			{
+				closeMenu();
+				return false;
+			}
+		}
+
+		if (event.key.keysym.sym == SDLK_b || event.key.keysym.sym == SDLK_e)
+		{
+			if (state == State::SelectBlockMenu)
+			{
+				closeMenu();
+				return false;
+			}
+			else if (state == State::None)
+			{
+				openMenu(State::SelectBlockMenu);
+				return false;
+			}
+		}
+	}
+	else if (event.type == SDL_MOUSEMOTION)
+	{
+		if (state != State::None)
+		{
+			mousePosition.x = (float(event.motion.x) * (game->widthDPI / 96.0f)) / float(game->scaleFactor);
+			mousePosition.y = (float(event.motion.y) * (game->heightDPI / 96.0f)) / float(game->scaleFactor);
+
+			update();
+			return false;
+		}
+	}
+	else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+	{
+		if (state != State::None)
+		{
+			mouseState = MouseState::Down;
+
+			update();
+			return false;
+		}
+	}
+	else if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
+	{
+		if (state != State::None)
+		{
+			mouseState = MouseState::Up;
+
+			update();
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void UI::refresh()
 {
 	page = 0;
@@ -163,88 +245,6 @@ void UI::save(int index)
 	);
 #endif
 	}
-}
-
-void UI::closeMenu()
-{
-	SDL_SetRelativeMouseMode(SDL_TRUE);
-
-	mouseState = MouseState::Up;
-	state = State::None;
-
-	update();
-}
-
-bool UI::input(const SDL_Event& event)
-{
-	if (event.type == SDL_KEYUP)
-	{
-		if (event.key.keysym.sym == SDLK_ESCAPE)
-		{
-			if (state == State::None)
-			{
-				openMainMenu();
-				return false;
-			}
-			else if (state == State::SaveMenu || state == State::LoadMenu)
-			{
-				openMainMenu();
-				return false;
-			}
-			else if (state == State::MainMenu)
-			{
-				closeMenu();
-				return false;
-			}
-		}
-
-		if (event.key.keysym.sym == SDLK_b || event.key.keysym.sym == SDLK_e)
-		{
-			if (state == State::SelectBlockMenu)
-			{
-				closeMenu();
-				return false;
-			}
-			else if (state == State::None)
-			{
-				openMenu(State::SelectBlockMenu);
-				return false;
-			}
-		}	
-	}
-	else if (event.type == SDL_MOUSEMOTION)
-	{
-		if (state != State::None)
-		{
-			mousePosition.x = float(event.motion.x) / float(game->scaleFactor);
-			mousePosition.y = float(event.motion.y) / float(game->scaleFactor);
-
-			update();
-			return false;
-		}
-	}
-	else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
-	{
-		if (state != State::None)
-		{
-			mouseState = MouseState::Down;
-
-			update();
-			return false;
-		}
-	}
-	else if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
-	{
-		if (state != State::None)
-		{
-			mouseState = MouseState::Up;
-
-			update();
-			return false;
-		}
-	}
-
-	return true;
 }
 
 void UI::update()

@@ -3,6 +3,12 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Web Build Files
+Web/Build
+
+# Web Object Files
+Web/Objects
+
 # User-specific files
 *.rsuser
 *.suo

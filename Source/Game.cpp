@@ -13,6 +13,18 @@
 #include <ctime>
 #include <cstdio>
 
+#ifdef EMSCRIPTEN
+#include <emscripten/html5.h>
+
+EM_JS(float, canvas_get_width, (), {
+  return document.getElementById("canvas").getBoundingClientRect().width;
+});
+
+EM_JS(float, canvas_get_height, (), {
+  return document.getElementById("canvas").getBoundingClientRect().height;
+});
+#endif
+
 static const GLchar* fragmentSource = R""""(#version 100
     precision highp float;
 
@@ -86,6 +98,8 @@ void Game::init(SDL_Window* sdlWindow)
     this->frameRate = 0;
     this->atlasTexture = textureManager.load(terrainResourceTexture, sizeof(terrainResourceTexture));
     this->shader = shaderManager.load(vertexSource, fragmentSource);
+    this->heightDPI = 96.0f;
+    this->widthDPI = 96.0f;
 
     SDL_GetWindowSize(window, &width, &height);
     resize();
@@ -203,6 +217,29 @@ void Game::input(const SDL_Event& event)
 
 void Game::resize()
 {
+#ifdef EMSCRIPTEN
+    if (!SDL_GetDisplayDPI(0, nullptr, &widthDPI, &heightDPI))
+    {
+        if (widthDPI > 192.0f)
+        {
+            widthDPI = 192.0f;
+        }
+
+        if (heightDPI > 192.0f)
+        {
+            heightDPI = 192.0f;
+        }
+
+        float widthDPIRatio = widthDPI / 96.0f;
+        float heightDPIRatio = heightDPI / 96.0f;
+
+        width = (int)(canvas_get_width() * widthDPIRatio + 0.5f);
+        height = (int)(canvas_get_height() * heightDPIRatio + 0.5f);
+
+        emscripten_set_canvas_element_size("canvas", width, height);
+    }
+#endif
+
     glViewport(0, 0, width, height);
 
     scaledWidth = float(width);
