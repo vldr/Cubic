@@ -16,12 +16,12 @@
 #ifdef EMSCRIPTEN
 #include <emscripten/html5.h>
 
-EM_JS(float, canvas_get_width, (), {
-  return document.getElementById("canvas").getBoundingClientRect().width;
+EM_JS(float, window_width, (), {
+  return window.innerWidth;
 });
 
-EM_JS(float, canvas_get_height, (), {
-  return document.getElementById("canvas").getBoundingClientRect().height;
+EM_JS(float, window_height, (), {
+  return window.innerHeight;
 });
 #endif
 
@@ -98,8 +98,6 @@ void Game::init(SDL_Window* sdlWindow)
     this->frameRate = 0;
     this->atlasTexture = textureManager.load(terrainResourceTexture, sizeof(terrainResourceTexture));
     this->shader = shaderManager.load(vertexSource, fragmentSource);
-    this->heightDPI = 96.0f;
-    this->widthDPI = 96.0f;
 
     SDL_GetWindowSize(window, &width, &height);
     resize();
@@ -109,7 +107,7 @@ void Game::init(SDL_Window* sdlWindow)
     glEnable(GL_BLEND);
     glDepthFunc(GL_LEQUAL);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
+
     glUseProgram(shader);
     fragmentOffsetUniform = glGetUniformLocation(shader, "FragmentOffset");
     playerPositionUniform = glGetUniformLocation(shader, "PlayerPosition");
@@ -126,7 +124,7 @@ void Game::run()
 {
     timer.update();
 
-    for (int i = 0; i < timer.elapsedTicks; i++) 
+    for (int i = 0; i < timer.elapsedTicks; i++)
     {
         localPlayer.tick();
         particleManager.tick();
@@ -141,25 +139,25 @@ void Game::run()
     glClearColor(fogColor.r, fogColor.g, fogColor.b, fogColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, glm::value_ptr(perspectiveProjectionMatrix));
-	glUniform3fv(playerPositionUniform, 1, glm::value_ptr(localPlayer.position));
+    glUniformMatrix4fv(projectionMatrixUniform, 1, GL_FALSE, glm::value_ptr(perspectiveProjectionMatrix));
+    glUniform3fv(playerPositionUniform, 1, glm::value_ptr(localPlayer.position));
 
-	glUniform1f(fogEnableUniform, 0.0f);
-	glUniform1f(fogDistanceUniform, fogDistance);
-	glUniform4fv(fogColorUniform, 1, glm::value_ptr(fogColor));
+    glUniform1f(fogEnableUniform, 0.0f);
+    glUniform1f(fogDistanceUniform, fogDistance);
+    glUniform4fv(fogColorUniform, 1, glm::value_ptr(fogColor));
 
-	levelGenerator.update();
-	localPlayer.update();
-	frustum.update();
+    levelGenerator.update();
+    localPlayer.update();
+    frustum.update();
 
-	glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+    glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 
-	levelRenderer.render();
-	particleManager.render();
-	network.render();
+    levelRenderer.render();
+    particleManager.render();
+    network.render();
 
-	selectedBlock.renderPost();
-	levelRenderer.renderPost();
+    selectedBlock.renderPost();
+    levelRenderer.renderPost();
 
     glClear(GL_DEPTH_BUFFER_BIT);
     glUniform1f(fogEnableUniform, 1.0f);
@@ -178,7 +176,7 @@ void Game::run()
         lastChunkUpdates = chunkUpdates;
 
         frameRate = 0;
-        chunkUpdates = 0; 
+        chunkUpdates = 0;
         lastTick = timer.milliTime();
 
         ui.update();
@@ -196,15 +194,15 @@ void Game::input(const SDL_Event& event)
 
             resize();
         }
-		else if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
-		{
-			if (ui.state == UI::State::None)
-			{
+        else if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
+        {
+            if (ui.state == UI::State::None)
+            {
                 ui.openMainMenu();
-			}
-		}
-    } 
-    else if (event.type == SDL_QUIT) 
+            }
+        }
+    }
+    else if (event.type == SDL_QUIT)
     {
         exit(0);
     }
@@ -218,26 +216,16 @@ void Game::input(const SDL_Event& event)
 void Game::resize()
 {
 #ifdef EMSCRIPTEN
-    if (!SDL_GetDisplayDPI(0, nullptr, &widthDPI, &heightDPI))
+    float dpi = emscripten_get_device_pixel_ratio();
+    if (dpi > 2.0f)
     {
-        if (widthDPI > 192.0f)
-        {
-            widthDPI = 192.0f;
-        }
-
-        if (heightDPI > 192.0f)
-        {
-            heightDPI = 192.0f;
-        }
-
-        float widthDPIRatio = widthDPI / 96.0f;
-        float heightDPIRatio = heightDPI / 96.0f;
-
-        width = (int)(canvas_get_width() * widthDPIRatio + 0.5f);
-        height = (int)(canvas_get_height() * heightDPIRatio + 0.5f);
-
-        emscripten_set_canvas_element_size("canvas", width, height);
+        dpi = 2.0f;
     }
+
+    width = (int)(window_width() * dpi + 0.5f);
+    height = (int)(window_height() * dpi + 0.5f);
+
+    SDL_SetWindowSize(window, width, height);
 #endif
 
     glViewport(0, 0, width, height);

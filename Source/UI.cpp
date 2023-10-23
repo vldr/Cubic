@@ -120,8 +120,8 @@ bool UI::input(const SDL_Event& event)
 	{
 		if (state != State::None)
 		{
-			mousePosition.x = (float(event.motion.x) * (game->widthDPI / 96.0f)) / float(game->scaleFactor);
-			mousePosition.y = (float(event.motion.y) * (game->heightDPI / 96.0f)) / float(game->scaleFactor);
+			mousePosition.x = float(event.motion.x) / float(game->scaleFactor);
+			mousePosition.y = float(event.motion.y) / float(game->scaleFactor);
 
 			update();
 			return false;
