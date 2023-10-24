@@ -11,7 +11,7 @@ class Game;
 class UI
 {
 public:
-	enum class State 
+	enum class State
 	{
 		None,
 		StatusMenu,
@@ -21,7 +21,13 @@ public:
 		LoadMenu,
 	};
 
-	enum class MouseState 
+	enum class MouseState
+	{
+		Up,
+		Down
+	};
+
+	enum class TouchState
 	{
 		Up,
 		Down
@@ -43,17 +49,20 @@ public:
 
 	UI::State state;
 	UI::MouseState mouseState;
+	UI::TouchState touchState;
+	bool isTouch;
 
 	glm::vec2 mousePosition;
+	glm::vec2 touchPosition;
 
 private:
-	struct Log 
+	struct Log
 	{
 		uint64_t created;
 		std::string text;
 	};
 
-	struct Save 
+	struct Save
 	{
 		std::string path;
 		std::string name;
@@ -66,7 +75,7 @@ private:
 	void drawHUD();
 	void drawHotbar();
 	void drawBlock(unsigned char blockType, float x, float y, float scale);
-	
+
 	bool drawMainMenu();
 	bool drawStatusMenu();
 
@@ -75,6 +84,8 @@ private:
 
 	bool drawSelectBlockMenu();
 	bool drawSelectBlockButton(unsigned char blockType, unsigned char& selectedBlockType, float x, float y, float width, float height);
+
+	bool drawTouchButton(float x, float y, float z, const char* text, float width = 200.0f, float height = 20.0f);
 
 	bool drawButton(float x, float y, float z, const char* text, int state = 1, float width = 200.0f, float height = 20.0f);
 	bool drawButton(float x, float y, const char* text);
@@ -120,7 +131,7 @@ private:
 	GLuint interfaceTexture;
 
 	VertexList blockVertices;
-	
+
 	Game* game;
 };
 

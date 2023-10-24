@@ -15,9 +15,9 @@
 #ifdef EMSCRIPTEN
 #include <emscripten/html5.h>
 
-EM_JS(void, copy_to_clipboard, (const char* text), { 
+EM_JS(void, copy_to_clipboard, (const char* text), {
 	navigator.clipboard.writeText(UTF8ToString(text));
-});
+	});
 #endif
 
 void UI::init(Game* game)
@@ -33,6 +33,9 @@ void UI::init(Game* game)
 
 	this->interfaceVertices.init();
 	this->interfaceTexture = game->textureManager.load(interfaceResourceTexture, sizeof(interfaceResourceTexture));
+
+	this->touchPosition = glm::vec2();
+	this->isTouch = false;
 }
 
 void UI::openMenu(UI::State newState)
@@ -147,6 +150,20 @@ bool UI::input(const SDL_Event& event)
 			return false;
 		}
 	}
+	else if (event.type == SDL_FINGERDOWN)
+	{
+		touchPosition.x = event.tfinger.x * game->scaledWidth;
+		touchPosition.y = event.tfinger.y * game->scaledHeight;
+
+		touchState = TouchState::Down;
+		update();
+	}
+	else if (event.type == SDL_FINGERUP)
+	{
+		touchState = TouchState::Up;
+		update();
+	}
+
 
 	return true;
 }
@@ -238,21 +255,23 @@ void UI::save(int index)
 		fclose(file);
 
 #ifdef EMSCRIPTEN
-	EM_ASM(
-		FS.syncfs(false, function(err) {
+		EM_ASM(
+			FS.syncfs(false, function(err) {
 			console.log(err);
 		});
-	);
+		);
 #endif
 	}
 }
 
 void UI::update()
 {
+	isTouch = SDL_GetNumTouchDevices() > 0;
+
 	fontVertices.reset();
 	interfaceVertices.reset();
 	blockVertices.reset();
-	
+
 	if (state == State::StatusMenu)
 	{
 		if (drawStatusMenu())
@@ -445,7 +464,7 @@ bool UI::drawSaveMenu()
 	return false;
 }
 
-bool UI::drawMainMenu() 
+bool UI::drawMainMenu()
 {
 	const float offset = 73.5f;
 	const float optionsOffset = 80.0f;
@@ -494,8 +513,8 @@ bool UI::drawMainMenu()
 	return false;
 }
 
-bool UI::drawSelectBlockMenu() 
-{ 
+bool UI::drawSelectBlockMenu()
+{
 	float left = game->scaledWidth / 2.0f - 196.0f / 2.0f;
 	float top = game->scaledHeight / 2.0f - 143.0f / 2.0f;
 
@@ -507,7 +526,7 @@ bool UI::drawSelectBlockMenu()
 		{
 			float x = 10.0f + left + 23.0f * (index % 8);
 			float y = 23.5f + top + 21.0f * (index / 8);
-			 
+
 			float width = 23.5f;
 			float height = 23.0f;
 
@@ -534,13 +553,13 @@ bool UI::drawSelectBlockButton(unsigned char blockType, unsigned char& selectedB
 	float hoverX = x - 4.5f;
 	float hoverY = y - 16.0f;
 
-	bool hover = mousePosition.x >= hoverX && 
-				 mousePosition.x <= hoverX + width && 
-				 mousePosition.y >= hoverY && 
-			     mousePosition.y <= hoverY + height;
+	bool hover = mousePosition.x >= hoverX &&
+		mousePosition.x <= hoverX + width &&
+		mousePosition.y >= hoverY &&
+		mousePosition.y <= hoverY + height;
 
 	if (selectedBlockType == 0 && hover)
-	{	
+	{
 		drawInterface(hoverX, hoverY, width, height, 183, 0, 16, 16, 0.7f, 2.0f);
 		drawBlock(blockType, x - 1.2f, y + 1.0f, 12.0f);
 
@@ -550,6 +569,25 @@ bool UI::drawSelectBlockButton(unsigned char blockType, unsigned char& selectedB
 	{
 		drawBlock(blockType, x, y, 10.0f);
 	}
+
+	return hover && clicked;
+}
+
+bool UI::drawTouchButton(float x, float y, float z, const char* text, float width, float height)
+{
+	bool clicked = touchState == TouchState::Down;
+
+	float hoverX = x;
+	float hoverY = y;
+
+	bool hover = touchPosition.x >= hoverX &&
+		touchPosition.x <= hoverX + width &&
+		touchPosition.y >= hoverY &&
+		touchPosition.y <= hoverY + height;
+
+	drawInterface(x, y, width, height, 183, 0, 16, 16, 0.04f, 64.0f);
+
+	drawCenteredFont(text, x + width / 2, y + (height - 8) / 2, 1.0f, z + 100.0f);
 
 	return hover && clicked;
 }
@@ -575,7 +613,7 @@ bool UI::drawButton(float x, float y, float z, const char* text, int state, floa
 	{
 		drawCenteredFont(text, x + width / 2, y + (height - 8) / 2, 1.0f, z + 100.0f);
 	}
-	else 
+	else
 	{
 		float size = 0.0f;
 		int index = 0;
@@ -606,7 +644,7 @@ bool UI::drawButton(float x, float y, float z, const char* text, int state, floa
 
 bool UI::drawButton(float x, float y, const char* text)
 {
-	float width = 200; 
+	float width = 200;
 	float height = 20;
 
 	bool clicked = mouseState == MouseState::Down;
@@ -640,6 +678,93 @@ void UI::drawHUD()
 	drawInterface(game->scaledWidth / 2 - 92 + float(game->localPlayer.inventoryIndex) * 20, game->scaledHeight - 23, 0, 22, 24, 22);
 	drawInterface(game->scaledWidth / 2 - 7, game->scaledHeight / 2 - 7, 211, 0, 16, 16);
 
+	if (state == State::None)
+	{
+		SDL_Event event = {};
+
+		float buttonOffsetX = 25.0f;
+		float buttonOffsetY = 25.0f;
+
+		float buttonSize = std::max(game->scaledHeight, game->scaledWidth) * 0.05f;
+
+		if (drawTouchButton(buttonOffsetX + buttonSize, game->scaledHeight - buttonSize - buttonOffsetY, 65.0f, "\x1F", buttonSize, buttonSize)) // down
+		{
+			event.type = SDL_KEYDOWN;
+			event.key.keysym.sym = SDLK_DOWN;
+
+			SDL_PushEvent(&event);
+		}
+		else
+		{
+			event.type = SDL_KEYUP;
+			event.key.keysym.sym = SDLK_DOWN;
+
+			SDL_PushEvent(&event);
+		}
+
+		if (drawTouchButton(buttonOffsetX, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "\x11", buttonSize, buttonSize)) // left
+		{
+			event.type = SDL_KEYDOWN;
+			event.key.keysym.sym = SDLK_LEFT;
+
+			SDL_PushEvent(&event);
+		}
+		else
+		{
+			event.type = SDL_KEYUP;
+			event.key.keysym.sym = SDLK_LEFT;
+
+			SDL_PushEvent(&event);
+		}
+
+		if (drawTouchButton(buttonOffsetX + 2 * buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "\x10", buttonSize, buttonSize))
+		{
+			event.type = SDL_KEYDOWN;
+			event.key.keysym.sym = SDLK_RIGHT;
+
+			SDL_PushEvent(&event);
+		}
+		else
+		{
+			event.type = SDL_KEYUP;
+			event.key.keysym.sym = SDLK_RIGHT;
+
+			SDL_PushEvent(&event);
+		}
+
+		if (drawTouchButton(buttonOffsetX + buttonSize, game->scaledHeight - 3 * buttonSize - buttonOffsetY, 65.0f, "\x1E", buttonSize, buttonSize))
+		{
+			event.type = SDL_KEYDOWN;
+			event.key.keysym.sym = SDLK_UP;
+
+			SDL_PushEvent(&event);
+		}
+		else
+		{
+			event.type = SDL_KEYUP;
+			event.key.keysym.sym = SDLK_UP;
+
+			SDL_PushEvent(&event);
+		}
+
+		if (drawTouchButton(game->scaledWidth - buttonOffsetX - buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "\x4", buttonSize, buttonSize))
+		{
+			event.type = SDL_KEYDOWN;
+			event.key.keysym.sym = SDLK_SPACE;
+
+			SDL_PushEvent(&event);
+		}
+		else
+		{
+			event.type = SDL_KEYUP;
+			event.key.keysym.sym = SDLK_SPACE;
+
+			SDL_PushEvent(&event);
+		}
+
+		drawTouchButton(buttonOffsetX + buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "", buttonSize, buttonSize);
+	}
+
 	drawHotbar();
 
 	for (auto log = logs.begin(); log != logs.end();)
@@ -660,7 +785,7 @@ void UI::drawHUD()
 				width += FONT_WIDTHS[int(log->text[i])];
 			}
 
-			if (width > maxWidth) 
+			if (width > maxWidth)
 			{
 				maxWidth = width + 4.0f;
 			}
@@ -712,28 +837,28 @@ void UI::drawBlock(unsigned char blockType, float x, float y, float scale)
 
 	VertexList::Vertex blockVertexList[] = {
 		VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, uTop, vTop, 1.0f),
-        VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, uTop, vTop2, 1.0f),
-        VertexList::Vertex(1.0f, blockDefinition.height, 1.0f, uTop2, vTop2, 1.0f),
+		VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, uTop, vTop2, 1.0f),
+		VertexList::Vertex(1.0f, blockDefinition.height, 1.0f, uTop2, vTop2, 1.0f),
 
-        VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, uTop, vTop, 1.0f),
-        VertexList::Vertex(1.0f, blockDefinition.height, 1.0f, uTop2, vTop2, 1.0f),
-        VertexList::Vertex(1.0f, blockDefinition.height, 0.0f, uTop2, vTop, 1.0f),
+		VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, uTop, vTop, 1.0f),
+		VertexList::Vertex(1.0f, blockDefinition.height, 1.0f, uTop2, vTop2, 1.0f),
+		VertexList::Vertex(1.0f, blockDefinition.height, 0.0f, uTop2, vTop, 1.0f),
 
-        VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, u, v, 0.8f),
-        VertexList::Vertex(0.0f, 0.0f, 1.0f, u, v2, 0.8f),
-        VertexList::Vertex(1.0f, 0.0f, 1.0f, u2, v2, 0.8f),
+		VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, u, v, 0.8f),
+		VertexList::Vertex(0.0f, 0.0f, 1.0f, u, v2, 0.8f),
+		VertexList::Vertex(1.0f, 0.0f, 1.0f, u2, v2, 0.8f),
 
-        VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, u, v, 0.8f),
-        VertexList::Vertex(1.0f, 0.0f, 1.0f, u2, v2, 0.8f),
-        VertexList::Vertex(1.0f, blockDefinition.height, 1.0f, u2, v, 0.8f),
+		VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, u, v, 0.8f),
+		VertexList::Vertex(1.0f, 0.0f, 1.0f, u2, v2, 0.8f),
+		VertexList::Vertex(1.0f, blockDefinition.height, 1.0f, u2, v, 0.8f),
 
-        VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, u, v, 0.6f),
-        VertexList::Vertex(0.0f, 0.0f, 0.0f, u, v2, 0.6f),
-        VertexList::Vertex(0.0f, 0.0f, 1.0f, u2, v2, 0.6f),
+		VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, u, v, 0.6f),
+		VertexList::Vertex(0.0f, 0.0f, 0.0f, u, v2, 0.6f),
+		VertexList::Vertex(0.0f, 0.0f, 1.0f, u2, v2, 0.6f),
 
-        VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, u, v, 0.6f),
-        VertexList::Vertex(0.0f, 0.0f, 1.0f, u2, v2, 0.6f),
-        VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, u2, v, 0.6f),
+		VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, u, v, 0.6f),
+		VertexList::Vertex(0.0f, 0.0f, 1.0f, u2, v2, 0.6f),
+		VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, u2, v, 0.6f),
 	};
 
 	size_t length;

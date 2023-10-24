@@ -116,7 +116,10 @@ int main(int argc, char** argv)
 		FS.mkdir('/saves');
 		FS.mount(IDBFS, {}, '/saves');
 		FS.syncfs(true, function(err) {
-			console.log(err);
+			if (err)
+			{
+				console.log(err);
+			}
 		});
 	);
 #else
