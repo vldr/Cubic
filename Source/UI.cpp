@@ -17,12 +17,33 @@
 
 EM_JS(void, copy_to_clipboard, (const char* text), {
 	navigator.clipboard.writeText(UTF8ToString(text));
-	});
+});
+
+EM_JS(void, toggle_fullscreen, (), {
+	if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement) {
+         if (document.documentElement.requestFullscreen) {
+			document.documentElement.requestFullscreen();
+         } else if (document.documentElement.mozRequestFullScreen) {
+			document.documentElement.mozRequestFullScreen();
+         } else if (document.documentElement.webkitRequestFullscreen) {
+			document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+         }
+	} else {
+        if (document.cancelFullScreen) {
+            document.cancelFullScreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitCancelFullScreen) {
+			document.webkitCancelFullScreen();
+        }
+	}
+});
 #endif
 
 void UI::init(Game* game)
 {
 	this->game = game;
+	this->isFullscreen = false;
 	this->state = State::None;
 	this->mousePosition = glm::vec2();
 
@@ -33,9 +54,6 @@ void UI::init(Game* game)
 
 	this->interfaceVertices.init();
 	this->interfaceTexture = game->textureManager.load(interfaceResourceTexture, sizeof(interfaceResourceTexture));
-
-	this->touchPosition = glm::vec2();
-	this->isTouch = false;
 }
 
 void UI::openMenu(UI::State newState)
@@ -150,18 +168,45 @@ bool UI::input(const SDL_Event& event)
 			return false;
 		}
 	}
+	else if (event.type == SDL_FINGERMOTION)
+	{
+		for (auto touchPosition = touchPositions.begin(); touchPosition != touchPositions.end(); touchPosition++)
+		{
+			if (touchPosition->id == event.tfinger.fingerId)
+			{
+				touchPosition->x = event.tfinger.x * game->scaledWidth;
+				touchPosition->y = event.tfinger.y * game->scaledHeight;
+				break;
+			}
+		}
+
+		update();
+		return false;
+	}
 	else if (event.type == SDL_FINGERDOWN)
 	{
-		touchPosition.x = event.tfinger.x * game->scaledWidth;
-		touchPosition.y = event.tfinger.y * game->scaledHeight;
+		touchPositions.push_back({ 
+			event.tfinger.fingerId, 
+			event.tfinger.x * game->scaledWidth,
+			event.tfinger.y * game->scaledHeight
+		});
 
-		touchState = TouchState::Down;
 		update();
+		return false;
 	}
 	else if (event.type == SDL_FINGERUP)
 	{
-		touchState = TouchState::Up;
+		for (auto touchPosition = touchPositions.begin(); touchPosition != touchPositions.end(); touchPosition++)
+		{
+			if (touchPosition->id == event.tfinger.fingerId)
+			{
+				touchPositions.erase(touchPosition);
+				break;
+			}
+		}
+
 		update();
+		return false;
 	}
 
 
@@ -266,8 +311,6 @@ void UI::save(int index)
 
 void UI::update()
 {
-	isTouch = SDL_GetNumTouchDevices() > 0;
-
 	fontVertices.reset();
 	interfaceVertices.reset();
 	blockVertices.reset();
@@ -287,7 +330,7 @@ void UI::update()
 		{
 			return;
 		}
-
+		
 		if (state == State::MainMenu)
 		{
 			if (drawMainMenu())
@@ -575,21 +618,28 @@ bool UI::drawSelectBlockButton(unsigned char blockType, unsigned char& selectedB
 
 bool UI::drawTouchButton(float x, float y, float z, const char* text, float width, float height)
 {
-	bool clicked = touchState == TouchState::Down;
+	drawCenteredFont(text, x + width / 2, y + (height - 8) / 2, 1.0f, z + 100.0f);
 
-	float hoverX = x;
-	float hoverY = y;
+	for (auto touchPosition = touchPositions.begin(); touchPosition != touchPositions.end(); touchPosition++)
+	{
+		float hoverX = x;
+		float hoverY = y;
 
-	bool hover = touchPosition.x >= hoverX &&
-		touchPosition.x <= hoverX + width &&
-		touchPosition.y >= hoverY &&
-		touchPosition.y <= hoverY + height;
+		bool hover = touchPosition->x >= hoverX &&
+			touchPosition->x <= hoverX + width &&
+			touchPosition->y >= hoverY &&
+			touchPosition->y <= hoverY + height;
+
+		if (hover)
+		{
+			drawInterface(x, y, width, height, 183, 0, 16, 16, 0.15f, 64.0f);
+			return true;
+		}
+	}
 
 	drawInterface(x, y, width, height, 183, 0, 16, 16, 0.04f, 64.0f);
 
-	drawCenteredFont(text, x + width / 2, y + (height - 8) / 2, 1.0f, z + 100.0f);
-
-	return hover && clicked;
+	return false;
 }
 
 bool UI::drawButton(float x, float y, float z, const char* text, int state, float width, float height)
@@ -682,12 +732,12 @@ void UI::drawHUD()
 	{
 		SDL_Event event = {};
 
-		float buttonOffsetX = 25.0f;
+		float buttonOffsetX = 30.0f;
 		float buttonOffsetY = 25.0f;
 
 		float buttonSize = std::max(game->scaledHeight, game->scaledWidth) * 0.05f;
-
-		if (drawTouchButton(buttonOffsetX + buttonSize, game->scaledHeight - buttonSize - buttonOffsetY, 65.0f, "\x1F", buttonSize, buttonSize)) // down
+		
+		if (drawTouchButton(buttonOffsetX + buttonSize, game->scaledHeight - buttonSize - buttonOffsetY, 65.0f, "\x1F", buttonSize, buttonSize))
 		{
 			event.type = SDL_KEYDOWN;
 			event.key.keysym.sym = SDLK_DOWN;
@@ -702,7 +752,7 @@ void UI::drawHUD()
 			SDL_PushEvent(&event);
 		}
 
-		if (drawTouchButton(buttonOffsetX, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "\x11", buttonSize, buttonSize)) // left
+		if (drawTouchButton(buttonOffsetX, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "\x11", buttonSize, buttonSize))
 		{
 			event.type = SDL_KEYDOWN;
 			event.key.keysym.sym = SDLK_LEFT;
@@ -747,7 +797,7 @@ void UI::drawHUD()
 			SDL_PushEvent(&event);
 		}
 
-		if (drawTouchButton(game->scaledWidth - buttonOffsetX - buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "\x4", buttonSize, buttonSize))
+		if (drawTouchButton(game->scaledWidth - buttonOffsetX - buttonSize * 1.25f, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "\x4", buttonSize * 1.25f, buttonSize * 1.25f))
 		{
 			event.type = SDL_KEYDOWN;
 			event.key.keysym.sym = SDLK_SPACE;
@@ -761,8 +811,24 @@ void UI::drawHUD()
 
 			SDL_PushEvent(&event);
 		}
-
+		
 		drawTouchButton(buttonOffsetX + buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "", buttonSize, buttonSize);
+
+		float otherButtonOffsetX = 1.5f;
+		float otherButtonOffsetY = 3.0f;
+		float otherButtonSize = std::max(game->scaledHeight, game->scaledWidth) * 0.03f;
+
+		if (drawTouchButton(game->scaledWidth / 2 + otherButtonOffsetX, otherButtonOffsetY, 65.0f, "\xF0", otherButtonSize, otherButtonSize))
+		{
+			openMainMenu();
+		}
+
+		if (drawTouchButton(game->scaledWidth / 2 - otherButtonSize - otherButtonOffsetX + 1.0f, otherButtonOffsetY, 65.0f, "\xF", otherButtonSize, otherButtonSize))
+		{
+#ifdef EMSCRIPTEN
+			toggle_fullscreen();
+#endif
+		}
 	}
 
 	drawHotbar();
@@ -962,7 +1028,7 @@ void UI::drawCenteredFont(const char* text, float x, float y, float shade, float
 	const auto length = std::strlen(text);
 	for (auto i = 0; i < length; i++)
 	{
-		width += FONT_WIDTHS[int(text[i])];
+		width += FONT_WIDTHS[(unsigned char)text[i]];
 	}
 
 	drawShadowedFont(text, x - width / 2, y, shade, z);

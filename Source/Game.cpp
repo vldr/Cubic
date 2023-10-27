@@ -225,8 +225,6 @@ void Game::resize()
     width = (int)(window_width() * dpi + 0.5f);
     height = (int)(window_height() * dpi + 0.5f);
 
-    ui.log(std::to_string(width) + " " + std::to_string(height));
-
     SDL_SetWindowSize(window, width, height);
 #endif
 

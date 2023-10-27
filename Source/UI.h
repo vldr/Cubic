@@ -49,11 +49,8 @@ public:
 
 	UI::State state;
 	UI::MouseState mouseState;
-	UI::TouchState touchState;
-	bool isTouch;
 
 	glm::vec2 mousePosition;
-	glm::vec2 touchPosition;
 
 private:
 	struct Log
@@ -66,6 +63,12 @@ private:
 	{
 		std::string path;
 		std::string name;
+	};
+
+	struct TouchPosition {
+		int64_t id;
+		float x;
+		float y;
 	};
 
 	void refresh();
@@ -102,7 +105,7 @@ private:
 	void drawCenteredFont(const char* text, float x, float y, float shade, float z);
 	void drawCenteredFont(const char* text, float x, float y, float shade);
 
-	const float FONT_WIDTHS[128] = {
+	const float FONT_WIDTHS[256] = {
 		1, 8, 8, 8, 8, 8, 8, 1, 8, 1, 8, 8, 1, 8, 8, 8,
 		8, 8, 1, 1, 8, 8, 1, 8, 1, 1, 8, 8, 8, 8, 8, 8,
 		4, 2, 5, 6, 6, 7, 7, 3, 5, 5, 8, 6, 2, 6, 2, 6,
@@ -111,12 +114,25 @@ private:
 		6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 4, 6, 4, 6, 6,
 		3, 6, 6, 6, 6, 6, 5, 6, 6, 2, 6, 5, 3, 6, 6, 6,
 		6, 6, 6, 6, 4, 6, 6, 6, 6, 6, 6, 5, 2, 5, 7, 6,
+
+
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		6, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
 	};
 
+	std::vector<TouchPosition> touchPositions;
 	std::vector<Log> logs;
 
 	int page;
 	std::vector<Save> saves;
+
+	bool isFullscreen;
 
 	std::string statusTitle;
 	std::string statusDescription;
