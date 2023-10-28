@@ -43,7 +43,7 @@ EM_JS(void, toggle_fullscreen, (), {
 void UI::init(Game* game)
 {
 	this->game = game;
-	this->isFullscreen = false;
+
 	this->state = State::None;
 	this->mousePosition = glm::vec2();
 
@@ -717,17 +717,8 @@ bool UI::drawButton(float x, float y, const char* text)
 	return hover && clicked;
 }
 
-void UI::drawHUD()
+void UI::drawTouchControls()
 {
-	static char info[255];
-	std::snprintf(info, sizeof(info), "%lld fps, %lld chunk updates", game->lastFrameRate, game->lastChunkUpdates);
-
-	drawShadowedFont(info, 3.0f, 3.0f, 1.0f);
-
-	drawInterface(game->scaledWidth / 2 - 91, game->scaledHeight - 22, 0, 0, 182, 22);
-	drawInterface(game->scaledWidth / 2 - 92 + float(game->localPlayer.inventoryIndex) * 20, game->scaledHeight - 23, 0, 22, 24, 22);
-	drawInterface(game->scaledWidth / 2 - 7, game->scaledHeight / 2 - 7, 211, 0, 16, 16);
-
 	if (state == State::None)
 	{
 		SDL_Event event = {};
@@ -736,7 +727,7 @@ void UI::drawHUD()
 		float buttonOffsetY = 25.0f;
 
 		float buttonSize = std::max(game->scaledHeight, game->scaledWidth) * 0.05f;
-		
+
 		if (drawTouchButton(buttonOffsetX + buttonSize, game->scaledHeight - buttonSize - buttonOffsetY, 65.0f, "\x1F", buttonSize, buttonSize))
 		{
 			event.type = SDL_KEYDOWN;
@@ -811,7 +802,7 @@ void UI::drawHUD()
 
 			SDL_PushEvent(&event);
 		}
-		
+
 		drawTouchButton(buttonOffsetX + buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "", buttonSize, buttonSize);
 
 		float otherButtonOffsetX = 1.5f;
@@ -823,14 +814,27 @@ void UI::drawHUD()
 			openMainMenu();
 		}
 
-		if (drawTouchButton(game->scaledWidth / 2 - otherButtonSize - otherButtonOffsetX + 1.0f, otherButtonOffsetY, 65.0f, "\xF", otherButtonSize, otherButtonSize))
+		if (drawTouchButton(game->scaledWidth / 2 - otherButtonSize - otherButtonOffsetX + 1.0f, otherButtonOffsetY, 65.0f, "\x16", otherButtonSize, otherButtonSize))
 		{
 #ifdef EMSCRIPTEN
 			toggle_fullscreen();
 #endif
 		}
 	}
+}
 
+void UI::drawHUD()
+{
+	static char info[255];
+	std::snprintf(info, sizeof(info), "%lld fps, %lld chunk updates", game->lastFrameRate, game->lastChunkUpdates);
+
+	drawShadowedFont(info, 3.0f, 3.0f, 1.0f);
+
+	drawInterface(game->scaledWidth / 2 - 91, game->scaledHeight - 22, 0, 0, 182, 22);
+	drawInterface(game->scaledWidth / 2 - 92 + float(game->localPlayer.inventoryIndex) * 20, game->scaledHeight - 23, 0, 22, 24, 22);
+	drawInterface(game->scaledWidth / 2 - 7, game->scaledHeight / 2 - 7, 211, 0, 16, 16);
+
+	drawTouchControls();
 	drawHotbar();
 
 	for (auto log = logs.begin(); log != logs.end();)

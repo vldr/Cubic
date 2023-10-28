@@ -75,6 +75,7 @@ private:
 	void load(int index);
 	void save(int index);
 
+	void drawTouchControls();
 	void drawHUD();
 	void drawHotbar();
 	void drawBlock(unsigned char blockType, float x, float y, float scale);
@@ -107,7 +108,7 @@ private:
 
 	const float FONT_WIDTHS[256] = {
 		1, 8, 8, 8, 8, 8, 8, 1, 8, 1, 8, 8, 1, 8, 8, 8,
-		8, 8, 1, 1, 8, 8, 1, 8, 1, 1, 8, 8, 8, 8, 8, 8,
+		8, 8, 1, 1, 8, 8, 8, 8, 1, 1, 8, 8, 8, 8, 8, 8,
 		4, 2, 5, 6, 6, 7, 7, 3, 5, 5, 8, 6, 2, 6, 2, 6,
 		6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 2, 2, 5, 6, 5, 6,
 		7, 6, 6, 6, 6, 6, 6, 6, 6, 4, 6, 6, 6, 6, 6, 6,
@@ -131,8 +132,6 @@ private:
 
 	int page;
 	std::vector<Save> saves;
-
-	bool isFullscreen;
 
 	std::string statusTitle;
 	std::string statusDescription;

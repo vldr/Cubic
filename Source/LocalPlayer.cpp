@@ -460,6 +460,13 @@ void LocalPlayer::input(const SDL_Event& event)
                 (float)event.motion.yrel
             );
         }
+        else if (event.type == SDL_FINGERMOTION)
+        {
+            turn(
+                event.tfinger.dx * game->width,
+                event.tfinger.dy * game->height
+            );
+        }
     }
 }
 
