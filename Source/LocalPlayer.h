@@ -15,8 +15,8 @@ class LocalPlayer : public Entity
 {
 public:
 	void init(Game* game);
-
 	void input(const SDL_Event& event);
+
 	void tick();
 	void update();
 	void setPosition(float x, float y, float z);
@@ -44,12 +44,6 @@ public:
 		(unsigned char)Block::Type::BLOCK_SLAB,
 	};
 
-	AABBPosition selected;
-	int selectedIndex;
-
-private:
-	uint64_t lastClick;
-
 	enum Move {
 		Move_None = 0,
 		Move_Left = 1 << 0,
@@ -69,6 +63,12 @@ private:
 
 	unsigned int moveState = Move::Move_None;
 	unsigned int interactState = Interact::Interact_None;
+
+	AABBPosition selected;
+	int selectedIndex;
+
+private:
+	uint64_t lastClick;
 
 	const float CAMERA_OFFSET = 0.10f;
 	const float BUILD_SPEED = 5.0f;

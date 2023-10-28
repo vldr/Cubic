@@ -38,11 +38,23 @@ EM_JS(void, toggle_fullscreen, (), {
         }
 	}
 });
+
+EM_JS(bool, is_touch, (), {
+  return (('ontouchstart' in window) ||
+	 (navigator.maxTouchPoints > 0) ||
+	 (navigator.msMaxTouchPoints > 0));
+});
 #endif
 
 void UI::init(Game* game)
 {
 	this->game = game;
+
+#ifdef EMSCRIPTEN
+	this->isTouch = is_touch();
+#else
+	this->isTouch = SDL_GetNumTouchFingers(0) > 0;
+#endif
 
 	this->state = State::None;
 	this->mousePosition = glm::vec2();
@@ -180,6 +192,11 @@ bool UI::input(const SDL_Event& event)
 			}
 		}
 
+		if (state == State::None)
+		{
+			game->localPlayer.turn(event.tfinger.dx * game->width, event.tfinger.dy * game->height);
+		}
+
 		update();
 		return false;
 	}
@@ -209,8 +226,7 @@ bool UI::input(const SDL_Event& event)
 		return false;
 	}
 
-
-	return true;
+	return !isTouch;
 }
 
 void UI::refresh()
@@ -719,10 +735,8 @@ bool UI::drawButton(float x, float y, const char* text)
 
 void UI::drawTouchControls()
 {
-	if (state == State::None)
+	if (isTouch && state == State::None)
 	{
-		SDL_Event event = {};
-
 		float buttonOffsetX = 30.0f;
 		float buttonOffsetY = 25.0f;
 
@@ -730,77 +744,47 @@ void UI::drawTouchControls()
 
 		if (drawTouchButton(buttonOffsetX + buttonSize, game->scaledHeight - buttonSize - buttonOffsetY, 65.0f, "\x1F", buttonSize, buttonSize))
 		{
-			event.type = SDL_KEYDOWN;
-			event.key.keysym.sym = SDLK_DOWN;
-
-			SDL_PushEvent(&event);
+			game->localPlayer.moveState |= LocalPlayer::Move::Move_Backward;
 		}
 		else
 		{
-			event.type = SDL_KEYUP;
-			event.key.keysym.sym = SDLK_DOWN;
-
-			SDL_PushEvent(&event);
+			game->localPlayer.moveState &= ~LocalPlayer::Move::Move_Backward;
 		}
 
 		if (drawTouchButton(buttonOffsetX, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "\x11", buttonSize, buttonSize))
 		{
-			event.type = SDL_KEYDOWN;
-			event.key.keysym.sym = SDLK_LEFT;
-
-			SDL_PushEvent(&event);
+			game->localPlayer.moveState |= LocalPlayer::Move::Move_Left;
 		}
 		else
 		{
-			event.type = SDL_KEYUP;
-			event.key.keysym.sym = SDLK_LEFT;
-
-			SDL_PushEvent(&event);
+			game->localPlayer.moveState &= ~LocalPlayer::Move::Move_Left;
 		}
 
 		if (drawTouchButton(buttonOffsetX + 2 * buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "\x10", buttonSize, buttonSize))
 		{
-			event.type = SDL_KEYDOWN;
-			event.key.keysym.sym = SDLK_RIGHT;
-
-			SDL_PushEvent(&event);
+			game->localPlayer.moveState |= LocalPlayer::Move::Move_Right;
 		}
 		else
 		{
-			event.type = SDL_KEYUP;
-			event.key.keysym.sym = SDLK_RIGHT;
-
-			SDL_PushEvent(&event);
+			game->localPlayer.moveState &= ~LocalPlayer::Move::Move_Right;
 		}
 
 		if (drawTouchButton(buttonOffsetX + buttonSize, game->scaledHeight - 3 * buttonSize - buttonOffsetY, 65.0f, "\x1E", buttonSize, buttonSize))
 		{
-			event.type = SDL_KEYDOWN;
-			event.key.keysym.sym = SDLK_UP;
-
-			SDL_PushEvent(&event);
+			game->localPlayer.moveState |= LocalPlayer::Move::Move_Forward;
 		}
 		else
 		{
-			event.type = SDL_KEYUP;
-			event.key.keysym.sym = SDLK_UP;
-
-			SDL_PushEvent(&event);
+			game->localPlayer.moveState &= ~LocalPlayer::Move::Move_Forward;
 		}
 
 		if (drawTouchButton(game->scaledWidth - buttonOffsetX - buttonSize * 1.25f, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "\x4", buttonSize * 1.25f, buttonSize * 1.25f))
 		{
-			event.type = SDL_KEYDOWN;
-			event.key.keysym.sym = SDLK_SPACE;
-
-			SDL_PushEvent(&event);
+			game->localPlayer.moveState |= LocalPlayer::Move::Move_Jump;
 		}
 		else
 		{
-			event.type = SDL_KEYUP;
-			event.key.keysym.sym = SDLK_SPACE;
-
-			SDL_PushEvent(&event);
+			game->localPlayer.moveState &= ~LocalPlayer::Move::Move_Jump;
 		}
 
 		drawTouchButton(buttonOffsetX + buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "", buttonSize, buttonSize);

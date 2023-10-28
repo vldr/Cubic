@@ -147,6 +147,8 @@ private:
 
 	VertexList blockVertices;
 
+	bool isTouch;
+
 	Game* game;
 };
 
