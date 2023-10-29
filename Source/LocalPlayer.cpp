@@ -33,8 +33,6 @@ void LocalPlayer::update()
 
     game->viewMatrix = glm::lookAt(viewPosition, viewPosition + lookAt, UP);
 
-    /////////////////////////////////////////////////////
-
     if (game->level.isRenderWaterTile(viewPosition.x, viewPosition.y + CAMERA_OFFSET, viewPosition.z))
     {
         game->fogColor.r = 0.02f;
@@ -60,20 +58,23 @@ void LocalPlayer::update()
         game->fogDistance = 1000.0f;
     }
 
-    /////////////////////////////////////////////////////
-     
-    selected = game->level.clip(viewPosition, viewPosition + lookAt * REACH); 
- 
+    interact();
+}
+
+void LocalPlayer::interact()
+{
+    selected = game->level.clip(viewPosition, viewPosition + lookAt * REACH);
+
     if (!selected.isValid && onGround)
     {
         const auto ground = glm::ivec3(viewPosition.x, viewPosition.y - 2, viewPosition.z);
         const auto groundBlockType = game->level.getTile(ground.x, ground.y, ground.z);
 
         if (
-            !game->level.isAirTile(groundBlockType) && 
-            !game->level.isWaterTile(groundBlockType) && 
+            !game->level.isAirTile(groundBlockType) &&
+            !game->level.isWaterTile(groundBlockType) &&
             !game->level.isLavaTile(groundBlockType)
-        )
+            )
         {
             selected = game->level.clip(viewPosition, viewPosition + lookAt * REACH, &ground);
         }
@@ -90,7 +91,7 @@ void LocalPlayer::update()
         if (interactState & Interact::Interact_Right) { interactRight = true; }
     }
 
-    if (game->timer.ticks - lastClick >= game->timer.ticksPerSecond / BUILD_SPEED)
+    if (game->timer.ticks - lastClick >= game->timer.ticksPerSecond / BUILD_SPEED * (game->ui.isTouch ? 1.5 : 1))
     {
         if (interactLeft)
         {
@@ -112,7 +113,7 @@ void LocalPlayer::update()
                 if (
                     selected.destructible &&
                     !game->level.isAirTile(blockType)
-                )
+                    )
                 {
                     game->level.setTileWithNeighborChange(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR, true);
                     game->particleManager.spawn((float)vx, (float)vy, (float)vz, blockType);
@@ -142,7 +143,7 @@ void LocalPlayer::update()
                     blockType == (unsigned char)Block::Type::BLOCK_AIR ||
                     game->level.isWaterTile(blockType) ||
                     game->level.isLavaTile(blockType)
-                )
+                    )
                 {
                     if (!aabb.intersects(heldBlockAABB))
                     {
@@ -169,8 +170,8 @@ void LocalPlayer::update()
                     blockType != heldBlockType &&
                     blockType != (unsigned char)Block::Type::BLOCK_AIR &&
                     !game->level.isWaterTile(blockType) &&
-                    !game->level.isLavaTile(blockType) 
-                )
+                    !game->level.isLavaTile(blockType)
+                    )
                 {
                     inventory[inventoryIndex] = blockType;
 
@@ -365,48 +366,6 @@ void LocalPlayer::input(const SDL_Event& event)
 
         if (event.key.keysym.sym == SDLK_LSHIFT)
             moveState &= ~Move::Move_Sprint;
-
-        if (event.key.keysym.sym == SDLK_F2)
-        {
-            game->ui.log("Players: " + std::to_string(game->network.count()));
-        }
-
-        if (event.key.keysym.sym == SDLK_F3)
-        {
-            auto crc32 = [](unsigned char* data, size_t length)
-            {
-                unsigned int crc;
-                crc = 0xFFFFFFFFu; 
-
-                for (int i = 0; i < length; i++)
-                {
-                    crc ^= (data[i] << 24u);
-
-                    for (int j = 0; j < 8; j++)
-                    {
-                        unsigned int msb = crc >> 31u;
-                        crc <<= 1u;
-                        crc ^= (0u - msb) & 0x04C11DB7u;
-                    }
-                }
-
-                return crc;
-            };
-
-            auto hash = crc32(game->level.blocks.get(), game->level.width * game->level.height * game->level.depth);
-            game->ui.log("CRC32 checksum: " + std::to_string(hash));
-        }  
-
-        if (event.key.keysym.sym == SDLK_F4)
-        {
-            std::stringstream log{};
-            log << "Build date: ";
-            log << __DATE__;
-            log << " ";
-            log << __TIME__;
-
-            game->ui.log(log.str());
-        }
     }
     else if (event.type == SDL_MOUSEBUTTONDOWN)
     {
@@ -458,13 +417,6 @@ void LocalPlayer::input(const SDL_Event& event)
             turn(
                 (float)event.motion.xrel,
                 (float)event.motion.yrel
-            );
-        }
-        else if (event.type == SDL_FINGERMOTION)
-        {
-            turn(
-                event.tfinger.dx * game->width,
-                event.tfinger.dy * game->height
             );
         }
     }

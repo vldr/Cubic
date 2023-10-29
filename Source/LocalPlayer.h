@@ -19,6 +19,7 @@ public:
 
 	void tick();
 	void update();
+	void interact();
 	void setPosition(float x, float y, float z);
 
 	glm::vec2 viewAngles;
@@ -66,7 +67,6 @@ public:
 
 	AABBPosition selected;
 	int selectedIndex;
-
 private:
 	uint64_t lastClick;
 

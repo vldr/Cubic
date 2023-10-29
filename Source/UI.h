@@ -33,10 +33,17 @@ public:
 		Down
 	};
 
+	enum Cancellable {
+		Cancel_None = 0,
+		Cancel_Hold = 1 << 0,
+		Cancel_Swipe = 1 << 1,
+	};
+
 	void init(Game* game);
 	bool input(const SDL_Event& event);
 	void update();
 	void render();
+	void tick();
 
 	void log(const std::string& text);
 	void logMotd();
@@ -51,7 +58,7 @@ public:
 	UI::MouseState mouseState;
 
 	glm::vec2 mousePosition;
-
+	bool isTouch;
 private:
 	struct Log
 	{
@@ -69,6 +76,12 @@ private:
 		int64_t id;
 		float x;
 		float y;
+
+		uint64_t startTime;
+
+		bool swipe;
+		bool hold;
+		bool isHolding;
 	};
 
 	void refresh();
@@ -77,6 +90,7 @@ private:
 
 	void drawTouchControls();
 	void drawHUD();
+	void drawLogs();
 	void drawHotbar();
 	void drawBlock(unsigned char blockType, float x, float y, float scale);
 
@@ -89,7 +103,7 @@ private:
 	bool drawSelectBlockMenu();
 	bool drawSelectBlockButton(unsigned char blockType, unsigned char& selectedBlockType, float x, float y, float width, float height);
 
-	bool drawTouchButton(float x, float y, float z, const char* text, float width = 200.0f, float height = 20.0f);
+	bool drawTouchButton(unsigned int flag, float x, float y, float z, const char* text, float width = 200.0f, float height = 20.0f);
 
 	bool drawButton(float x, float y, float z, const char* text, int state = 1, float width = 200.0f, float height = 20.0f);
 	bool drawButton(float x, float y, const char* text);
@@ -146,8 +160,6 @@ private:
 	GLuint interfaceTexture;
 
 	VertexList blockVertices;
-
-	bool isTouch;
 
 	Game* game;
 };

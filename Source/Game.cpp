@@ -132,6 +132,7 @@ void Game::run()
         levelRenderer.tick();
         heldBlock.tick();
         network.tick();
+        ui.tick();
 
         timer.tick();
     }
