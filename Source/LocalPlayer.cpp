@@ -91,98 +91,111 @@ void LocalPlayer::interact()
         if (interactState & Interact::Interact_Right) { interactRight = true; }
     }
 
-    if (game->timer.ticks - lastClick >= game->timer.ticksPerSecond / BUILD_SPEED * (game->ui.isTouch ? 1.5 : 1))
+    if (game->ui.isTouch)
     {
+        if (interactLeft && game->timer.ticks - lastClick < game->timer.ticksPerSecond / BUILD_SPEED * 1.5)
+        {
+            return;
+        }
+    }
+    else
+    {
+        if (game->timer.ticks - lastClick < game->timer.ticksPerSecond / BUILD_SPEED)
+        {
+            return;
+        }
+    }
+
+    if (interactLeft)
+    {
+        game->heldBlock.swing();
+
+        lastClick = game->timer.ticks;
+    }
+
+    if (selected.isValid)
+    {
+        int vx = selected.x;
+        int vy = selected.y;
+        int vz = selected.z;
+
         if (interactLeft)
         {
-            game->heldBlock.swing();
+            auto blockType = game->level.getTile(vx, vy, vz);
 
-            lastClick = game->timer.ticks;
-        }
-
-        if (selected.isValid)
-        {
-            int vx = selected.x;
-            int vy = selected.y;
-            int vz = selected.z;
-
-            if (interactLeft)
+            if (
+                selected.destructible &&
+                !game->level.isAirTile(blockType)
+                )
             {
-                auto blockType = game->level.getTile(vx, vy, vz);
+                game->level.setTileWithNeighborChange(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR, true);
+                game->particleManager.spawn((float)vx, (float)vy, (float)vz, blockType);
 
-                if (
-                    selected.destructible &&
-                    !game->level.isAirTile(blockType)
-                    )
+                if (game->network.isConnected() && !game->network.isHost())
                 {
-                    game->level.setTileWithNeighborChange(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR, true);
-                    game->particleManager.spawn((float)vx, (float)vy, (float)vz, blockType);
+                    game->network.sendSetBlock(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR);
+                }
+            }
+        }
+        else if (interactRight)
+        {
+            if (selected.face == 0) { vy--; }
+            if (selected.face == 1) { vy++; }
+            if (selected.face == 2) { vz--; }
+            if (selected.face == 3) { vz++; }
+            if (selected.face == 4) { vx--; }
+            if (selected.face == 5) { vx++; }
+
+            auto blockType = game->level.getTile(vx, vy, vz);
+
+            auto heldBlockType = inventory[inventoryIndex];
+            auto heldBlockDefinition = Block::Definitions[heldBlockType];
+            auto heldBlockAABB = heldBlockDefinition.boundingBox.move(vx, vy, vz);
+
+            if (
+                blockType == (unsigned char)Block::Type::BLOCK_AIR ||
+                game->level.isWaterTile(blockType) ||
+                game->level.isLavaTile(blockType)
+                )
+            {
+                if (!aabb.intersects(heldBlockAABB))
+                {
+                    game->level.setTileWithNeighborChange(vx, vy, vz, heldBlockType);
+                    game->heldBlock.reset();
 
                     if (game->network.isConnected() && !game->network.isHost())
                     {
-                        game->network.sendSetBlock(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR);
+                        game->network.sendSetBlock(vx, vy, vz, heldBlockType);
                     }
+
+                    selectedIndex = 0;
                 }
             }
-            else if (interactRight)
+
+            lastClick = game->timer.ticks;
+        }
+        else if (interactMiddle)
+        {
+            auto heldBlockType = inventory[inventoryIndex];
+            auto blockType = game->level.getTile(vx, vy, vz);
+
+            if (
+                blockType != heldBlockType &&
+                blockType != (unsigned char)Block::Type::BLOCK_AIR &&
+                !game->level.isWaterTile(blockType) &&
+                !game->level.isLavaTile(blockType)
+                )
             {
-                if (selected.face == 0) { vy--; }
-                if (selected.face == 1) { vy++; }
-                if (selected.face == 2) { vz--; }
-                if (selected.face == 3) { vz++; }
-                if (selected.face == 4) { vx--; }
-                if (selected.face == 5) { vx++; }
+                inventory[inventoryIndex] = blockType;
 
-                auto blockType = game->level.getTile(vx, vy, vz);
-
-                auto heldBlockType = inventory[inventoryIndex];
-                auto heldBlockDefinition = Block::Definitions[heldBlockType];
-                auto heldBlockAABB = heldBlockDefinition.boundingBox.move(vx, vy, vz);
-
-                if (
-                    blockType == (unsigned char)Block::Type::BLOCK_AIR ||
-                    game->level.isWaterTile(blockType) ||
-                    game->level.isLavaTile(blockType)
-                    )
-                {
-                    if (!aabb.intersects(heldBlockAABB))
-                    {
-                        game->level.setTileWithNeighborChange(vx, vy, vz, heldBlockType);
-                        game->heldBlock.reset();
-
-                        if (game->network.isConnected() && !game->network.isHost())
-                        {
-                            game->network.sendSetBlock(vx, vy, vz, heldBlockType);
-                        }
-
-                        selectedIndex = 0;
-                    }
-                }
-
-                lastClick = game->timer.ticks;
+                game->heldBlock.update();
+                game->ui.update();
             }
-            else if (interactMiddle)
-            {
-                auto heldBlockType = inventory[inventoryIndex];
-                auto blockType = game->level.getTile(vx, vy, vz);
 
-                if (
-                    blockType != heldBlockType &&
-                    blockType != (unsigned char)Block::Type::BLOCK_AIR &&
-                    !game->level.isWaterTile(blockType) &&
-                    !game->level.isLavaTile(blockType)
-                    )
-                {
-                    inventory[inventoryIndex] = blockType;
-
-                    game->heldBlock.update();
-                    game->ui.update();
-                }
-
-                lastClick = game->timer.ticks;
-            }
+            lastClick = game->timer.ticks;
         }
     }
+   
 }
 
 void LocalPlayer::tick()
