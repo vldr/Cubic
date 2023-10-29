@@ -33,8 +33,6 @@ void LocalPlayer::update()
 
     game->viewMatrix = glm::lookAt(viewPosition, viewPosition + lookAt, UP);
 
-    /////////////////////////////////////////////////////
-
     if (game->level.isRenderWaterTile(viewPosition.x, viewPosition.y + CAMERA_OFFSET, viewPosition.z))
     {
         game->fogColor.r = 0.02f;
@@ -60,20 +58,23 @@ void LocalPlayer::update()
         game->fogDistance = 1000.0f;
     }
 
-    /////////////////////////////////////////////////////
-     
-    selected = game->level.clip(viewPosition, viewPosition + lookAt * REACH); 
- 
+    interact();
+}
+
+void LocalPlayer::interact()
+{
+    selected = game->level.clip(viewPosition, viewPosition + lookAt * REACH);
+
     if (!selected.isValid && onGround)
     {
         const auto ground = glm::ivec3(viewPosition.x, viewPosition.y - 2, viewPosition.z);
         const auto groundBlockType = game->level.getTile(ground.x, ground.y, ground.z);
 
         if (
-            !game->level.isAirTile(groundBlockType) && 
-            !game->level.isWaterTile(groundBlockType) && 
+            !game->level.isAirTile(groundBlockType) &&
+            !game->level.isWaterTile(groundBlockType) &&
             !game->level.isLavaTile(groundBlockType)
-        )
+            )
         {
             selected = game->level.clip(viewPosition, viewPosition + lookAt * REACH, &ground);
         }
@@ -90,98 +91,111 @@ void LocalPlayer::update()
         if (interactState & Interact::Interact_Right) { interactRight = true; }
     }
 
-    if (game->timer.ticks - lastClick >= game->timer.ticksPerSecond / BUILD_SPEED)
+    if (game->ui.isTouch)
     {
+        if (interactLeft && game->timer.ticks - lastClick < game->timer.ticksPerSecond / BUILD_SPEED * 1.5)
+        {
+            return;
+        }
+    }
+    else
+    {
+        if (game->timer.ticks - lastClick < game->timer.ticksPerSecond / BUILD_SPEED)
+        {
+            return;
+        }
+    }
+
+    if (interactLeft)
+    {
+        game->heldBlock.swing();
+
+        lastClick = game->timer.ticks;
+    }
+
+    if (selected.isValid)
+    {
+        int vx = selected.x;
+        int vy = selected.y;
+        int vz = selected.z;
+
         if (interactLeft)
         {
-            game->heldBlock.swing();
+            auto blockType = game->level.getTile(vx, vy, vz);
 
-            lastClick = game->timer.ticks;
-        }
-
-        if (selected.isValid)
-        {
-            int vx = selected.x;
-            int vy = selected.y;
-            int vz = selected.z;
-
-            if (interactLeft)
-            {
-                auto blockType = game->level.getTile(vx, vy, vz);
-
-                if (
-                    selected.destructible &&
-                    !game->level.isAirTile(blockType)
+            if (
+                selected.destructible &&
+                !game->level.isAirTile(blockType)
                 )
+            {
+                game->level.setTileWithNeighborChange(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR, true);
+                game->particleManager.spawn((float)vx, (float)vy, (float)vz, blockType);
+
+                if (game->network.isConnected() && !game->network.isHost())
                 {
-                    game->level.setTileWithNeighborChange(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR, true);
-                    game->particleManager.spawn((float)vx, (float)vy, (float)vz, blockType);
+                    game->network.sendSetBlock(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR);
+                }
+            }
+        }
+        else if (interactRight)
+        {
+            if (selected.face == 0) { vy--; }
+            if (selected.face == 1) { vy++; }
+            if (selected.face == 2) { vz--; }
+            if (selected.face == 3) { vz++; }
+            if (selected.face == 4) { vx--; }
+            if (selected.face == 5) { vx++; }
+
+            auto blockType = game->level.getTile(vx, vy, vz);
+
+            auto heldBlockType = inventory[inventoryIndex];
+            auto heldBlockDefinition = Block::Definitions[heldBlockType];
+            auto heldBlockAABB = heldBlockDefinition.boundingBox.move(vx, vy, vz);
+
+            if (
+                blockType == (unsigned char)Block::Type::BLOCK_AIR ||
+                game->level.isWaterTile(blockType) ||
+                game->level.isLavaTile(blockType)
+                )
+            {
+                if (!aabb.intersects(heldBlockAABB))
+                {
+                    game->level.setTileWithNeighborChange(vx, vy, vz, heldBlockType);
+                    game->heldBlock.reset();
 
                     if (game->network.isConnected() && !game->network.isHost())
                     {
-                        game->network.sendSetBlock(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR);
+                        game->network.sendSetBlock(vx, vy, vz, heldBlockType);
                     }
+
+                    selectedIndex = 0;
                 }
             }
-            else if (interactRight)
-            {
-                if (selected.face == 0) { vy--; }
-                if (selected.face == 1) { vy++; }
-                if (selected.face == 2) { vz--; }
-                if (selected.face == 3) { vz++; }
-                if (selected.face == 4) { vx--; }
-                if (selected.face == 5) { vx++; }
 
-                auto blockType = game->level.getTile(vx, vy, vz);
+            lastClick = game->timer.ticks;
+        }
+        else if (interactMiddle)
+        {
+            auto heldBlockType = inventory[inventoryIndex];
+            auto blockType = game->level.getTile(vx, vy, vz);
 
-                auto heldBlockType = inventory[inventoryIndex];
-                auto heldBlockDefinition = Block::Definitions[heldBlockType];
-                auto heldBlockAABB = heldBlockDefinition.boundingBox.move(vx, vy, vz);
-
-                if (
-                    blockType == (unsigned char)Block::Type::BLOCK_AIR ||
-                    game->level.isWaterTile(blockType) ||
-                    game->level.isLavaTile(blockType)
+            if (
+                blockType != heldBlockType &&
+                blockType != (unsigned char)Block::Type::BLOCK_AIR &&
+                !game->level.isWaterTile(blockType) &&
+                !game->level.isLavaTile(blockType)
                 )
-                {
-                    if (!aabb.intersects(heldBlockAABB))
-                    {
-                        game->level.setTileWithNeighborChange(vx, vy, vz, heldBlockType);
-                        game->heldBlock.reset();
-
-                        if (game->network.isConnected() && !game->network.isHost())
-                        {
-                            game->network.sendSetBlock(vx, vy, vz, heldBlockType);
-                        }
-
-                        selectedIndex = 0;
-                    }
-                }
-
-                lastClick = game->timer.ticks;
-            }
-            else if (interactMiddle)
             {
-                auto heldBlockType = inventory[inventoryIndex];
-                auto blockType = game->level.getTile(vx, vy, vz);
+                inventory[inventoryIndex] = blockType;
 
-                if (
-                    blockType != heldBlockType &&
-                    blockType != (unsigned char)Block::Type::BLOCK_AIR &&
-                    !game->level.isWaterTile(blockType) &&
-                    !game->level.isLavaTile(blockType) 
-                )
-                {
-                    inventory[inventoryIndex] = blockType;
-
-                    game->heldBlock.update();
-                    game->ui.update();
-                }
-
-                lastClick = game->timer.ticks;
+                game->heldBlock.update();
+                game->ui.update();
             }
+
+            lastClick = game->timer.ticks;
         }
     }
+   
 }
 
 void LocalPlayer::tick()
@@ -365,48 +379,6 @@ void LocalPlayer::input(const SDL_Event& event)
 
         if (event.key.keysym.sym == SDLK_LSHIFT)
             moveState &= ~Move::Move_Sprint;
-
-        if (event.key.keysym.sym == SDLK_F2)
-        {
-            game->ui.log("Players: " + std::to_string(game->network.count()));
-        }
-
-        if (event.key.keysym.sym == SDLK_F3)
-        {
-            auto crc32 = [](unsigned char* data, size_t length)
-            {
-                unsigned int crc;
-                crc = 0xFFFFFFFFu; 
-
-                for (int i = 0; i < length; i++)
-                {
-                    crc ^= (data[i] << 24u);
-
-                    for (int j = 0; j < 8; j++)
-                    {
-                        unsigned int msb = crc >> 31u;
-                        crc <<= 1u;
-                        crc ^= (0u - msb) & 0x04C11DB7u;
-                    }
-                }
-
-                return crc;
-            };
-
-            auto hash = crc32(game->level.blocks.get(), game->level.width * game->level.height * game->level.depth);
-            game->ui.log("CRC32 checksum: " + std::to_string(hash));
-        }  
-
-        if (event.key.keysym.sym == SDLK_F4)
-        {
-            std::stringstream log{};
-            log << "Build date: ";
-            log << __DATE__;
-            log << " ";
-            log << __TIME__;
-
-            game->ui.log(log.str());
-        }
     }
     else if (event.type == SDL_MOUSEBUTTONDOWN)
     {

@@ -11,7 +11,7 @@ class Game;
 class UI
 {
 public:
-	enum class State 
+	enum class State
 	{
 		None,
 		StatusMenu,
@@ -21,16 +21,29 @@ public:
 		LoadMenu,
 	};
 
-	enum class MouseState 
+	enum class MouseState
 	{
 		Up,
 		Down
+	};
+
+	enum class TouchState
+	{
+		Up,
+		Down
+	};
+
+	enum Cancellable {
+		Cancel_None = 0,
+		Cancel_Hold = 1 << 0,
+		Cancel_Swipe = 1 << 1,
 	};
 
 	void init(Game* game);
 	bool input(const SDL_Event& event);
 	void update();
 	void render();
+	void tick();
 
 	void log(const std::string& text);
 	void logMotd();
@@ -45,28 +58,42 @@ public:
 	UI::MouseState mouseState;
 
 	glm::vec2 mousePosition;
-
+	bool isTouch;
 private:
-	struct Log 
+	struct Log
 	{
 		uint64_t created;
 		std::string text;
 	};
 
-	struct Save 
+	struct Save
 	{
 		std::string path;
 		std::string name;
+	};
+
+	struct TouchPosition {
+		int64_t id;
+		float x;
+		float y;
+
+		uint64_t startTime;
+
+		bool swipe;
+		bool hold;
+		bool isHolding;
 	};
 
 	void refresh();
 	void load(int index);
 	void save(int index);
 
+	void drawTouchControls();
 	void drawHUD();
+	void drawLogs();
 	void drawHotbar();
 	void drawBlock(unsigned char blockType, float x, float y, float scale);
-	
+
 	bool drawMainMenu();
 	bool drawStatusMenu();
 
@@ -75,6 +102,8 @@ private:
 
 	bool drawSelectBlockMenu();
 	bool drawSelectBlockButton(unsigned char blockType, unsigned char& selectedBlockType, float x, float y, float width, float height);
+
+	bool drawTouchButton(unsigned int flag, float x, float y, float z, const char* text, float width = 200.0f, float height = 20.0f);
 
 	bool drawButton(float x, float y, float z, const char* text, int state = 1, float width = 200.0f, float height = 20.0f);
 	bool drawButton(float x, float y, const char* text);
@@ -91,17 +120,27 @@ private:
 	void drawCenteredFont(const char* text, float x, float y, float shade, float z);
 	void drawCenteredFont(const char* text, float x, float y, float shade);
 
-	const float FONT_WIDTHS[128] = {
+	const float FONT_WIDTHS[256] = {
 		1, 8, 8, 8, 8, 8, 8, 1, 8, 1, 8, 8, 1, 8, 8, 8,
-		8, 8, 1, 1, 8, 8, 1, 8, 1, 1, 8, 8, 8, 8, 8, 8,
+		8, 8, 1, 1, 8, 8, 8, 8, 1, 1, 8, 8, 8, 8, 8, 8,
 		4, 2, 5, 6, 6, 7, 7, 3, 5, 5, 8, 6, 2, 6, 2, 6,
 		6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 2, 2, 5, 6, 5, 6,
 		7, 6, 6, 6, 6, 6, 6, 6, 6, 4, 6, 6, 6, 6, 6, 6,
 		6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 4, 6, 4, 6, 6,
 		3, 6, 6, 6, 6, 6, 5, 6, 6, 2, 6, 5, 3, 6, 6, 6,
 		6, 6, 6, 6, 4, 6, 6, 6, 6, 6, 6, 5, 2, 5, 7, 6,
+
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		6, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
 	};
 
+	std::vector<TouchPosition> touchPositions;
 	std::vector<Log> logs;
 
 	int page;
@@ -120,7 +159,7 @@ private:
 	GLuint interfaceTexture;
 
 	VertexList blockVertices;
-	
+
 	Game* game;
 };
 
