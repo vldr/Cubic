@@ -48,7 +48,7 @@ public:
 	void log(const std::string& text);
 	void logMotd();
 
-	void openMenu(UI::State state);
+	void openMenu(UI::State state, bool shouldUpdate = true);
 	void openStatusMenu(const char* title, const char* description, bool closeable = false);
 	void openMainMenu();
 
@@ -103,7 +103,7 @@ private:
 	bool drawSelectBlockMenu();
 	bool drawSelectBlockButton(unsigned char blockType, unsigned char& selectedBlockType, float x, float y, float width, float height);
 
-	bool drawTouchButton(unsigned int flag, float x, float y, float z, const char* text, float width = 200.0f, float height = 20.0f);
+	bool drawTouchButton(unsigned int flag, float x, float y, float z, const char* text, float width = 200.0f, float height = 20.0f, bool invisible = false);
 
 	bool drawButton(float x, float y, float z, const char* text, int state = 1, float width = 200.0f, float height = 20.0f);
 	bool drawButton(float x, float y, const char* text);
