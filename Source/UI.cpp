@@ -281,18 +281,15 @@ bool UI::input(const SDL_Event& event)
 		{
 			if (touchPosition->id == event.tfinger.fingerId)
 			{
-				if (state == State::None)
+				if (touchPosition->isHolding)
 				{
-					if (touchPosition->isHolding)
-					{
-						game->localPlayer.interactState &= ~LocalPlayer::Interact::Interact_Left;
-					}
-					else if (touchPosition->hold && game->timer.milliTime() - touchPosition->startTime <= 100)
-					{
-						game->localPlayer.interactState |= LocalPlayer::Interact::Interact_Right;
-						game->localPlayer.interact();
-						game->localPlayer.interactState &= ~LocalPlayer::Interact::Interact_Right;
-					}
+					game->localPlayer.interactState &= ~LocalPlayer::Interact::Interact_Left;
+				}
+				else if (touchPosition->hold && game->timer.milliTime() - touchPosition->startTime <= 100)
+				{
+					game->localPlayer.interactState |= LocalPlayer::Interact::Interact_Right;
+					game->localPlayer.interact();
+					game->localPlayer.interactState &= ~LocalPlayer::Interact::Interact_Right;
 				}
 
 				touchPositions.erase(touchPosition);
