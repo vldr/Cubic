@@ -4,9 +4,9 @@
 #include "Resources.h"
 
 #include <ctime>
-#include <sstream>
 #include <iomanip>
 #include <string>
+#include <sstream>
 #include <cstdio>
 #include <filesystem>
 #include <glm/gtc/matrix_transform.hpp>
@@ -117,191 +117,159 @@ void UI::closeMenu()
 
 bool UI::input(const SDL_Event& event)
 {
-	if (event.type == SDL_KEYUP)
+	if (isTouch)
 	{
-		if (event.key.keysym.sym == SDLK_ESCAPE)
+		if (event.type == SDL_FINGERMOTION)
 		{
-			if (state == State::None)
-			{
-				openMainMenu();
-				return false;
-			}
-			else if (state == State::SaveMenu || state == State::LoadMenu)
-			{
-				openMainMenu();
-				return false;
-			}
-			else if (state == State::MainMenu)
-			{
-				closeMenu();
-				return false;
-			}
-		}
+			mousePosition.x = event.tfinger.x * game->scaledWidth;
+			mousePosition.y = event.tfinger.y * game->scaledHeight;
 
-		if (event.key.keysym.sym == SDLK_b || event.key.keysym.sym == SDLK_e)
-		{
-			if (state == State::SelectBlockMenu)
+			for (auto touchPosition = touchPositions.begin(); touchPosition != touchPositions.end(); touchPosition++)
 			{
-				closeMenu();
-				return false;
-			}
-			else if (state == State::None)
-			{
-				openMenu(State::SelectBlockMenu);
-				return false;
-			}
-		}
-
-		if (event.key.keysym.sym == SDLK_F2)
-		{
-			game->ui.log("Players: " + std::to_string(game->network.count()));
-		}
-
-		if (event.key.keysym.sym == SDLK_F3)
-		{
-			auto crc32 = [](unsigned char* data, size_t length) {
-				unsigned int crc;
-				crc = 0xFFFFFFFFu;
-
-				for (int i = 0; i < length; i++)
+				if (touchPosition->id == event.tfinger.fingerId)
 				{
-					crc ^= (data[i] << 24u);
-
-					for (int j = 0; j < 8; j++)
+					if (glm::abs(event.tfinger.dx) > 0.003f || glm::abs(event.tfinger.dy) > 0.003f)
 					{
-						unsigned int msb = crc >> 31u;
-						crc <<= 1u;
-						crc ^= (0u - msb) & 0x04C11DB7u;
+						touchPosition->hold = false;
 					}
+
+					if (state == State::None && touchPosition->swipe)
+					{
+						game->localPlayer.turn(event.tfinger.dx * game->width, event.tfinger.dy * game->height);
+					}
+
+					touchPosition->x = event.tfinger.x * game->scaledWidth;
+					touchPosition->y = event.tfinger.y * game->scaledHeight;
+					break;
 				}
-
-				return crc;
-			};
-
-			auto hash = crc32(game->level.blocks.get(), game->level.width * game->level.height * game->level.depth);
-			game->ui.log("CRC32 checksum: " + std::to_string(hash));
-		}
-
-		if (event.key.keysym.sym == SDLK_F4)
-		{
-			std::stringstream log{};
-			log << "Build date: ";
-			log << __DATE__;
-			log << " ";
-			log << __TIME__;
-
-			game->ui.log(log.str());
-		}
-
-		if (event.key.keysym.sym == SDLK_F5)
-		{
-			game->ui.isTouch = !game->ui.isTouch;
-
-			std::stringstream log{};
-			log << "Touch: ";
-			log << (game->ui.isTouch ? "enabled" : "disabled");
-
-			game->ui.log(log.str());
-		}
-	}
-	else if (event.type == SDL_MOUSEMOTION)
-	{
-		if (state != State::None)
-		{
-			mousePosition.x = float(event.motion.x) / float(game->scaleFactor);
-			mousePosition.y = float(event.motion.y) / float(game->scaleFactor);
+			}
 
 			update();
-			return false;
 		}
-	}
-	else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
-	{
-		if (state != State::None)
+		else if (event.type == SDL_FINGERDOWN)
 		{
-			mouseState = MouseState::Down;
+			touchPositions.push_back({
+				event.tfinger.fingerId,
+				event.tfinger.x * game->scaledWidth,
+				event.tfinger.y * game->scaledHeight,
+				game->timer.milliTime(),
+				true,
+				true,
+				false,
+			});
 
 			update();
-			return false;
 		}
-	}
-	else if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
-	{
-		if (state != State::None)
+		else if (event.type == SDL_FINGERUP)
 		{
-			mouseState = MouseState::Up;
-
-			update();
-			return false;
-		}
-	}
-	else if (event.type == SDL_FINGERMOTION)
-	{
-		for (auto touchPosition = touchPositions.begin(); touchPosition != touchPositions.end(); touchPosition++)
-		{
-			if (touchPosition->id == event.tfinger.fingerId)
+			for (auto touchPosition = touchPositions.begin(); touchPosition != touchPositions.end(); touchPosition++)
 			{
-				if (glm::abs(event.tfinger.dx) > 0.003f || glm::abs(event.tfinger.dy) > 0.003f)
+				if (touchPosition->id == event.tfinger.fingerId)
 				{
-					touchPosition->hold = false;
-				}
+					if (touchPosition->isHolding)
+					{
+						game->localPlayer.interactState &= ~LocalPlayer::Interact::Interact_Left;
+					}
+					else if (touchPosition->hold && game->timer.milliTime() - touchPosition->startTime <= 100)
+					{
+						game->localPlayer.interactState |= LocalPlayer::Interact::Interact_Right;
+						game->localPlayer.interact();
+						game->localPlayer.interactState &= ~LocalPlayer::Interact::Interact_Right;
+					}
 
-				if (state == State::None && touchPosition->swipe)
+					touchPositions.erase(touchPosition);
+					break;
+				}
+			}
+
+			if (state != State::None)
+			{
+				mousePosition.x = event.tfinger.x * game->scaledWidth;
+				mousePosition.y = event.tfinger.y * game->scaledHeight;
+				mouseState = MouseState::Down;
+			}
+
+			update();
+
+			if (state != State::None)
+			{
+				mouseState = MouseState::Up;
+			}			
+		}
+
+		return false;
+	}
+	else
+	{
+		if (event.type == SDL_KEYUP)
+		{
+			if (event.key.keysym.sym == SDLK_ESCAPE)
+			{
+				if (state == State::None)
 				{
-					game->localPlayer.turn(event.tfinger.dx * game->width, event.tfinger.dy * game->height);
+					openMainMenu();
+					return false;
 				}
+				else if (state == State::SaveMenu || state == State::LoadMenu)
+				{
+					openMainMenu();
+					return false;
+				}
+				else if (state == State::MainMenu)
+				{
+					closeMenu();
+					return false;
+				}
+			}
 
-				touchPosition->x = event.tfinger.x * game->scaledWidth;
-				touchPosition->y = event.tfinger.y * game->scaledHeight;
-				break;
+			if (event.key.keysym.sym == SDLK_b || event.key.keysym.sym == SDLK_e)
+			{
+				if (state == State::SelectBlockMenu)
+				{
+					closeMenu();
+					return false;
+				}
+				else if (state == State::None)
+				{
+					openMenu(State::SelectBlockMenu);
+					return false;
+				}
 			}
 		}
-
-		update();
-		return false;
-	}
-	else if (event.type == SDL_FINGERDOWN)
-	{
-		touchPositions.push_back({ 
-			event.tfinger.fingerId, 
-			event.tfinger.x * game->scaledWidth,
-			event.tfinger.y * game->scaledHeight,
-			game->timer.milliTime(),
-			true,
-			true,
-			false,
-		});
-
-		update();
-		return false;
-	}
-	else if (event.type == SDL_FINGERUP)
-	{
-		for (auto touchPosition = touchPositions.begin(); touchPosition != touchPositions.end(); touchPosition++)
+		else if (event.type == SDL_MOUSEMOTION)
 		{
-			if (touchPosition->id == event.tfinger.fingerId)
+			if (state != State::None)
 			{
-				if (touchPosition->isHolding)
-				{
-					game->localPlayer.interactState &= ~LocalPlayer::Interact::Interact_Left;
-				}
-				else if (touchPosition->hold && game->timer.milliTime() - touchPosition->startTime <= 100)
-				{
-					game->localPlayer.interactState |= LocalPlayer::Interact::Interact_Right;
-					game->localPlayer.interact();
-					game->localPlayer.interactState &= ~LocalPlayer::Interact::Interact_Right;
-				}
+				mousePosition.x = float(event.motion.x) / float(game->scaleFactor);
+				mousePosition.y = float(event.motion.y) / float(game->scaleFactor);
 
-				touchPositions.erase(touchPosition);
-				break;
+				update();
+				return false;
 			}
 		}
+		else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+		{
+			if (state != State::None)
+			{
+				mouseState = MouseState::Down;
 
-		update();
-		return false;
+				update();
+				return false;
+			}
+		}
+		else if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
+		{
+			if (state != State::None)
+			{
+				mouseState = MouseState::Up;
+
+				update();
+				return false;
+			}
+		}
 	}
 
-	return !isTouch;
+	return true;
 }
 
 void UI::refresh()
@@ -472,7 +440,7 @@ void UI::tick()
 				!touchPosition->isHolding &&
 				game->timer.milliTime() - touchPosition->startTime >= 350 &&
 				!(game->localPlayer.interactState & LocalPlayer::Interact::Interact_Left)
-				)
+			)
 			{
 				game->localPlayer.interactState |= LocalPlayer::Interact::Interact_Left;
 
@@ -864,7 +832,8 @@ void UI::drawTouchControls()
 	float buttonOffsetX = 30.0f;
 	float buttonOffsetY = 25.0f;
 
-	float buttonSize = std::max(game->scaledHeight, game->scaledWidth) * 0.05f;
+	float buttonSize = std::max(game->scaledHeight, game->scaledWidth) * 0.06f;
+	float jumpButtonSize = std::max(game->scaledHeight, game->scaledWidth) * 0.0625f;
 
 	bool middleTouch = drawTouchButton(UI::Cancel_Hold | UI::Cancel_Swipe, buttonOffsetX + buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "", buttonSize, buttonSize);
 
@@ -904,7 +873,7 @@ void UI::drawTouchControls()
 		game->localPlayer.moveState &= ~LocalPlayer::Move::Move_Forward;
 	}
 
-	if (drawTouchButton(UI::Cancel_Hold, game->scaledWidth - buttonOffsetX - buttonSize * 1.25f, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "\x4", buttonSize * 1.25f, buttonSize * 1.25f))
+	if (drawTouchButton(UI::Cancel_Hold, game->scaledWidth - buttonOffsetX - 1.5f * buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "\x4", jumpButtonSize, jumpButtonSize))
 	{
 		game->localPlayer.moveState |= LocalPlayer::Move::Move_Jump;
 	}

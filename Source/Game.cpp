@@ -12,6 +12,7 @@
 #include <glm/gtc/type_ptr.hpp> 
 #include <ctime>
 #include <cstdio>
+#include <sstream>
 
 #ifdef EMSCRIPTEN
 #include <emscripten/html5.h>
@@ -201,6 +202,60 @@ void Game::input(const SDL_Event& event)
             {
                 ui.openMainMenu();
             }
+        }
+    }
+    else if (event.type == SDL_KEYUP)
+    {
+        if (event.key.keysym.sym == SDLK_F2)
+        {
+            ui.log("Players: " + std::to_string(network.count()));
+        }
+
+        if (event.key.keysym.sym == SDLK_F3)
+        {
+            auto crc32 = [](unsigned char* data, size_t length) {
+                unsigned int crc;
+                crc = 0xFFFFFFFFu;
+
+                for (int i = 0; i < length; i++)
+                {
+                    crc ^= (data[i] << 24u);
+
+                    for (int j = 0; j < 8; j++)
+                    {
+                        unsigned int msb = crc >> 31u;
+                        crc <<= 1u;
+                        crc ^= (0u - msb) & 0x04C11DB7u;
+                    }
+                }
+
+                return crc;
+            };
+
+            auto hash = crc32(level.blocks.get(), level.width * level.height * level.depth);
+            ui.log("CRC32 checksum: " + std::to_string(hash));
+        }
+
+        if (event.key.keysym.sym == SDLK_F4)
+        {
+            std::stringstream log{};
+            log << "Build date: ";
+            log << __DATE__;
+            log << " ";
+            log << __TIME__;
+
+            ui.log(log.str());
+        }
+
+        if (event.key.keysym.sym == SDLK_F5)
+        {
+            ui.isTouch = !ui.isTouch;
+
+            std::stringstream log{};
+            log << "Touch: ";
+            log << (ui.isTouch ? "enabled" : "disabled");
+
+            ui.log(log.str());
         }
     }
     else if (event.type == SDL_QUIT)
