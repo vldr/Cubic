@@ -45,6 +45,9 @@ public:
 		(unsigned char)Block::Type::BLOCK_SLAB,
 	};
 
+	AABBPosition selected;
+	int selectedIndex;
+private:
 	enum Move {
 		Move_None = 0,
 		Move_Left = 1 << 0,
@@ -65,14 +68,13 @@ public:
 	unsigned int moveState = Move::Move_None;
 	unsigned int interactState = Interact::Interact_None;
 
-	AABBPosition selected;
-	int selectedIndex;
-private:
 	uint64_t lastClick;
 
 	const float CAMERA_OFFSET = 0.10f;
 	const float BUILD_SPEED = 5.0f;
 	const float REACH = 5.0f;
 	const glm::vec3 UP = glm::vec3(0.0, 1.0, 0.0);
+
+	friend class UI;
 };
 

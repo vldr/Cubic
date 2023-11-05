@@ -873,8 +873,13 @@ void UI::drawTouchControls()
 		game->localPlayer.moveState &= ~LocalPlayer::Move::Move_Forward;
 	}
 
-	if (drawTouchButton(UI::Cancel_Hold, game->scaledWidth - buttonOffsetX - 1.5f * buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, "\x4", jumpButtonSize, jumpButtonSize))
+	if (drawTouchButton(UI::Cancel_Hold, game->scaledWidth - buttonOffsetX - 1.5f * buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, 65.0f, game->localPlayer.noPhysics ? "\x8" : "\x4", jumpButtonSize, jumpButtonSize))
 	{
+		if (middleTouch && game->localPlayer.moveState == LocalPlayer::Move::Move_None)
+		{
+			game->localPlayer.noPhysics = !game->localPlayer.noPhysics;
+		}
+
 		game->localPlayer.moveState |= LocalPlayer::Move::Move_Jump;
 	}
 	else
@@ -900,7 +905,7 @@ void UI::drawTouchControls()
 
 	for (int i = 0; i < game->localPlayer.inventorySize + 1; i++)
 	{
-		bool touched = drawTouchButton(UI::Cancel_Hold, game->scaledWidth / 2 - 90 + float(i) * 20 - (isTouch * 8), game->scaledHeight - 22, 65.0f, "", 20, 22, true);
+		bool touched = drawTouchButton(UI::Cancel_Hold | UI::Cancel_Swipe, game->scaledWidth / 2 - 90 + float(i) * 20 - (isTouch * 8), game->scaledHeight - 22, 65.0f, "", 20, 22, true);
 
 		if (i == game->localPlayer.inventorySize)
 		{
