@@ -987,13 +987,7 @@ void UI::drawLogs()
 
 void UI::drawHotbar()
 {
-	drawInterface(game->scaledWidth / 2 - 91 - (isTouch * 21 / 2), game->scaledHeight - 22, 0, 0, 182, 22);
-
-	if (isTouch)
-	{
-		drawInterface(game->scaledWidth / 2 + 90 - (isTouch * 21 / 2), game->scaledHeight - 22, 48, 23, 21, 22);
-	}
-
+	drawInterface(game->scaledWidth / 2 - 91 - (isTouch * 21 / 2), game->scaledHeight - 22, (isTouch * 48), (isTouch * 23), 182 + (isTouch * 21), 22);
 	drawInterface(game->scaledWidth / 2 - 92 + float(game->localPlayer.inventoryIndex) * 20 - (isTouch * 21 / 2), game->scaledHeight - 23, 0, 22, 24, 22);
 
 	for (int i = 0; i < game->localPlayer.inventorySize; i++)
