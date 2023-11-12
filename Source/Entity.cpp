@@ -63,21 +63,21 @@ void Entity::tick()
 	oldPosition.y = position.y;
 	oldPosition.z = position.z;
 
-	oldRotation.x = rotation.x;
 	oldRotation.y = rotation.y;
+	oldRotation.x = rotation.x;
 }
 
-void Entity::turn(float ry, float rx) 
+void Entity::turn(float rx, float ry) 
 {
-	float orx = rotation.x;
 	float ory = rotation.y;
+	float orx = rotation.x;
 
-	rotation.x -= rx * 0.15f;
-	rotation.y += ry * 0.15f;
-	rotation.x = rotation.x < -90.0f ? -89.9f : (rotation.x > 90.0f ? 89.9f : rotation.x);
+	rotation.y -= ry;
+	rotation.x += rx;
+	rotation.y = rotation.y < -90.0f ? -89.9f : (rotation.y > 90.0f ? 89.9f : rotation.y);
 
-	oldRotation.x += rotation.x - orx; 
-	oldRotation.y += rotation.y - ory;
+	oldRotation.y += rotation.y - ory; 
+	oldRotation.x += rotation.x - orx;
 }
 
 bool Entity::isFree(float ax, float ay, float az) 
@@ -112,8 +112,8 @@ void Entity::moveRelative(float x, float z, float speed)
 		x *= length;
 		z *= length;
 
-		float s = glm::sin(glm::radians(rotation.y));
-		float c = glm::cos(glm::radians(rotation.y));
+		float s = glm::sin(glm::radians(rotation.x));
+		float c = glm::cos(glm::radians(rotation.x));
 
 		velocity.x += x * c - z * s;
 		velocity.z += z * c + x * s;

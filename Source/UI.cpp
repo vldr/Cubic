@@ -135,7 +135,7 @@ bool UI::input(const SDL_Event& event)
 
 					if (state == State::None && touchPosition->swipe)
 					{
-						game->localPlayer.turn(event.tfinger.dx * game->width, event.tfinger.dy * game->height);
+						game->localPlayer.turn(event.tfinger.dx * 360.0f, event.tfinger.dy * 180.0f);
 					}
 
 					touchPosition->x = event.tfinger.x * game->scaledWidth;
@@ -985,9 +985,9 @@ void UI::drawLogs()
 	}
 }
 
-void UI::drawHotbar()
+void UI::drawHotbar() 
 {
-	drawInterface(game->scaledWidth / 2 - 91 - (isTouch * 21 / 2), game->scaledHeight - 22, (isTouch * 48), (isTouch * 23), 182 + (isTouch * 21), 22);
+	drawInterface(game->scaledWidth / 2 - 91 - (isTouch * 21 / 2), game->scaledHeight - 22, float(isTouch * 48), float(isTouch * 23), 182 + float(isTouch * 21), 22);
 	drawInterface(game->scaledWidth / 2 - 92 + float(game->localPlayer.inventoryIndex) * 20 - (isTouch * 21 / 2), game->scaledHeight - 23, 0, 22, 24, 22);
 
 	for (int i = 0; i < game->localPlayer.inventorySize; i++)
@@ -999,7 +999,7 @@ void UI::drawHotbar()
 
 		drawBlock(blockType, x, y, 9.8f);
 	}
-}
+} 
 
 void UI::drawBlock(unsigned char blockType, float x, float y, float scale)
 {

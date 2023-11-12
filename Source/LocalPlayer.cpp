@@ -22,8 +22,8 @@ void LocalPlayer::init(Game* game)
 
 void LocalPlayer::update()
 {
-    viewAngles.y = glm::radians(rotation.x);
-    viewAngles.x = glm::radians(-rotation.y);
+    viewAngles.y = glm::radians(rotation.y);
+    viewAngles.x = glm::radians(-rotation.x);
 
     lookAt.x = glm::sin(viewAngles.x) * glm::cos(viewAngles.y);
     lookAt.y = glm::sin(viewAngles.y);
@@ -428,8 +428,8 @@ void LocalPlayer::input(const SDL_Event& event)
         else if (event.type == SDL_MOUSEMOTION)
         {
             turn(
-                (float)event.motion.xrel,
-                (float)event.motion.yrel
+                (float)event.motion.xrel * 0.15f,
+                (float)event.motion.yrel * 0.15f
             );
         }
     }

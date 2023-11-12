@@ -119,12 +119,12 @@ void Particle::update()
 	{ 
 		const auto viewPosition = oldPosition + ((position - oldPosition) * game->timer.delta);
 
-		float x = -glm::cos(glm::radians(game->localPlayer.rotation.y));
-		float z = -glm::sin(glm::radians(game->localPlayer.rotation.y));
-		float y = glm::cos(glm::radians(game->localPlayer.rotation.x));
+		float x = -glm::cos(glm::radians(game->localPlayer.rotation.x));
+		float z = -glm::sin(glm::radians(game->localPlayer.rotation.x));
+		float y = glm::cos(glm::radians(game->localPlayer.rotation.y));
 
-		float rotX = -z * glm::sin(glm::radians(game->localPlayer.rotation.x));
-		float rotZ = x * glm::sin(glm::radians(game->localPlayer.rotation.x));
+		float rotX = -z * glm::sin(glm::radians(game->localPlayer.rotation.y));
+		float rotZ = x * glm::sin(glm::radians(game->localPlayer.rotation.y));
 
 		float vertices[ParticleManager::verticesPerParticle * 3] =
 		{
