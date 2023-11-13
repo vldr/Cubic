@@ -250,12 +250,7 @@ void Game::input(const SDL_Event& event)
         if (event.key.keysym.sym == SDLK_F5)
         {
             ui.isTouch = !ui.isTouch;
-
-            std::stringstream log{};
-            log << "Touch: ";
-            log << (ui.isTouch ? "enabled" : "disabled");
-
-            ui.log(log.str());
+            ui.update();
         }
     }
     else if (event.type == SDL_QUIT)

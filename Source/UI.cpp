@@ -905,7 +905,7 @@ void UI::drawTouchControls()
 
 	for (int i = 0; i < game->localPlayer.inventorySize + 1; i++)
 	{
-		bool touched = drawTouchButton(UI::Cancel_Hold | UI::Cancel_Swipe, game->scaledWidth / 2 - 90 + float(i) * 20 - (isTouch * 21 / 2), game->scaledHeight - 22, 65.0f, "", 20, 22, true);
+		bool touched = drawTouchButton(UI::Cancel_Hold | UI::Cancel_Swipe, game->scaledWidth / 2 - 90 + float(i) * 20 - 21 / 2, game->scaledHeight - 22 - 3.0f, 65.0f, "", 20, 22, true);
 
 		if (i == game->localPlayer.inventorySize)
 		{
@@ -987,15 +987,15 @@ void UI::drawLogs()
 
 void UI::drawHotbar() 
 {
-	drawInterface(game->scaledWidth / 2 - 91 - (isTouch * 21 / 2), game->scaledHeight - 22, float(isTouch * 48), float(isTouch * 23), 182 + float(isTouch * 21), 22);
-	drawInterface(game->scaledWidth / 2 - 92 + float(game->localPlayer.inventoryIndex) * 20 - (isTouch * 21 / 2), game->scaledHeight - 23, 0, 22, 24, 22);
+	drawInterface(game->scaledWidth / 2 - 91 - (isTouch * 21 / 2), game->scaledHeight - 22 - (isTouch * 3.0f), float(isTouch * 48), float(isTouch * 23), 182 + float(isTouch * 21), 22);
+	drawInterface(game->scaledWidth / 2 - 92 + float(game->localPlayer.inventoryIndex) * 20 - (isTouch * 21 / 2), game->scaledHeight - 23 - (isTouch * 3.0f), 0, 22, 24, 24);
 
 	for (int i = 0; i < game->localPlayer.inventorySize; i++)
 	{
 		auto blockType = game->localPlayer.inventory[i];
 
 		float x = game->scaledWidth / 2.0f - 86.8f + i * 20.0f - (isTouch * 21 / 2);
-		float y = game->scaledHeight - 6.8f;
+		float y = game->scaledHeight - 6.8f - (isTouch * 3.0f);
 
 		drawBlock(blockType, x, y, 9.8f);
 	}
