@@ -100,7 +100,6 @@ void Game::init(SDL_Window* sdlWindow)
     this->atlasTexture = textureManager.load(terrainResourceTexture, sizeof(terrainResourceTexture));
     this->shader = shaderManager.load(vertexSource, fragmentSource);
 
-    SDL_GetWindowSize(window, &width, &height);
     resize();
 
     glEnable(GL_DEPTH_TEST);
@@ -191,9 +190,6 @@ void Game::input(const SDL_Event& event)
     {
         if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
         {
-            width = event.window.data1;
-            height = event.window.data2;
-
             resize();
         }
         else if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
@@ -266,28 +262,21 @@ void Game::input(const SDL_Event& event)
 
 void Game::resize()
 {
-#ifdef EMSCRIPTEN
-    float dpi = emscripten_get_device_pixel_ratio();
-    if (dpi > 2.0f)
-    {
-        dpi = 2.0f;
-    }
-
-    width = (int)(window_width() * dpi + 0.5f);
-    height = (int)(window_height() * dpi + 0.5f);
-
-    SDL_SetWindowSize(window, width, height);
-#endif
-
+    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+    SDL_GL_GetDrawableSize(window, &width, &height);
     glViewport(0, 0, width, height);
 
     scaledWidth = float(width);
     scaledHeight = float(height);
 
-    scaleFactor = 1;
-    scaleCount = 3;
+    int maxScaleFactor = 3;
+    int scaleFactor = 1;
 
-    while (scaleFactor < scaleCount && scaledWidth / (scaleFactor + 1) >= 320 && scaledHeight / (scaleFactor + 1) >= 240)
+#ifdef EMSCRIPTEN
+    maxScaleFactor *= emscripten_get_device_pixel_ratio();
+#endif
+
+    while (scaleFactor < maxScaleFactor && scaledWidth / (scaleFactor + 1) >= 320 && scaledHeight / (scaleFactor + 1) >= 240)
     {
         scaleFactor++;
     }

@@ -15,13 +15,6 @@
 Game game;
 
 #ifdef EMSCRIPTEN
-static EM_BOOL resize(int eventType, const EmscriptenUiEvent* uiEvent, void* userData)
-{
-	game.resize();
-
-	return true;
-}
-
 static EM_BOOL pointer_lock_change(int eventType, const EmscriptenPointerlockChangeEvent* pointerlockChangeEvent, void* userData)
 {
 	static bool previousIsActive = false;
@@ -68,11 +61,8 @@ int main(int argc, char** argv)
 
 	auto window = SDL_CreateWindow("Cubic",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		1280, 720, 
-		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN 
-#ifndef EMSCRIPTEN
-		| SDL_WINDOW_RESIZABLE
-#endif
+		1280, 720,
+		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI
 	);
 
 	if (!window)
@@ -110,7 +100,6 @@ int main(int argc, char** argv)
 
 	emscripten_webgl_make_context_current(context);
 	emscripten_set_pointerlockchange_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, nullptr, false, pointer_lock_change);
-	emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, nullptr, false, resize);
 
 	EM_ASM(
 		FS.mkdir('/saves');

@@ -128,7 +128,7 @@ bool UI::input(const SDL_Event& event)
 			{
 				if (touchPosition->id == event.tfinger.fingerId)
 				{
-					if (glm::abs(event.tfinger.dx) > 0.003f || glm::abs(event.tfinger.dy) > 0.003f)
+					if (glm::abs(event.tfinger.dx) > 0.0035f || glm::abs(event.tfinger.dy) > 0.0035f)
 					{
 						touchPosition->hold = false;
 					}
@@ -170,7 +170,7 @@ bool UI::input(const SDL_Event& event)
 					{
 						game->localPlayer.interactState &= ~LocalPlayer::Interact::Interact_Left;
 					}
-					else if (touchPosition->hold && game->timer.milliTime() - touchPosition->startTime <= 100)
+					else if (touchPosition->hold && game->timer.milliTime() - touchPosition->startTime <= 200)
 					{
 						game->localPlayer.interactState |= LocalPlayer::Interact::Interact_Right;
 						game->localPlayer.interact();
@@ -240,8 +240,8 @@ bool UI::input(const SDL_Event& event)
 		{
 			if (state != State::None)
 			{
-				mousePosition.x = float(event.motion.x) / float(game->scaleFactor);
-				mousePosition.y = float(event.motion.y) / float(game->scaleFactor);
+				mousePosition.x = float(event.motion.x) / float(game->windowWidth) * game->scaledWidth;
+				mousePosition.y = float(event.motion.y) / float(game->windowHeight) * game->scaledHeight;
 
 				update();
 				return false;
@@ -987,7 +987,13 @@ void UI::drawLogs()
 
 void UI::drawHotbar() 
 {
-	drawInterface(game->scaledWidth / 2 - 91 - (isTouch * 21 / 2), game->scaledHeight - 22, float(isTouch * 48), float(isTouch * 23), 182 + float(isTouch * 21), 22);
+	drawInterface(game->scaledWidth / 2 - 91 - (isTouch * 21 / 2), game->scaledHeight - 22, 0, 0, 182 + float(isTouch * 21), 22);
+
+	if (isTouch)
+	{
+		drawInterface(game->scaledWidth / 2 - 91 + 181 - 21 / 2, game->scaledHeight - 22, 48, 23, 21, 22);
+	}
+
 	drawInterface(game->scaledWidth / 2 - 92 + float(game->localPlayer.inventoryIndex) * 20 - (isTouch * 21 / 2), game->scaledHeight - 23, 0, 22, 24, 24);
 
 	for (int i = 0; i < game->localPlayer.inventorySize; i++)
