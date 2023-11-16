@@ -12,7 +12,7 @@ class Random;
 class LevelGenerator
 {
 public:
-	void init(Game* game, int size = 0);
+	void init(Game* game);
 	void update();
 
 private:

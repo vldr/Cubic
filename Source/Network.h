@@ -1,5 +1,6 @@
 #pragma once
 #include "Player.h"
+#include "Level.h"
 
 #include <vector>
 #include <string>
@@ -66,7 +67,7 @@ private:
         bool respawn;
 
         int length;
-        unsigned char data[(128 * 64 * 128) * 2];
+        unsigned char data[2 * Level::WIDTH * Level::HEIGHT * Level::DEPTH];
     };
 #pragma pack(pop)
 

@@ -17,9 +17,9 @@ void LevelRenderer::init(Game* game)
 
     skybox.init(game);
 
-    xChunks = game->level.width / Chunk::WIDTH;
-    yChunks = game->level.height / Chunk::HEIGHT;
-    zChunks = game->level.depth / Chunk::DEPTH;
+    xChunks = Level::WIDTH / Chunk::WIDTH;
+    yChunks = Level::HEIGHT / Chunk::HEIGHT;
+    zChunks = Level::DEPTH / Chunk::DEPTH;
     chunks = std::make_unique<Chunk[]>(xChunks * yChunks * zChunks);
 
     for (int x = 0; x < xChunks; x++)

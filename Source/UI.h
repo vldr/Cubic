@@ -88,12 +88,14 @@ private:
 	void load(int index);
 	void save(int index);
 
-	void drawTouchControls();
 	void drawHUD();
+	void drawFPS();
+	void drawCrosshair();
 	void drawLogs();
 	void drawHotbar();
 	void drawBlock(unsigned char blockType, float x, float y, float scale);
 
+	bool drawTouchControls();
 	bool drawMainMenu();
 	bool drawStatusMenu();
 
@@ -103,7 +105,7 @@ private:
 	bool drawSelectBlockMenu();
 	bool drawSelectBlockButton(unsigned char blockType, unsigned char& selectedBlockType, float x, float y, float width, float height);
 
-	bool drawTouchButton(unsigned int flag, float x, float y, float z, const char* text, float width = 200.0f, float height = 20.0f, bool invisible = false);
+	bool drawTouchButton(unsigned int flag, float x, float y, float z, const char* text, float width = 200.0f, float height = 20.0f, bool multiTouch = true, bool invisible = false);
 
 	bool drawButton(float x, float y, float z, const char* text, int state = 1, float width = 200.0f, float height = 20.0f);
 	bool drawButton(float x, float y, const char* text);

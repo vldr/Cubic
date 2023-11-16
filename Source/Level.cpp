@@ -6,24 +6,21 @@
 #include <glm/glm.hpp>
 #include <random>
 
-void Level::init(Game* game, int width, int depth)
+void Level::init(Game* game)
 {
 	this->game = game;
-	this->width = width;
-	this->height = 64;
-	this->depth = depth;
-	this->waterLevel = height / 2;
+	this->waterLevel = Level::HEIGHT / 2;
 	this->groundLevel = this->waterLevel - 2;
-	this->blocks = std::make_unique<unsigned char[]>(width * height * depth);
+	this->blocks = std::make_unique<unsigned char[]>(Level::WIDTH * Level::HEIGHT * Level::DEPTH);
 
-	this->spawn.x = this->width - 1.0f;
-	this->spawn.x = this->height - 1.0f;
-	this->spawn.x = this->depth - 1.0f;
+	this->spawn.x = Level::WIDTH - 1.0f;
+	this->spawn.x = Level::HEIGHT - 1.0f;
+	this->spawn.x = Level::DEPTH - 1.0f;
 
-	this->lightDepths = std::make_unique<int[]>(width * depth);
-	for (int i = 0; i < width * depth; i++)
+	this->lightDepths = std::make_unique<int[]>(Level::WIDTH * Level::DEPTH);
+	for (int i = 0; i < Level::WIDTH * Level::DEPTH; i++)
 	{
-		this->lightDepths[i] = this->height - 1;
+		this->lightDepths[i] = Level::HEIGHT - 1;
 	}
 }
 
@@ -88,7 +85,7 @@ bool Level::canFlood(int x, int y, int z)
 
 bool Level::isTileLit(int x, int y, int z)
 {
-	return !(x < 0 || y < 0 || z < 0 || x >= width || y >= height || z >= depth) ? y >= lightDepths[x + z * width] : true;
+	return !(x < 0 || y < 0 || z < 0 || x >= Level::WIDTH || y >= Level::HEIGHT || z >= Level::DEPTH) ? y >= lightDepths[x + z * Level::WIDTH] : true;
 }
 
 float Level::getTileBrightness(int x, int y, int z)
@@ -129,7 +126,7 @@ unsigned int Level::getTileAABBCount(AABB box)
 		{
 			for (int k = z0; k < z1; k++)
 			{
-				if (i >= 0 && j >= 0 && k >= 0 && i < width && j < height && k < depth)
+				if (i >= 0 && j >= 0 && k >= 0 && i < Level::WIDTH && j < Level::HEIGHT && k < Level::DEPTH)
 				{
 					Block::Definition blockDefinition = Block::Definitions[getTile(i, j, k)];
 
@@ -150,7 +147,7 @@ unsigned int Level::getTileAABBCount(AABB box)
 						}
 					}
 				}
-				else if (i < 0 || j < 0 || k < 0 || i >= width || k >= depth)
+				else if (i < 0 || j < 0 || k < 0 || i >= Level::WIDTH || k >= Level::DEPTH)
 				{
 					if (j < groundLevel)
 					{
@@ -206,7 +203,7 @@ std::vector<AABB> Level::getTileAABB(AABB box)
 		{
 			for (int k = z0; k < z1; k++)
 			{
-				if (i >= 0 && j >= 0 && k >= 0 && i < width && j < height && k < depth)
+				if (i >= 0 && j >= 0 && k >= 0 && i < Level::WIDTH && j < Level::HEIGHT && k < Level::DEPTH)
 				{
 					Block::Definition blockDefinition = Block::Definitions[getTile(i, j, k)];
 
@@ -227,7 +224,7 @@ std::vector<AABB> Level::getTileAABB(AABB box)
 						}
 					}
 				}
-				else if (i < 0 || j < 0 || k < 0 || i >= width || k >= depth)
+				else if (i < 0 || j < 0 || k < 0 || i >= Level::WIDTH || k >= Level::DEPTH)
 				{
 					if (j < groundLevel)
 					{
@@ -283,7 +280,7 @@ bool Level::containsAnyLiquid(AABB box)
 			{
 				Block::Definition blockDefinition = Block::Definitions[(unsigned char)getTile(i, j, k)];
 
-				if (i < 0 || j < 0 || k < 0 || i >= width || k >= depth)
+				if (i < 0 || j < 0 || k < 0 || i >= Level::WIDTH || k >= Level::DEPTH)
 				{
 					if (j < waterLevel && j > groundLevel)
 					{
@@ -326,7 +323,7 @@ bool Level::containsLiquid(AABB box, Block::Type blockType)
 		{
 			for (int k = z0; k < z1; k++)
 			{
-				if (i < 0 || j < 0 || k < 0 || i >= width || k >= depth)
+				if (i < 0 || j < 0 || k < 0 || i >= Level::WIDTH || k >= Level::DEPTH)
 				{
 					if (
 						j < waterLevel && 
@@ -352,11 +349,11 @@ void Level::calculateSpawnPosition()
 {
 	glm::vec3 maxPosition = glm::vec3(-INFINITY, -INFINITY, -INFINITY);
 
-	for (int x = 0; x < width; x++)
+	for (int x = 0; x < Level::WIDTH; x++)
 	{
-		for (int z = 0; z < depth; z++)
+		for (int z = 0; z < Level::DEPTH; z++)
 		{
-			int y = lightDepths[x + z * width];
+			int y = lightDepths[x + z * Level::WIDTH];
 
 			if (
 				getTile(x, y + 1, z) == (unsigned char)Block::Type::BLOCK_AIR &&
@@ -387,8 +384,8 @@ void Level::calculateLightDepths(int x, int z, int offsetX, int offsetZ)
 	{
 		for (int j = z; j < z + offsetZ; j++)
 		{
-			int blocker = lightDepths[i + j * width];
-			int k = height - 1;
+			int blocker = lightDepths[i + j * Level::WIDTH];
+			int k = Level::HEIGHT - 1;
 
 			while (
 				!Block::Definitions[getTile(i, k, j)].blocksLight &&
@@ -398,7 +395,7 @@ void Level::calculateLightDepths(int x, int z, int offsetX, int offsetZ)
 				k--;
 			}
 
-			lightDepths[i + j * width] = k;
+			lightDepths[i + j * Level::WIDTH] = k;
 
 			if (blocker != k)
 			{
@@ -413,12 +410,12 @@ void Level::calculateLightDepths(int x, int z, int offsetX, int offsetZ)
 
 unsigned char Level::getTile(int x, int y, int z)
 {
-	return isInBounds(x, y, z) ? blocks[(z * height + y) * width + x] : (unsigned char)Block::Type::BLOCK_AIR;
+	return isInBounds(x, y, z) ? blocks[(z * Level::HEIGHT + y) * Level::WIDTH + x] : (unsigned char)Block::Type::BLOCK_AIR;
 }
 
 unsigned char Level::getRenderTile(int x, int y, int z)
 {
-	if (x < 0 || y < 0 || z < 0 || x >= width || z >= depth)
+	if (x < 0 || y < 0 || z < 0 || x >= Level::WIDTH || z >= Level::DEPTH)
 	{
 		if (y < waterLevel && y >= groundLevel)
 		{
@@ -426,7 +423,7 @@ unsigned char Level::getRenderTile(int x, int y, int z)
 		}
 	}
 
-	return isInBounds(x, y, z) ? blocks[(z * height + y) * width + x] : (unsigned char)Block::Type::BLOCK_AIR;
+	return isInBounds(x, y, z) ? blocks[(z * Level::HEIGHT + y) * Level::WIDTH + x] : (unsigned char)Block::Type::BLOCK_AIR;
 }
 
 void Level::updateTile(int x, int y, int z, unsigned char tile)
@@ -544,7 +541,7 @@ void Level::removedTile(int x, int y, int z, unsigned char blockType)
 
 bool Level::setTileWithNoNeighborChange(int x, int y, int z, unsigned char blockType, bool mode)
 {
-	if (x < 0 || y < 0 || z < 0 || x >= width || y >= height || z >= depth)
+	if (x < 0 || y < 0 || z < 0 || x >= Level::WIDTH || y >= Level::HEIGHT || z >= Level::DEPTH)
 	{
 		return false;
 	}
@@ -556,7 +553,7 @@ bool Level::setTileWithNoNeighborChange(int x, int y, int z, unsigned char block
 	}
 
 	if (
-		(x == 0 || z == 0 || x == width - 1 || z == depth - 1) &&
+		(x == 0 || z == 0 || x == Level::WIDTH - 1 || z == Level::DEPTH - 1) &&
 		y >= groundLevel &&
 		y < waterLevel &&
 		blockType == (unsigned char)Block::Type::BLOCK_AIR
@@ -587,7 +584,7 @@ void Level::setTile(int x, int y, int z, unsigned char blockType, bool mode)
 {
 	if (isInBounds(x, y, z))
 	{
-		blocks[(z * height + y) * width + x] = blockType;
+		blocks[(z * Level::HEIGHT + y) * Level::WIDTH + x] = blockType;
 
 		if (game->network.isConnected() && game->network.isHost())
 		{
@@ -598,7 +595,7 @@ void Level::setTile(int x, int y, int z, unsigned char blockType, bool mode)
 
 bool Level::isInBounds(int x, int y, int z)
 {
-	return x >= 0 && y >= 0 && z >= 0 && x < width && y < height && z < depth;
+	return x >= 0 && y >= 0 && z >= 0 && x < Level::WIDTH && y < Level::HEIGHT && z < Level::DEPTH;
 }
 
 bool Level::isAirTile(int x, int y, int z)
@@ -615,7 +612,7 @@ bool Level::isAirTile(unsigned char blockType)
 
 bool Level::isRenderWaterTile(float x, float y, float z)
 {
-	if (x < 0 || y < 0 || z < 0 || x >= width || z >= depth)
+	if (x < 0 || y < 0 || z < 0 || x >= Level::WIDTH || z >= Level::DEPTH)
 	{
 		if (y < waterLevel && y > groundLevel)
 		{
@@ -787,7 +784,7 @@ AABBPosition Level::clip(glm::vec3 start, glm::vec3 end, const glm::ivec3* expec
 							aabbPosition.x = (int)neighbor.x;
 							aabbPosition.y = (int)neighbor.y;
 							aabbPosition.z = (int)neighbor.z;
-							aabbPosition.index = (aabbPosition.z * height + aabbPosition.y) * width + aabbPosition.x;
+							aabbPosition.index = (aabbPosition.z * Level::HEIGHT + aabbPosition.y) * Level::WIDTH + aabbPosition.x;
 							aabbPosition.vector = aabbPosition.vector + glm::vec3(neighbor);
 							aabbPosition.destructible = false;
 							aabbPosition.isValid = true;
@@ -828,7 +825,7 @@ AABBPosition Level::clip(glm::vec3 start, glm::vec3 end, const glm::ivec3* expec
 					aabbPosition.x = (int)origin.x;
 					aabbPosition.y = (int)origin.y;
 					aabbPosition.z = (int)origin.z;
-					aabbPosition.index = (aabbPosition.z * height + aabbPosition.y) * width + aabbPosition.x;
+					aabbPosition.index = (aabbPosition.z * Level::HEIGHT + aabbPosition.y) * Level::WIDTH + aabbPosition.x;
 					aabbPosition.vector = aabbPosition.vector + origin;
 					aabbPosition.destructible = true;
 

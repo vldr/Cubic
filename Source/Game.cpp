@@ -17,12 +17,9 @@
 #ifdef EMSCRIPTEN
 #include <emscripten/html5.h>
 
-EM_JS(float, window_width, (), {
-  return window.innerWidth;
-});
-
-EM_JS(float, window_height, (), {
-  return window.innerHeight;
+EM_JS(bool, is_fullscreen, (), {
+  return (window.fullScreen) ||
+   (window.innerWidth == screen.width && window.innerHeight == screen.height);
 });
 #endif
 
@@ -97,6 +94,7 @@ void Game::init(SDL_Window* sdlWindow)
     this->levelRenderer.init(this);
     this->lastTick = timer.milliTime();
     this->frameRate = 0;
+    this->fullscreen = false;
     this->atlasTexture = textureManager.load(terrainResourceTexture, sizeof(terrainResourceTexture));
     this->shader = shaderManager.load(vertexSource, fragmentSource);
 
@@ -228,7 +226,7 @@ void Game::input(const SDL_Event& event)
                 return crc;
             };
 
-            auto hash = crc32(level.blocks.get(), level.width * level.height * level.depth);
+            auto hash = crc32(level.blocks.get(), Level::WIDTH * Level::HEIGHT * Level::DEPTH);
             ui.log("CRC32 checksum: " + std::to_string(hash));
         }
 
@@ -274,6 +272,7 @@ void Game::resize()
 
 #ifdef EMSCRIPTEN
     maxScaleFactor *= emscripten_get_device_pixel_ratio();
+    fullscreen = is_fullscreen();
 #endif
 
     while (scaleFactor < maxScaleFactor && scaledWidth / (scaleFactor + 1) >= 320 && scaledHeight / (scaleFactor + 1) >= 240)

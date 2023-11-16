@@ -58,6 +58,7 @@ public:
 
 	int height;
 	int width;
+	bool fullscreen;
 
 	int windowHeight;
 	int windowWidth;

@@ -12,39 +12,39 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-void LevelGenerator::init(Game* game, int size)
+void LevelGenerator::init(Game* game)
 {
 	this->game = game;
-	this->game->level.init(game, 128 << size, 128 << size);
+	this->game->level.init(game);
 
 	this->state = State::Init;
 }
 
 void LevelGenerator::generateHeightMap()
 {
-	for (int z = 0; z < game->level.depth; z++)
+	for (int z = 0; z < Level::DEPTH; z++)
 	{
-		for (int x = 0; x < game->level.width; x++)
+		for (int x = 0; x < Level::WIDTH; x++)
 		{
 			float noise1Value = noise1->compute(x * 1.3f, z * 1.3f) / 6.0f - 4.0f;
 			float noise2Value = noise2->compute(x * 1.3f, z * 1.3f) / 5.0f + 6.0f;
 			if (noise3->compute((float)x, (float)z) / 8.0f > 0.0f) { noise2Value = noise1Value; }
 
 			float maxValue = glm::max(noise1Value, noise2Value) / 2.0f;
-			heights[x + z * game->level.width] = (int)maxValue;
+			heights[x + z * Level::WIDTH] = (int)maxValue;
 		} 
 	}
 
-	for (int z = 0; z < game->level.depth; z++)
+	for (int z = 0; z < Level::DEPTH; z++)
 	{
-		for (int x = 0; x < game->level.width; x++)
+		for (int x = 0; x < Level::WIDTH; x++)
 		{
 			float noise1Value = noise1->compute(x * 2.0f, z * 2.0f) / 8.0f;
 			int noise2Value = noise2->compute(x * 2.0f, z * 2.0f) > 0.0f ? 1 : 0;
 
 			if (noise1Value > 2.0f)
 			{
-				heights[x + z * game->level.width] = ((heights[x + z * game->level.width] - noise2Value) / 2 << 1) + noise2Value;
+				heights[x + z * Level::WIDTH] = ((heights[x + z * Level::WIDTH] - noise2Value) / 2 << 1) + noise2Value;
 			}
 		}
 	}
@@ -52,19 +52,19 @@ void LevelGenerator::generateHeightMap()
 
 void LevelGenerator::generateDirtStoneLava()
 {
-	for (int z = 0; z < game->level.depth; z++)
+	for (int z = 0; z < Level::DEPTH; z++)
 	{ 
-		for (int x = 0; x < game->level.width; x++)
+		for (int x = 0; x < Level::WIDTH; x++)
 		{
 			int noise3Value = (int)(noise3->compute((float)x, (float)z) / 24.0f) - 4;
-			int heightValue = heights[x + z * game->level.width] + game->level.waterLevel;
+			int heightValue = heights[x + z * Level::WIDTH] + game->level.waterLevel;
 			int combinedValue = heightValue + noise3Value;
 
-			heights[x + z * game->level.width] = heightValue > combinedValue ? heightValue : combinedValue;
-			if (heights[x + z * game->level.width] > game->level.height - 2) { heights[x + z * game->level.width] = game->level.height - 2; }
-			if (heights[x + z * game->level.width] < 1) { heights[x + z * game->level.width] = 1; }
+			heights[x + z * Level::WIDTH] = heightValue > combinedValue ? heightValue : combinedValue;
+			if (heights[x + z * Level::WIDTH] > Level::HEIGHT - 2) { heights[x + z * Level::WIDTH] = Level::HEIGHT - 2; }
+			if (heights[x + z * Level::WIDTH] < 1) { heights[x + z * Level::WIDTH] = 1; }
 
-			for (auto height = 0; height < game->level.height; height++)
+			for (auto height = 0; height < Level::HEIGHT; height++)
 			{
 				auto tile = Block::Type::BLOCK_AIR;
 
@@ -80,11 +80,11 @@ void LevelGenerator::generateDirtStoneLava()
 
 void LevelGenerator::generateWater()
 {
-	for (int z = 0; z < game->level.depth; z++)
+	for (int z = 0; z < Level::DEPTH; z++)
 	{
-		for (int x = 0; x < game->level.width; x++)
+		for (int x = 0; x < Level::WIDTH; x++)
 		{
-			int heightValue = heights[x + z * game->level.width];
+			int heightValue = heights[x + z * Level::WIDTH];
 
 			for (auto height = heightValue; height < game->level.waterLevel; height++)
 			{
@@ -99,15 +99,15 @@ void LevelGenerator::generateWater()
 
 void LevelGenerator::generateCaves()
 {
-	int size = (game->level.width * game->level.depth * game->level.height) / 256 / 64 << 1;
+	int size = (Level::WIDTH * Level::DEPTH * Level::HEIGHT) / 256 / 64 << 1;
 
 	for (int i = 0; i < size; i++) 
 	{
 		int numberOfSteps = (int)((random->uniform() + random->uniform()) * 200.0f);
 
-		float startX = (float)(random->uniform() * game->level.width);
-		float startY = (float)(random->uniform() * game->level.height);
-		float startZ = (float)(random->uniform() * game->level.depth);
+		float startX = (float)(random->uniform() * Level::WIDTH);
+		float startY = (float)(random->uniform() * Level::HEIGHT);
+		float startZ = (float)(random->uniform() * Level::DEPTH);
 
 		float angleX = (float)(random->uniform() * 2.0 * M_PI);
 		float angleY = (float)(random->uniform() * 2.0 * M_PI);
@@ -131,7 +131,7 @@ void LevelGenerator::generateCaves()
 				float currentY = startY + (float)((random->uniform() * 4.0 - 2.0) * 0.2);
 				float currentZ = startZ + (float)((random->uniform() * 4.0 - 2.0) * 0.2);
 
-				float radius = (game->level.height - currentY) / game->level.height * 2;
+				float radius = (Level::HEIGHT - currentY) / Level::HEIGHT * 2;
 				radius = 1.2f + (radius * 3.5f + 1.0f) * randomFactor;
 				radius *= glm::sin(j * (float)M_PI / numberOfSteps);
 
@@ -145,7 +145,7 @@ void LevelGenerator::generateCaves()
 							float distanceY = blockY - currentY;
 							float distanceZ = blockZ - currentZ;
 
-							if (distanceX * distanceX + 2.0 * distanceY * distanceY + distanceZ * distanceZ < radius * radius && blockX >= 1 && blockY >= 1 && blockZ >= 1 && blockX < game->level.width - 1 && blockY < game->level.height - 1 && blockZ < game->level.depth - 1) {
+							if (distanceX * distanceX + 2.0 * distanceY * distanceY + distanceZ * distanceZ < radius * radius && blockX >= 1 && blockY >= 1 && blockZ >= 1 && blockX < Level::WIDTH - 1 && blockY < Level::HEIGHT - 1 && blockZ < Level::DEPTH - 1) {
 								if (
 									game->level.getTile(blockX, blockY + 1, blockZ) != (unsigned char)Block::Type::BLOCK_WATER &&
 									game->level.getTile(blockX, blockY - 1, blockZ) != (unsigned char)Block::Type::BLOCK_WATER &&
@@ -173,15 +173,15 @@ void LevelGenerator::generateCaves()
 
 void LevelGenerator::generateOre(Block::Type blockType, int amount)
 {
-	int size = game->level.width * game->level.depth * game->level.height / 256 / 64 * amount / 100;
+	int size = Level::WIDTH * Level::DEPTH * Level::HEIGHT / 256 / 64 * amount / 100;
 
 	for (int i = 0; i < size; i++) 
 	{
 		int numberOfSteps = (int)((random->uniform() + random->uniform()) * 75.0 * amount / 100.0);
 
-		float startX = (float)(random->uniform() * game->level.width);
-		float startY = (float)(random->uniform() * game->level.height);
-		float startZ = (float)(random->uniform() * game->level.depth);
+		float startX = (float)(random->uniform() * Level::WIDTH);
+		float startY = (float)(random->uniform() * Level::HEIGHT);
+		float startZ = (float)(random->uniform() * Level::DEPTH);
 
 		float angleX = (float)(random->uniform() * 2.0 * M_PI);
 		float angleY = (float)(random->uniform() * 2.0 * M_PI);
@@ -210,7 +210,7 @@ void LevelGenerator::generateOre(Block::Type blockType, int amount)
 						float distanceY = blockY - startY;
 						float distanceZ = blockZ - startZ;
 
-						if (distanceX * distanceX + 2.0 * distanceY * distanceY + distanceZ * distanceZ < radius * radius && blockX >= 1 && blockY >= 1 && blockZ >= 1 && blockX < game->level.width - 1 && blockY < game->level.height - 1 && blockZ < game->level.depth - 1)
+						if (distanceX * distanceX + 2.0 * distanceY * distanceY + distanceZ * distanceZ < radius * radius && blockX >= 1 && blockY >= 1 && blockZ >= 1 && blockX < Level::WIDTH - 1 && blockY < Level::HEIGHT - 1 && blockZ < Level::DEPTH - 1)
 						{
 							if (game->level.getTile(blockX, blockY, blockZ) == (unsigned char)Block::Type::BLOCK_STONE)
 							{
@@ -226,25 +226,25 @@ void LevelGenerator::generateOre(Block::Type blockType, int amount)
 
 void LevelGenerator::generateGrassSandGravel()
 {
-	for (int z = 0; z < game->level.depth; z++)
+	for (int z = 0; z < Level::DEPTH; z++)
 	{
-		for (int x = 0; x < game->level.width; x++)
+		for (int x = 0; x < Level::WIDTH; x++)
 		{ 
-			int height = heights[x + z * game->level.width];
+			int height = heights[x + z * Level::WIDTH];
 
 			bool isNoise1 = noise1->compute((float)x, (float)z) > 8.0f;
 			bool isNoise2 = noise2->compute((float)x, (float)z) > 12.0f;
 
 			auto blockAbove = game->level.getTile(x, height + 1, z);
 
-			if (blockAbove == (unsigned char)Block::Type::BLOCK_WATER && height <= (game->level.height / 2) - 1 && isNoise2) 
+			if (blockAbove == (unsigned char)Block::Type::BLOCK_WATER && height <= (Level::HEIGHT / 2) - 1 && isNoise2) 
 			{
 				game->level.setTile(x, height, z, (unsigned char)Block::Type::BLOCK_GRAVEL);
 			}
 
 			if (blockAbove == (unsigned char)Block::Type::BLOCK_AIR) 
 			{
-				if (height <= (game->level.height / 2) - 1 && isNoise1) 
+				if (height <= (Level::HEIGHT / 2) - 1 && isNoise1) 
 				{
 					game->level.setTile(x, height, z, (unsigned char)Block::Type::BLOCK_SAND);
 				}
@@ -259,12 +259,12 @@ void LevelGenerator::generateGrassSandGravel()
 
 void LevelGenerator::generateFlowers()
 {
-	int size = game->level.width * game->level.depth / 3000;
+	int size = Level::WIDTH * Level::DEPTH / 3000;
 
 	for (int i = 0; i < size; i++) 
 	{
-		int xCoord = (int)random->integerRange(0, game->level.width - 1);
-		int zCoord = (int)random->integerRange(0, game->level.depth - 1);
+		int xCoord = (int)random->integerRange(0, Level::WIDTH - 1);
+		int zCoord = (int)random->integerRange(0, Level::DEPTH - 1);
 		int flowerType = (int)random->integerRange(0, 1);
 
 		for (int j = 0; j < 10; j++) 
@@ -277,9 +277,9 @@ void LevelGenerator::generateFlowers()
 				currXCoord += (int)random->integerRange(0, 5) - (int)random->integerRange(0, 5);
 				currZCoord += (int)random->integerRange(0, 5) - (int)random->integerRange(0, 5);
 
-				if ((flowerType < 2 || random->integerRange(0, 3) == 0) && currXCoord >= 0 && currZCoord >= 0 && currXCoord < game->level.width && currZCoord < game->level.depth) 
+				if ((flowerType < 2 || random->integerRange(0, 3) == 0) && currXCoord >= 0 && currZCoord >= 0 && currXCoord < Level::WIDTH && currZCoord < Level::DEPTH) 
 				{
-					int yCoord = heights[currXCoord + currZCoord * game->level.width];
+					int yCoord = heights[currXCoord + currZCoord * Level::WIDTH];
 
 					if (game->level.getTile(currXCoord, yCoord, currZCoord) == (unsigned char)Block::Type::BLOCK_GRASS) 
 					{
@@ -294,14 +294,14 @@ void LevelGenerator::generateFlowers()
 
 void LevelGenerator::generateMushrooms()
 {
-	int size = game->level.width * game->level.depth * game->level.height / 2000;
+	int size = Level::WIDTH * Level::DEPTH * Level::HEIGHT / 2000;
 
 	for (int i = 0; i < size; i++) 
 	{
 		int mushroomType = (int)random->integerRange(0, 1);
-		int blockX = (int)random->integerRange(0, game->level.width - 1);
-		int blockY = (int)random->integerRange(0, game->level.height - 1);
-		int blockZ = (int)random->integerRange(0, game->level.depth - 1);
+		int blockX = (int)random->integerRange(0, Level::WIDTH - 1);
+		int blockY = (int)random->integerRange(0, Level::HEIGHT - 1);
+		int blockZ = (int)random->integerRange(0, Level::DEPTH - 1);
 
 		for (int j = 0; j < 20; j++)
 		{
@@ -315,7 +315,7 @@ void LevelGenerator::generateMushrooms()
 				currentY += (int)random->integerRange(0, 1) - (int)random->integerRange(0, 1);
 				currentZ += (int)random->integerRange(0, 5) - (int)random->integerRange(0, 5);
 
-				if ((mushroomType < 2 || random->integerRange(0, 3) == 0) && currentX >= 0 && currentZ >= 0 && currentY >= 1 && currentX < game->level.width && currentZ < game->level.depth && currentY < heights[currentX + currentZ * game->level.width] - 1) 
+				if ((mushroomType < 2 || random->integerRange(0, 3) == 0) && currentX >= 0 && currentZ >= 0 && currentY >= 1 && currentX < Level::WIDTH && currentZ < Level::DEPTH && currentY < heights[currentX + currentZ * Level::WIDTH] - 1) 
 				{
 					if (game->level.getTile(currentX, blockY, currentZ) == (unsigned char)Block::Type::BLOCK_AIR) {
 						if (game->level.getTile(currentX, blockY - 1, currentZ) == (unsigned char)Block::Type::BLOCK_STONE) {
@@ -331,17 +331,17 @@ void LevelGenerator::generateMushrooms()
 
 void LevelGenerator::generateTrees()
 {
-	for (int z = 4; z < game->level.depth - 4; z += 5)
+	for (int z = 4; z < Level::DEPTH - 4; z += 5)
 	{
-		for (int x = 4; x < game->level.width - 4; x += 5)
+		for (int x = 4; x < Level::WIDTH - 4; x += 5)
 		{
-			int treeHeight = heights[x + z * game->level.width];
+			int treeHeight = heights[x + z * Level::WIDTH];
 
 			if (random->integerRange(0, 4) == 0)
 			{
 				int treeTrunkSize = (int)random->integerRange(0, 2) + 5;
 
-				if (game->level.getTile(x, treeHeight, z) == (unsigned char)Block::Type::BLOCK_GRASS && treeHeight < game->level.depth - treeTrunkSize - 1)
+				if (game->level.getTile(x, treeHeight, z) == (unsigned char)Block::Type::BLOCK_GRASS && treeHeight < Level::DEPTH - treeTrunkSize - 1)
 				{
 					game->level.setTile(x, treeHeight, z, (unsigned char)Block::Type::BLOCK_DIRT);
 
@@ -382,7 +382,7 @@ void LevelGenerator::update()
 	case State::Init:
 		game->ui.openStatusMenu("Generating World", "Generating height map...");
 
-		heights = std::make_unique<int[]>(game->level.width * game->level.depth);
+		heights = std::make_unique<int[]>(Level::WIDTH * Level::DEPTH);
 
 		random = std::make_unique<Random>();
 		random->init(std::time(nullptr));
@@ -459,7 +459,7 @@ void LevelGenerator::update()
 		state = State::Destroy;
 		break;
 	case State::Destroy:
-		game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);
+		game->level.calculateLightDepths(0, 0, Level::WIDTH, Level::DEPTH);
 		game->level.calculateSpawnPosition();
 		game->levelRenderer.initChunks();
 		game->network.connect();

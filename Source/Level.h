@@ -12,13 +12,17 @@ class AABB;
 
 class Level {
 public:
+	const static int WIDTH = 128;
+	const static int HEIGHT = 64;
+	const static int DEPTH = 128;
+
 	struct Tile 
 	{
 		int x, y, z;
 		unsigned char blockType;
 	};
 
-	void init(Game* game, int width, int depth);
+	void init(Game* game);
 	void tick();
 
 	void setTile(int x, int y, int z, unsigned char blockType, bool mode = false);
@@ -60,9 +64,6 @@ public:
 	bool containsLiquid(AABB box, Block::Type blockType);
 	AABBPosition clip(glm::vec3 start, glm::vec3 end, const glm::ivec3* expected = nullptr);
 
-	int width;
-	int height;
-	int depth;
 	int groundLevel;
 	int waterLevel;
 

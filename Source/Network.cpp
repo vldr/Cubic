@@ -570,8 +570,8 @@ void Network::onBinaryMessage(const unsigned char* data, size_t size)
             return;
         }
 
-        game->level.calculateLightDepths(0, 0, game->level.width, game->level.depth);
-        game->levelRenderer.loadChunks(0, 0, 0, game->level.width, game->level.height, game->level.depth);
+        game->level.calculateLightDepths(0, 0, Level::WIDTH, Level::DEPTH);
+        game->levelRenderer.loadChunks(0, 0, 0, Level::WIDTH, Level::HEIGHT, Level::DEPTH);
 
         if (packet->respawn)
         {
