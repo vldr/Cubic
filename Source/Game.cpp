@@ -18,7 +18,7 @@
 #include <emscripten/html5.h>
 
 EM_JS(bool, is_fullscreen, (), {
-  return (window.fullScreen) ||
+  return window.fullScreen ||
    (window.innerWidth == screen.width && window.innerHeight == screen.height);
 });
 #endif

@@ -930,7 +930,16 @@ bool UI::drawTouchControls()
 		{
 			if (touched)
 			{
-				openMenu(State::SelectBlockMenu, false);
+				if (state == State::SelectBlockMenu)
+				{
+					closeMenu();
+				}
+				else
+				{
+					openMenu(State::SelectBlockMenu);
+				}
+
+				return true;
 			}
 		}
 		else
@@ -939,6 +948,11 @@ bool UI::drawTouchControls()
 			{
 				game->localPlayer.inventoryIndex = i;
 				game->heldBlock.update();
+
+				mouseState = MouseState::Up;
+				update();
+
+				return true;
 			}
 		}
 	}
