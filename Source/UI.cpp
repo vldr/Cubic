@@ -1033,7 +1033,7 @@ void UI::drawHotbar()
 
 	if (isTouch)
 	{
-		drawInterface(game->scaledWidth / 2 - 91 + 181 - 21 / 2, game->scaledHeight - 22, 48, 23, 21, 22);
+		drawInterface(game->scaledWidth / 2 - 91 + 179 - 21 / 2, game->scaledHeight - 22, 48, 23, 23, 22);
 	}
 
 	drawInterface(game->scaledWidth / 2 - 92 + float(game->localPlayer.inventoryIndex) * 20 - (isTouch * 21 / 2), game->scaledHeight - 23, 0, 22, 24, 24);
