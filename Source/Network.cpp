@@ -14,11 +14,11 @@ static Network* network;
 static EMSCRIPTEN_WEBSOCKET_T socket;
 
 EM_JS(void, set_hash, (const char* hash), { location.hash = UTF8ToString(hash); });
-EM_JS(char*, get_hash, (), { 
+EM_JS(char*, get_hash, (), {
     return stringToNewUTF8(
         location.hash.replace("#","")
     );
-});
+    });
 
 EM_BOOL emscripten_on_message(int event_type, const EmscriptenWebSocketMessageEvent* websocket_event, void* user_data)
 {
@@ -75,7 +75,7 @@ using websocketpp::lib::placeholders::_2;
 using websocketpp::lib::bind;
 
 static websocketpp_connection_handle socket_connection_handle;
-static websocketpp_client socket_client;
+static websocketpp_client* socket_client;
 
 void websocketpp_on_message(websocketpp_client* socket, websocketpp_connection_handle connection_handle, websocketpp_message_ptr message)
 {
@@ -111,24 +111,6 @@ void Network::init(Game* game)
     this->connected = false;
 
     network = this;
-
-#ifndef EMSCRIPTEN
-	try
-	{
-		socket_client.set_access_channels(websocketpp::log::alevel::none);
-		socket_client.clear_access_channels(websocketpp::log::alevel::none);
-
-		socket_client.init_asio();
-		socket_client.set_message_handler(bind(&websocketpp_on_message, &socket_client, ::_1, ::_2));
-		socket_client.set_fail_handler(bind(&websocketpp_on_close, &socket_client, ::_1));
-		socket_client.set_close_handler(bind(&websocketpp_on_close, &socket_client, ::_1));
-		socket_client.set_open_handler(bind(&websocketpp_on_open, &socket_client, ::_1));
-	}
-	catch (websocketpp::exception const& e)
-	{
-		std::cout << e.what() << std::endl;
-	}
-#endif
 }
 
 void Network::connect()
@@ -150,9 +132,20 @@ void Network::connect()
 #else
     try
     {
+        socket_client = new websocketpp_client;
+        socket_client->set_access_channels(websocketpp::log::alevel::none);
+        socket_client->clear_access_channels(websocketpp::log::alevel::none);
+
+        socket_client->init_asio();
+        socket_client->set_message_handler(bind(&websocketpp_on_message, socket_client, ::_1, ::_2));
+        socket_client->set_fail_handler(bind(&websocketpp_on_close, socket_client, ::_1));
+        socket_client->set_close_handler(bind(&websocketpp_on_close, socket_client, ::_1));
+        socket_client->set_open_handler(bind(&websocketpp_on_open, socket_client, ::_1));
+
         websocketpp::lib::error_code error_code;
-        websocketpp_client::connection_ptr con = socket_client.get_connection(URI, error_code);
-        con->append_header("Origin", BASE_URL);
+
+        auto connection = socket_client->get_connection(URI, error_code);
+        connection->append_header("Origin", BASE_URL);
 
         if (error_code)
         {
@@ -160,7 +153,7 @@ void Network::connect()
             return;
         }
 
-        socket_client.connect(con);
+        socket_client->connect(connection);
     }
     catch (websocketpp::exception const& e)
     {
@@ -172,7 +165,10 @@ void Network::connect()
 void Network::tick()
 {
 #ifndef EMSCRIPTEN
-    socket_client.poll();
+    if (socket_client)
+    {
+        socket_client->poll();
+    }
 #endif
 
     sendPosition(game->localPlayer.position, game->localPlayer.viewAngles);
@@ -197,7 +193,7 @@ void Network::tick()
 
                     positionPacket = positionPackets.erase(positionPacket);
                     continue;
-                } 
+                }
             }
         }
         else
@@ -250,8 +246,14 @@ void Network::send(const std::string& text)
         printf("Failed to send: %d\n", result);
     }
 #else
+    if (!socket_client)
+    {
+        printf("Failed to send, socket_client is nullptr\n");
+        return;
+    }
+
     websocketpp::lib::error_code error_code;
-    socket_client.send(socket_connection_handle, text, websocketpp::frame::opcode::text, error_code);
+    socket_client->send(socket_connection_handle, text, websocketpp::frame::opcode::text, error_code);
 
     if (error_code)
     {
@@ -270,8 +272,14 @@ void Network::sendBinary(unsigned char* data, size_t size)
         printf("Failed to send binary: %d\n", result);
     }
 #else
+    if (!socket_client)
+    {
+        printf("Failed to send, socket_client is nullptr\n");
+        return;
+    }
+
     websocketpp::lib::error_code error_code;
-    socket_client.send(socket_connection_handle, (void*)data, size, websocketpp::frame::opcode::binary, error_code);
+    socket_client->send(socket_connection_handle, (void*)data, size, websocketpp::frame::opcode::binary, error_code);
 
     if (error_code)
     {
@@ -373,7 +381,7 @@ void Network::join(const std::string& id)
 
         send(message.dump());
 
-		url = BASE_URL + id;
+        url = BASE_URL + id;
     }
 }
 
@@ -383,7 +391,7 @@ void Network::create()
     {
         game->ui.openStatusMenu("Creating Room", "Attempting to create room...");
 
-		nlohmann::json message;
+        nlohmann::json message;
         message["type"] = "create";
         message["size"] = UCHAR_MAX - 1;
 
@@ -406,24 +414,24 @@ void Network::onOpen()
     {
         create();
     }
-    
+
     std::free((void*)hash);
 #else
-	char input[255];
+    char input[255];
 
-	printf("Enter a room identifier to join (leave blank to create a room): ");
-	fgets(input, sizeof(input), stdin);
+    printf("Enter a room identifier to join (leave blank to create a room): ");
+    fgets(input, sizeof(input), stdin);
 
-	input[strcspn(input, "\n")] = '\0';
+    input[strcspn(input, "\n")] = '\0';
 
-	if (strlen(input) == 0)
-	{
-		create();
-	}
-	else
-	{
-		join(input);
-	}
+    if (strlen(input) == 0)
+    {
+        create();
+    }
+    else
+    {
+        join(input);
+    }
 #endif
 }
 
@@ -452,9 +460,9 @@ void Network::onMessage(const std::string& text)
     }
     else if (message["type"] == "create")
     {
-        std::string id = message["id"]; 
+        std::string id = message["id"];
 
-        players.push_back(nullptr); 
+        players.push_back(nullptr);
 
 #ifdef EMSCRIPTEN
         set_hash(id.c_str());
@@ -479,10 +487,10 @@ void Network::onMessage(const std::string& text)
             if (isHost())
             {
                 sendLevel(
-                    (unsigned char)players.size() - 1, 
+                    (unsigned char)players.size() - 1,
                     true
                 );
-            } 
+            }
 
             game->ui.log("A player has connected to the room.");
         }
@@ -519,18 +527,18 @@ void Network::onMessage(const std::string& text)
             }
         }
 
-        players.erase(players.begin() + index); 
+        players.erase(players.begin() + index);
 
         if (isHost())
         {
             sendLevel(
-                UCHAR_MAX, 
+                UCHAR_MAX,
                 false
             );
 
             if (game->ui.state == UI::State::StatusMenu)
             {
-				game->ui.closeMenu();
+                game->ui.closeMenu();
             }
         }
         else if (!index)
@@ -546,8 +554,8 @@ void Network::onBinaryMessage(const unsigned char* data, size_t size)
 {
     if (size < 2)
     {
-		printf("network error: packet is too small.\n");
-		return;
+        printf("network error: packet is too small.\n");
+        return;
     }
 
     unsigned char index = data[0];
@@ -555,11 +563,11 @@ void Network::onBinaryMessage(const unsigned char* data, size_t size)
 
     if (type == (unsigned char)PacketType::Level)
     {
-		if (size > sizeof(LevelPacket))
-		{
-			printf("network error: invalid level packet size.\n");
-			return;
-		}
+        if (size > sizeof(LevelPacket))
+        {
+            printf("network error: invalid level packet size.\n");
+            return;
+        }
 
         if (index)
         {
@@ -587,21 +595,21 @@ void Network::onBinaryMessage(const unsigned char* data, size_t size)
     }
     else if (type == (unsigned char)PacketType::Position)
     {
-		if (size != sizeof(PositionPacket))
-		{
-			printf("network error: invalid position packet size.\n");
-			return;
-		}
+        if (size != sizeof(PositionPacket))
+        {
+            printf("network error: invalid position packet size.\n");
+            return;
+        }
 
         positionPackets.push_back(*(PositionPacket*)data);
-    } 
+    }
     else if (type == (unsigned char)PacketType::SetBlock)
     {
-		if (size != sizeof(SetBlockPacket))
-		{
-			printf("network error: invalid set block packet size.\n");
-			return;
-		}
+        if (size != sizeof(SetBlockPacket))
+        {
+            printf("network error: invalid set block packet size.\n");
+            return;
+        }
 
         SetBlockPacket* packet = (SetBlockPacket*)data;
 
@@ -629,7 +637,7 @@ void Network::onBinaryMessage(const unsigned char* data, size_t size)
                 !game->level.isWaterTile(previousBlockType) &&
                 !game->level.isLavaTile(previousBlockType) &&
                 game->level.isAirTile(packet->blockType)
-            )
+                )
             {
                 game->particleManager.spawn(
                     (float)packet->position.x,
@@ -663,10 +671,10 @@ void Network::onBinaryMessage(const unsigned char* data, size_t size)
                     packet->position.y,
                     packet->position.z,
                     packet->blockType
-                ) 
+                )
                 &&
                 packet->mode
-            )
+                )
             {
                 game->particleManager.spawn(
                     (float)packet->position.x,
