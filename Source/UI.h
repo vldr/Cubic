@@ -43,7 +43,6 @@ public:
 	bool input(const SDL_Event& event);
 	void update();
 	void render();
-	void tick();
 
 	void log(const std::string& text);
 	void logMotd();

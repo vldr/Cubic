@@ -127,7 +127,7 @@ bool UI::input(const SDL_Event& event)
 			{
 				if (touchPosition->id == event.tfinger.fingerId)
 				{
-					if (glm::abs(event.tfinger.dx) > 0.0035f || glm::abs(event.tfinger.dy) > 0.0035f)
+					if (glm::abs(event.tfinger.dx) > 0.004f || glm::abs(event.tfinger.dy) > 0.004f)
 					{
 						touchPosition->hold = false;
 					}
@@ -421,18 +421,7 @@ void UI::update()
 
 void UI::render()
 {
-	blockVertices.render();
-
-	glBindTexture(GL_TEXTURE_2D, fontTexture);
-	fontVertices.render();
-
-	glBindTexture(GL_TEXTURE_2D, interfaceTexture);
-	interfaceVertices.render();
-}
-
-void UI::tick()
-{
-	if (state == State::None)
+	if (isTouch && state == State::None)
 	{
 		for (auto touchPosition = touchPositions.begin(); touchPosition != touchPositions.end(); touchPosition++)
 		{
@@ -449,6 +438,14 @@ void UI::tick()
 			}
 		}
 	}
+
+	blockVertices.render();
+
+	glBindTexture(GL_TEXTURE_2D, fontTexture);
+	fontVertices.render();
+
+	glBindTexture(GL_TEXTURE_2D, interfaceTexture);
+	interfaceVertices.render();
 }
 
 void UI::log(const std::string& text)
