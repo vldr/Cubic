@@ -9,6 +9,12 @@ Web/Build
 # Web Object Files
 Web/Objects
 
+# Ubuntu Build Files
+Ubuntu/Build
+
+# Ubuntu Object Files
+Ubuntu/Objects
+
 # User-specific files
 *.rsuser
 *.suo

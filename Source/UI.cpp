@@ -964,16 +964,21 @@ void UI::drawHUD()
 {
 	drawFPS();
 	drawCrosshair();
-	drawHotbar();
 	drawLogs();
+	drawHotbar();
 }
 
 void UI::drawFPS()
 {
-	static char fps[255];
-	std::snprintf(fps, sizeof(fps), "%lld fps, %lld chunk updates", game->lastFrameRate, game->lastChunkUpdates);
+	static std::string fps;
+	fps.clear();
 
-	drawShadowedFont(fps, 3.0f, 3.0f, 1.0f);
+	fps += std::to_string(game->lastFrameRate);
+	fps += " fps, ";
+	fps += std::to_string(game->lastChunkUpdates);
+	fps += " chunk updates";
+	
+	drawShadowedFont(fps.c_str(), 3.0f, 3.0f, 1.0f);
 }
 
 void UI::drawCrosshair()

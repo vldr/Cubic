@@ -1,6 +1,6 @@
 # Cubic
 
-![](https://i.imgur.com/5tS5i3M.png)
+[![](https://i.imgur.com/5tS5i3M.png)](https://cubic.vldr.org/)
 
 ---
 
@@ -23,12 +23,11 @@ You can play around with the game by clicking the above link.
 
 1. Install [Emscripten](https://emscripten.org/docs/getting_started/downloads.html) and [Make](https://www.gnu.org/software/make/manual/make.html).
 2. Navigate to the `Web/` directory.
-3. Run `make`
+3. Run `make -j`
 
 After the build process completes, the output HTML, JS, and WASM files will be located in the `Web/Build/` directory.
 
 ### Windows
-
 **Note:** The included compiled SDL2 and GLEW dynamic link binaries are built for x86-based machines only.
 
 1. Install [Visual Studio](https://visualstudio.microsoft.com/#vs-section).
@@ -38,3 +37,12 @@ After the build process completes, the output HTML, JS, and WASM files will be l
 5. Press `F7` or click `Build > Build Solution` to build the project.
 
 After the build process completes, the output executable will be located either in `Windows/x64/Debug` or `Windows/x64/Release` depending if you've compiled a debug or release build.
+
+### Ubuntu
+**Note:** The following instructions assume that you are in a terminal.
+
+1. Run `sudo apt install clang libgl-dev libglew-dev libsdl2-dev`
+2. Navigate to the `Ubuntu/` directory.
+3. Run `make -j`
+
+After the build process completes, the output executable will be located in the `Ubuntu/Build/` directory.
