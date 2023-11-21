@@ -142,7 +142,7 @@ void Entity::move(float ax, float ay, float az)
 
 		///////////////////////////////////////////////////////
 
-		for (int i = 0; i < cubes.size(); i++) 
+		for (size_t i = 0; i < cubes.size(); i++)
 		{
 			ay = cubes[i].clipY(aabb, ay);
 		}
@@ -157,7 +157,7 @@ void Entity::move(float ax, float ay, float az)
 
 		///////////////////////////////////////////////////////
 
-		for (int i = 0; i < cubes.size(); i++)
+		for (size_t i = 0; i < cubes.size(); i++)
 		{
 			ax = cubes[i].clipX(aabb, ax);
 		}
@@ -172,7 +172,7 @@ void Entity::move(float ax, float ay, float az)
 
 		///////////////////////////////////////////////////////
 
-		for (int i = 0; i < cubes.size(); i++)
+		for (size_t i = 0; i < cubes.size(); i++)
 		{
 			az = cubes[i].clipZ(aabb, az);
 		}
@@ -206,7 +206,7 @@ void Entity::move(float ax, float ay, float az)
 
 			cubes = game->level.getTileAABB(aabb.expand(ox, ay, oz));
 
-			for (int i = 0; i < cubes.size(); i++)
+			for (size_t i = 0; i < cubes.size(); i++)
 			{
 				ay = cubes[i].clipY(this->aabb, ay);
 			}
@@ -221,7 +221,7 @@ void Entity::move(float ax, float ay, float az)
 
 			///////////////////////////////////////////////////////
 
-			for (int i = 0; i < cubes.size(); i++)
+			for (size_t i = 0; i < cubes.size(); i++)
 			{
 				ax = cubes[i].clipX(this->aabb, ax);
 			}
@@ -236,7 +236,7 @@ void Entity::move(float ax, float ay, float az)
 
 			///////////////////////////////////////////////////////
 
-			for (int i = 0; i < cubes.size(); i++)
+			for (size_t i = 0; i < cubes.size(); i++)
 			{
 				az = cubes[i].clipZ(this->aabb, az);
 			}

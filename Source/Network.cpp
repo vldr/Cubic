@@ -207,7 +207,7 @@ void Network::tick()
         positionPacket++;
     }
 
-    for (int index = 0; index < players.size(); index++)
+    for (size_t index = 0; index < players.size(); index++)
     {
         auto& player = players[index];
 

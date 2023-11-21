@@ -83,9 +83,10 @@ private:
 		bool isHolding;
 	};
 
+	void think();
 	void refresh();
-	void load(int index);
-	void save(int index);
+	void load(size_t index);
+	void save(size_t index);
 
 	void drawHUD();
 	void drawFPS();
@@ -144,7 +145,7 @@ private:
 	std::vector<TouchPosition> touchPositions;
 	std::vector<Log> logs;
 
-	int page;
+	size_t page;
 	std::vector<Save> saves;
 
 	std::string statusTitle;

@@ -210,7 +210,7 @@ void Game::input(const SDL_Event& event)
                 unsigned int crc;
                 crc = 0xFFFFFFFFu;
 
-                for (int i = 0; i < length; i++)
+                for (size_t i = 0; i < length; i++)
                 {
                     crc ^= (data[i] << 24u);
 

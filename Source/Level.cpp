@@ -30,7 +30,7 @@ void Level::tick()
 	{
 		auto liquidUpdatesSize = liquidUpdates.size();
 
-		for (auto i = 0; i < liquidUpdatesSize; i++)
+		for (size_t i = 0; i < liquidUpdatesSize; i++)
 		{
 			auto tile = liquidUpdates.front();
 

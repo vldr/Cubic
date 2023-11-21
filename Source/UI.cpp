@@ -302,7 +302,7 @@ void UI::refresh()
 	}
 }
 
-void UI::load(int index)
+void UI::load(size_t index)
 {
 	if (index >= saves.size())
 	{
@@ -325,7 +325,7 @@ void UI::load(int index)
 	}
 }
 
-void UI::save(int index)
+void UI::save(size_t index)
 {
 	std::stringstream filename;
 
@@ -421,6 +421,19 @@ void UI::update()
 
 void UI::render()
 {
+	think();
+
+	blockVertices.render();
+
+	glBindTexture(GL_TEXTURE_2D, fontTexture);
+	fontVertices.render();
+
+	glBindTexture(GL_TEXTURE_2D, interfaceTexture);
+	interfaceVertices.render();
+}
+
+void UI::think()
+{
 	if (isTouch && state == State::None)
 	{
 		for (auto touchPosition = touchPositions.begin(); touchPosition != touchPositions.end(); touchPosition++)
@@ -438,14 +451,6 @@ void UI::render()
 			}
 		}
 	}
-
-	blockVertices.render();
-
-	glBindTexture(GL_TEXTURE_2D, fontTexture);
-	fontVertices.render();
-
-	glBindTexture(GL_TEXTURE_2D, interfaceTexture);
-	interfaceVertices.render();
 }
 
 void UI::log(const std::string& text)
@@ -485,8 +490,6 @@ bool UI::drawStatusMenu()
 		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 5.0f, game->network.isConnected() ? "Create a new room" : "Play offline"))
 		{
 			game->network.create();
-
-			closeMenu();
 			return true;
 		}
 	}
@@ -790,10 +793,10 @@ bool UI::drawButton(float x, float y, float z, const char* text, int state, floa
 	else
 	{
 		float size = 0.0f;
-		int index = 0;
+		size_t index = 0;
 
 		const auto length = std::strlen(text);
-		for (auto i = 0; i < length; i++)
+		for (size_t i = 0; i < length; i++)
 		{
 			size += FONT_WIDTHS[int(text[i])];
 			index = i;
@@ -1011,7 +1014,7 @@ void UI::drawLogs()
 				fontY = offset + 1.2f + index * 10.0f;
 			}
 
-			for (auto i = 0; i < log->text.length(); i++)
+			for (size_t i = 0; i < log->text.length(); i++)
 			{
 				width += FONT_WIDTHS[int(log->text[i])];
 			}
@@ -1055,91 +1058,81 @@ void UI::drawBlock(unsigned char blockType, float x, float y, float scale)
 {
 	auto blockDefinition = Block::Definitions[blockType];
 
-	float uTop = 0.0625f * (blockDefinition.topTexture % 16);
-	float vTop = 0.0625f * (blockDefinition.topTexture / 16);
-	float uTop2 = 0.0625f + 0.0625f * (blockDefinition.topTexture % 16);
-	float vTop2 = 0.0625f + 0.0625f * (blockDefinition.topTexture / 16);
-
 	float u = 0.0625f * (blockDefinition.sideTexture % 16);
 	float v = 0.0625f * (blockDefinition.sideTexture / 16) + (0.0625f - (0.0625f * blockDefinition.height));
 	float u2 = 0.0625f + 0.0625f * (blockDefinition.sideTexture % 16);
 	float v2 = 0.0625f + 0.0625f * (blockDefinition.sideTexture / 16);
 
-	VertexList::Vertex spriteVertexList[] = {
-		VertexList::Vertex(0.0f, 1.0f, 1.0f, u, v, 1.0f),
-		VertexList::Vertex(0.0f, 0.0f, 1.0f, u, v2, 1.0f),
-		VertexList::Vertex(1.0f, 0.0f, 1.0f, u2, v2, 1.0f),
-
-		VertexList::Vertex(0.0f, 1.0f, 1.0f, u, v, 1.0f),
-		VertexList::Vertex(1.0f, 0.0f, 1.0f, u2, v2, 1.0f),
-		VertexList::Vertex(1.0f, 1.0f, 1.0f, u2, v, 1.0f),
-	};
-
-	VertexList::Vertex blockVertexList[] = {
-		VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, uTop, vTop, 1.0f),
-		VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, uTop, vTop2, 1.0f),
-		VertexList::Vertex(1.0f, blockDefinition.height, 1.0f, uTop2, vTop2, 1.0f),
-
-		VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, uTop, vTop, 1.0f),
-		VertexList::Vertex(1.0f, blockDefinition.height, 1.0f, uTop2, vTop2, 1.0f),
-		VertexList::Vertex(1.0f, blockDefinition.height, 0.0f, uTop2, vTop, 1.0f),
-
-		VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, u, v, 0.8f),
-		VertexList::Vertex(0.0f, 0.0f, 1.0f, u, v2, 0.8f),
-		VertexList::Vertex(1.0f, 0.0f, 1.0f, u2, v2, 0.8f),
-
-		VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, u, v, 0.8f),
-		VertexList::Vertex(1.0f, 0.0f, 1.0f, u2, v2, 0.8f),
-		VertexList::Vertex(1.0f, blockDefinition.height, 1.0f, u2, v, 0.8f),
-
-		VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, u, v, 0.6f),
-		VertexList::Vertex(0.0f, 0.0f, 0.0f, u, v2, 0.6f),
-		VertexList::Vertex(0.0f, 0.0f, 1.0f, u2, v2, 0.6f),
-
-		VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, u, v, 0.6f),
-		VertexList::Vertex(0.0f, 0.0f, 1.0f, u2, v2, 0.6f),
-		VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, u2, v, 0.6f),
-	};
-
-	size_t length;
-	VertexList::Vertex* vertices;
-
 	if (blockDefinition.draw == Block::DrawType::DRAW_SPRITE)
 	{
-		vertices = spriteVertexList;
-		length = std::size(spriteVertexList);
+		const VertexList::Vertex spriteVertexList[] = {
+			VertexList::Vertex(0.0f, 1.0f, 1.0f, u, v, 1.0f),
+			VertexList::Vertex(0.0f, 0.0f, 1.0f, u, v2, 1.0f),
+			VertexList::Vertex(1.0f, 0.0f, 1.0f, u2, v2, 1.0f),
+
+			VertexList::Vertex(0.0f, 1.0f, 1.0f, u, v, 1.0f),
+			VertexList::Vertex(1.0f, 0.0f, 1.0f, u2, v2, 1.0f),
+			VertexList::Vertex(1.0f, 1.0f, 1.0f, u2, v, 1.0f),
+		};
+
+		for (size_t i = 0; i < std::size(spriteVertexList); i++)
+		{
+			const VertexList::Vertex& vertex = spriteVertexList[i];
+
+			glm::vec4 position = 
+				glm::translate(glm::mat4(1.0f), glm::vec3(x + 2.0f, y + 1.0f, 15.0f)) * 
+				glm::scale(glm::mat4(1.0f), glm::vec3(scale, -scale, scale)) *
+				glm::vec4(vertex.x, vertex.y, vertex.z, 1.0f);
+
+			blockVertices.push(VertexList::Vertex(position.x, position.y, position.z, vertex.u, vertex.v, vertex.s));
+		}
 	}
 	else
 	{
-		vertices = blockVertexList;
-		length = std::size(blockVertexList);
-	}
+		float uTop = 0.0625f * (blockDefinition.topTexture % 16);
+		float vTop = 0.0625f * (blockDefinition.topTexture / 16);
+		float uTop2 = 0.0625f + 0.0625f * (blockDefinition.topTexture % 16);
+		float vTop2 = 0.0625f + 0.0625f * (blockDefinition.topTexture / 16);
 
-	for (int i = 0; i < length; i++)
-	{
-		VertexList::Vertex* vertex = &vertices[i];
+		const VertexList::Vertex blockVertexList[] = {
+			VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, uTop, vTop, 1.0f),
+			VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, uTop, vTop2, 1.0f),
+			VertexList::Vertex(1.0f, blockDefinition.height, 1.0f, uTop2, vTop2, 1.0f),
 
-		auto matrix = game->IDENTITY_MATRIX;
-		matrix = glm::translate(matrix, glm::vec3(x, y, 15.0f));
+			VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, uTop, vTop, 1.0f),
+			VertexList::Vertex(1.0f, blockDefinition.height, 1.0f, uTop2, vTop2, 1.0f),
+			VertexList::Vertex(1.0f, blockDefinition.height, 0.0f, uTop2, vTop, 1.0f),
 
-		if (blockDefinition.draw == Block::DrawType::DRAW_SPRITE)
+			VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, u, v, 0.8f),
+			VertexList::Vertex(0.0f, 0.0f, 1.0f, u, v2, 0.8f),
+			VertexList::Vertex(1.0f, 0.0f, 1.0f, u2, v2, 0.8f),
+
+			VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, u, v, 0.8f),
+			VertexList::Vertex(1.0f, 0.0f, 1.0f, u2, v2, 0.8f),
+			VertexList::Vertex(1.0f, blockDefinition.height, 1.0f, u2, v, 0.8f),
+
+			VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, u, v, 0.6f),
+			VertexList::Vertex(0.0f, 0.0f, 0.0f, u, v2, 0.6f),
+			VertexList::Vertex(0.0f, 0.0f, 1.0f, u2, v2, 0.6f),
+
+			VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, u, v, 0.6f),
+			VertexList::Vertex(0.0f, 0.0f, 1.0f, u2, v2, 0.6f),
+			VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, u2, v, 0.6f),
+		};
+
+		for (size_t i = 0; i < std::size(blockVertexList); i++)
 		{
-			matrix = glm::translate(matrix, glm::vec3(2.0f, 1.0f, 0.0f));
+			const VertexList::Vertex& vertex = blockVertexList[i];
+
+			glm::vec4 position =
+				glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 15.0f)) * 
+				glm::rotate(glm::mat4(1.0f), glm::radians(-30.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
+				glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f)) *
+				glm::scale(glm::mat4(1.0f), glm::vec3(scale, -scale, scale)) *
+				glm::vec4(vertex.x, vertex.y, vertex.z, 1.0f);
+
+			blockVertices.push(VertexList::Vertex(position.x, position.y, position.z, vertex.u, vertex.v, vertex.s));
 		}
-		else
-		{
-			matrix = glm::rotate(matrix, glm::radians(-30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-			matrix = glm::rotate(matrix, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		}
-
-		matrix = glm::scale(matrix, glm::vec3(scale, -scale, scale));
-
-		glm::vec4 position = matrix * glm::vec4(vertex->x, vertex->y, vertex->z, 1.0f);
-		vertex->x = position.x;
-		vertex->y = position.y;
-		vertex->z = position.z;
-
-		blockVertices.push(*vertex);
 	}
 }
 
@@ -1200,7 +1193,7 @@ void UI::drawCenteredFont(const char* text, float x, float y, float shade, float
 	float width = 0.0f;
 
 	const auto length = std::strlen(text);
-	for (auto i = 0; i < length; i++)
+	for (size_t i = 0; i < length; i++)
 	{
 		width += FONT_WIDTHS[(unsigned char)text[i]];
 	}
@@ -1218,7 +1211,7 @@ void UI::drawFont(const char* text, float x, float y, float shade, float z)
 	float width = 0.0f;
 
 	const auto length = std::strlen(text);
-	for (int index = 0; index < length; index++)
+	for (size_t index = 0; index < length; index++)
 	{
 		float u = float(text[index] % 16 << 3);
 		float v = float(text[index] / 16 << 3);

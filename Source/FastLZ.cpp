@@ -180,8 +180,8 @@ static void flz_maxcopy(void* dest, const void* src) {
   *q++ = *p++;
   *q++ = *p++;
 #else
-  fastlz_memcpy(dest, src, MAX_COPY);
-#endif
+  fastlz_memcpy((uint8_t*)dest, (uint8_t*)src, MAX_COPY);
+#endif 
 }
 
 static uint8_t* flz_literals(uint32_t runs, const uint8_t* src, uint8_t* dest) {
