@@ -1,5 +1,3 @@
-name: Build and Deploy
-
 on:
   push:
     branches: ["master"]
@@ -12,8 +10,9 @@ env:
   EM_CACHE_FOLDER: 'emsdk-cache'
 
 jobs:
-  build-windows:
-    concurrency: ci-${{ github.ref }}
+  build-publish-windows:
+    name: Build and Publish Windows
+    concurrency: ci-windows-${{ github.ref }}
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -25,7 +24,8 @@ jobs:
       - name: Build
         run: msbuild Windows\Cubic.vcxproj -t:rebuild -verbosity:diag -property:Configuration=Release
       
-  build-and-deploy:
+  build-deploy-web:
+    name: Build and Deploy Web
     concurrency: ci-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
