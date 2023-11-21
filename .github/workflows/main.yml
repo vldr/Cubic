@@ -23,6 +23,11 @@ jobs:
 
       - name: Build
         run: msbuild Windows\Cubic.vcxproj -t:rebuild -property:Configuration=Release -property:Platform=x64
+
+      - name: Publish
+        run: |
+          cd Windows\x64\Release
+          tar.exe -a -c -f Cubic_Windows_x64.zip Cubic.exe SDL2.dll glew32.dll
       
   build-deploy-web:
     name: Build and Deploy
