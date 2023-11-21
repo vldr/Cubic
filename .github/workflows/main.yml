@@ -11,7 +11,7 @@ env:
 
 jobs:
   build-publish-windows:
-    name: Build and Publish Windows
+    name: Build Windows
     concurrency: ci-windows-${{ github.ref }}
     runs-on: windows-latest
     steps:
@@ -22,10 +22,10 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1
 
       - name: Build
-        run: msbuild Windows\Cubic.vcxproj -t:rebuild -verbosity:diag -property:Configuration=Release
+        run: msbuild Windows\Cubic.vcxproj -t:rebuild -property:Configuration=Release -property:Platform=x64
       
   build-deploy-web:
-    name: Build and Deploy Web
+    name: Build and Deploy
     concurrency: ci-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
