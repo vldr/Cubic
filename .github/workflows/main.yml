@@ -24,10 +24,19 @@ jobs:
       - name: Build
         run: msbuild Windows\Cubic.vcxproj -t:rebuild -property:Configuration=Release -property:Platform=x64
 
-      - name: Publish
+      - name: Bundle
         run: |
           cd Windows\x64\Release
-          tar.exe -a -c -f Cubic_Windows_x64.zip Cubic.exe SDL2.dll glew32.dll
+          tar.exe -a -c -f cubic.zip Cubic.exe SDL2.dll glew32.dll
+
+      - name: Publish
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: Windows/x64/Release/cubic.zip
+          asset_name: Cubic_Windows.zip
+          tag: Build
+          overwrite: true
       
   build-deploy-web:
     name: Build and Deploy
