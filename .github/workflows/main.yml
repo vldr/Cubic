@@ -10,7 +10,7 @@ env:
   EM_CACHE_FOLDER: 'emsdk-cache'
 
 jobs:
-  build-publish-windows:
+  build-windows:
     name: Build Windows
     concurrency: ci-windows-${{ github.ref }}
     runs-on: windows-latest
@@ -35,6 +35,36 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: Windows/x64/Release/cubic.zip
           asset_name: Cubic_Windows.zip
+          tag: Build
+          overwrite: true
+          
+  build-ubuntu:
+    name: Build Ubuntu
+    concurrency: ci-ubuntu-${{ github.ref }}
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Install Dependencies
+        run: sudo apt install clang libgl-dev libglew-dev libsdl2-dev
+
+      - name: Build
+        run: |
+          cd Ubuntu
+          make -j
+
+      - name: Bundle
+        run: |
+          cd Ubuntu/Build
+          tar -a -c -f cubic.zip cubic
+
+      - name: Publish
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: Ubuntu/Build/cubic.zip
+          asset_name: Cubic_Ubuntu.zip
           tag: Build
           overwrite: true
       
