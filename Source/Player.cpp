@@ -30,12 +30,12 @@ void Player::init(Game* game)
 	{
 		playerTexture = game->textureManager.load(playerResourceTexture, sizeof(playerResourceTexture));
 
-		head.init(36);
-		body.init(36);
-		leftArm.init(36);
-		rightArm.init(36);
-		leftLeg.init(36);
-		rightLeg.init(36);
+		head.init(game, 36);
+		body.init(game, 36);
+		leftArm.init(game, 36);
+		rightArm.init(game, 36);
+		leftLeg.init(game, 36);
+		rightLeg.init(game, 36);
 
 		leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.000000f, -0.687500f, 1.0f));
 		leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.000000f, -0.500000f, 1.0f));

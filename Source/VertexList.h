@@ -3,6 +3,8 @@
 #include <vector>
 #include <GL/glew.h>
 
+class Game;
+
 class VertexList
 {
 public:
@@ -112,12 +114,11 @@ public:
 		float s;
 	};
 
-	void init(size_t capacity = 4);
+	void init(Game* game, size_t capacity = 4);
 	void update();
 	void render();
 	void reset();
 	void push(const VertexList::Vertex& vertex);
-
 private:
 	GLuint vao;
 	GLuint buffer;

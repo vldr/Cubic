@@ -14,9 +14,9 @@ void SelectedBlock::init(Game* game)
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glBufferData(GL_ARRAY_BUFFER, BUFFER_SIZE * sizeof(glm::vec3), NULL, GL_DYNAMIC_DRAW);
 
-    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(game->positionAttribute);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(game->positionAttribute, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glVertexAttrib2f(1, 0.0f, 1.0f);
     glVertexAttrib1f(2, 0.0f);
 }

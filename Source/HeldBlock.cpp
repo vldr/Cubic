@@ -14,7 +14,7 @@ void HeldBlock::init(Game* game)
     this->swingOffset = 0;
     this->isSwinging = false;
     this->height = 1.0f;
-    this->vertices.init(36);
+    this->vertices.init(game, 36);
 
     update();
 }

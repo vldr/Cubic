@@ -59,12 +59,12 @@ void UI::init(Game* game)
 	this->state = State::None;
 	this->mousePosition = glm::vec2();
 
-	this->blockVertices.init();
+	this->blockVertices.init(game);
 
-	this->fontVertices.init();
+	this->fontVertices.init(game);
 	this->fontTexture = game->textureManager.load(fontResourceTexture, sizeof(fontResourceTexture));
 
-	this->interfaceVertices.init();
+	this->interfaceVertices.init(game);
 	this->interfaceTexture = game->textureManager.load(interfaceResourceTexture, sizeof(interfaceResourceTexture));
 }
 

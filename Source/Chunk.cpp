@@ -10,8 +10,8 @@ void Chunk::init(Game* game, int x, int y, int z)
     this->isVisible = false;
     this->isLoaded = false;
 
-    this->vertices.init();
-    this->waterVertices.init();
+    this->vertices.init(game);
+    this->waterVertices.init(game);
 }
 
 bool Chunk::shouldRenderFace(const Block::Definition& current, const Block::Definition& neighbor, bool isBottom)

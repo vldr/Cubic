@@ -80,13 +80,13 @@ void ParticleManager::spawn(float x, float y, float z, unsigned char blockType)
 		GL_DYNAMIC_DRAW
 	);
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(game->positionAttribute);
+	glEnableVertexAttribArray(game->uvAttribute);
+	glEnableVertexAttribArray(game->shadeAttribute);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)(particleGroup.size * sizeof(glm::vec3)));
-	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 0, (void*)(particleGroup.size * sizeof(glm::vec3) + particleGroup.size * sizeof(glm::vec2)));
+	glVertexAttribPointer(game->positionAttribute, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(game->uvAttribute, 2, GL_FLOAT, GL_FALSE, 0, (void*)(particleGroup.size * sizeof(glm::vec3)));
+	glVertexAttribPointer(game->shadeAttribute, 1, GL_FLOAT, GL_FALSE, 0, (void*)(particleGroup.size * sizeof(glm::vec3) + particleGroup.size * sizeof(glm::vec2)));
 
 	for (int i = 0; i < particlesPerAxis; i++)
 	{

@@ -1,9 +1,10 @@
 #include "VertexList.h"
+#include "Game.h"
 
 #include <glm/glm.hpp>
 #include <cstdlib>
 
-void VertexList::init(size_t capacity)
+void VertexList::init(Game* game, size_t capacity)
 {
 	this->index = 0;
 	this->length = 0;
@@ -19,13 +20,13 @@ void VertexList::init(size_t capacity)
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(game->positionAttribute);
+	glEnableVertexAttribArray(game->uvAttribute);
+	glEnableVertexAttribArray(game->shadeAttribute);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexList::Vertex), 0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexList::Vertex), (void*)sizeof(glm::vec3));
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(VertexList::Vertex), (void*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
+	glVertexAttribPointer(game->positionAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexList::Vertex), 0);
+	glVertexAttribPointer(game->uvAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(VertexList::Vertex), (void*)sizeof(glm::vec3));
+	glVertexAttribPointer(game->shadeAttribute, 1, GL_FLOAT, GL_FALSE, sizeof(VertexList::Vertex), (void*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
 }
 
 void VertexList::reset()

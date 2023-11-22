@@ -13,6 +13,7 @@
 #include "UI.h"
 #include "Frustum.h"
 #include "Network.h"
+#include "VertexList.h"
 
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
@@ -55,6 +56,10 @@ public:
 	GLuint fogEnableUniform;
 	GLuint fogDistanceUniform;
 	GLuint fogColorUniform;
+
+	GLuint positionAttribute;
+	GLuint uvAttribute;
+	GLuint shadeAttribute;
 
 	int height;
 	int width;

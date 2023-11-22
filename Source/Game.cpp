@@ -7,6 +7,7 @@
 #include "Random.h"
 #include "Timer.h"
 #include "Resources.h"
+#include "VertexList.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp> 
@@ -80,25 +81,10 @@ static const GLchar* vertexSource = R""""(#version 100
 
 void Game::init(SDL_Window* sdlWindow)
 {
-    this->window = sdlWindow;
-    this->random.init(std::time(nullptr));
-    this->timer.init(this, TICK_RATE);
-    this->localPlayer.init(this);
-    this->frustum.init(this);
-    this->network.init(this);
-    this->ui.init(this);
-    this->heldBlock.init(this);
-    this->selectedBlock.init(this);
-    this->particleManager.init(this);
-    this->levelGenerator.init(this);
-    this->levelRenderer.init(this);
-    this->lastTick = timer.milliTime();
-    this->frameRate = 0;
-    this->fullscreen = false;
-    this->atlasTexture = textureManager.load(terrainResourceTexture, sizeof(terrainResourceTexture));
-    this->shader = shaderManager.load(vertexSource, fragmentSource);
+    window = sdlWindow;
+    shader = shaderManager.load(vertexSource, fragmentSource);
 
-    resize();
+    glUseProgram(shader);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -106,7 +92,6 @@ void Game::init(SDL_Window* sdlWindow)
     glDepthFunc(GL_LEQUAL);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glUseProgram(shader);
     fragmentOffsetUniform = glGetUniformLocation(shader, "FragmentOffset");
     playerPositionUniform = glGetUniformLocation(shader, "PlayerPosition");
     fogEnableUniform = glGetUniformLocation(shader, "FogEnable");
@@ -115,7 +100,30 @@ void Game::init(SDL_Window* sdlWindow)
     projectionMatrixUniform = glGetUniformLocation(shader, "Projection");
     viewMatrixUniform = glGetUniformLocation(shader, "View");
     modelMatrixUniform = glGetUniformLocation(shader, "Model");
+
+    positionAttribute = glGetAttribLocation(shader, "position");
+    uvAttribute = glGetAttribLocation(shader, "uv");
+    shadeAttribute = glGetAttribLocation(shader, "shade");
+
     glUniformMatrix4fv(modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(IDENTITY_MATRIX));
+
+    random.init(std::time(nullptr));
+    timer.init(this, TICK_RATE);
+    localPlayer.init(this);
+    frustum.init(this);
+    network.init(this);
+    ui.init(this);
+    heldBlock.init(this);
+    selectedBlock.init(this);
+    particleManager.init(this);
+    levelGenerator.init(this);
+    levelRenderer.init(this);
+    lastTick = timer.milliTime();
+    frameRate = 0;
+    fullscreen = false;
+    atlasTexture = textureManager.load(terrainResourceTexture, sizeof(terrainResourceTexture));
+
+    resize();
 }
 
 void Game::run()
