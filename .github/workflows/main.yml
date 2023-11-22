@@ -1,5 +1,3 @@
-name: Build and Deploy
-
 on:
   push:
     branches: ["master"]
@@ -12,7 +10,66 @@ env:
   EM_CACHE_FOLDER: 'emsdk-cache'
 
 jobs:
-  build-and-deploy:
+  build-windows:
+    name: Build Windows
+    concurrency: ci-windows-${{ github.ref }}
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Add MSBUILD to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Build
+        run: msbuild Windows\Cubic.vcxproj -t:rebuild -property:Configuration=Release -property:Platform=x64
+
+      - name: Bundle
+        run: |
+          cd Windows\x64\Release
+          tar.exe -a -c -f cubic.zip Cubic.exe SDL2.dll glew32.dll
+
+      - name: Publish
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: Windows/x64/Release/cubic.zip
+          asset_name: Cubic_Windows.zip
+          tag: Build
+          overwrite: true
+          
+  build-ubuntu:
+    name: Build Ubuntu
+    concurrency: ci-ubuntu-${{ github.ref }}
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Install Dependencies
+        run: sudo apt install clang libgl-dev libglew-dev libsdl2-dev
+
+      - name: Build
+        run: |
+          cd Ubuntu
+          make -j
+
+      - name: Bundle
+        run: |
+          cd Ubuntu/Build
+          tar -a -c -f cubic.zip cubic
+
+      - name: Publish
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: Ubuntu/Build/cubic.zip
+          asset_name: Cubic_Ubuntu.zip
+          tag: Build
+          overwrite: true
+      
+  build-deploy-web:
+    name: Build and Deploy
     concurrency: ci-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
