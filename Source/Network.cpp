@@ -417,21 +417,7 @@ void Network::onOpen()
 
     std::free((void*)hash);
 #else
-    char input[255];
-
-    printf("Enter a room identifier to join (leave blank to create a room): ");
-    fgets(input, sizeof(input), stdin);
-
-    input[strcspn(input, "\n")] = '\0';
-
-    if (strlen(input) == 0)
-    {
-        create();
-    }
-    else
-    {
-        join(input);
-    }
+    game->ui.openStatusMenu("Connected", "Select an option to continue.", true);
 #endif
 }
 
@@ -443,7 +429,7 @@ void Network::onClose()
     set_hash("");
 #endif
 
-    url = "Disconnected...";
+    url = "...";
 
     players.clear();
     game->ui.openStatusMenu("Disconnected", "The connection was closed.", true);
@@ -456,7 +442,7 @@ void Network::onMessage(const std::string& text)
     if (message["type"] == "error")
     {
         std::string reason = message["message"];
-        game->ui.openStatusMenu("Disconnected", reason.c_str(), true);
+        game->ui.openStatusMenu("Error", reason.c_str(), true);
     }
     else if (message["type"] == "create")
     {
@@ -466,8 +452,6 @@ void Network::onMessage(const std::string& text)
 
 #ifdef EMSCRIPTEN
         set_hash(id.c_str());
-#else
-        printf("Room: %s\n", id.c_str());
 #endif
 
         url = BASE_URL + id;

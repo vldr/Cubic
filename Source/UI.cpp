@@ -453,6 +453,24 @@ void UI::think()
 	}
 }
 
+void UI::log(const char* format, ...)
+{
+	char buffer[4096];
+
+	va_list args;
+	va_start(args, format);
+	int count = vsnprintf(buffer, sizeof(buffer), format, args);
+	va_end(args);
+
+	Log log;
+	log.created = game->timer.milliTime();
+	log.text = std::string(buffer, count);
+
+	logs.push_back(log);
+
+	update();
+}
+
 void UI::log(const std::string& text)
 {
 	Log log;
@@ -484,14 +502,62 @@ bool UI::drawStatusMenu()
 
 	if (statusCloseable)
 	{
+#ifdef EMSCRIPTEN
 		drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 25.0f, 0.6f);
 		drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 12.0f, 1.0f);
 
 		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 5.0f, game->network.isConnected() ? "Create a new room" : "Play offline"))
 		{
-			game->network.create();
+			if (game->network.isConnected())
+			{
+				game->network.create();
+			}
+			else
+			{
+				closeMenu();
+			}
+
 			return true;
 		}
+#else
+		drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 38.0f + 2.0f, 0.6f);
+		drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 25.0f + 2.0f, 1.0f);
+
+		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - 10.0f + 2.0f, game->network.isConnected() ? "Create a new room" : "Create a new room (offline)"))
+		{
+			if (game->network.isConnected())
+			{
+				game->network.create();
+			}
+			else
+			{
+				closeMenu();
+			}
+
+			return true;
+		}
+
+		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 13.0f + 2.0f, 1.0f, "Join room", game->network.isConnected()))
+		{
+			char* clipboardText = SDL_GetClipboardText();
+			size_t clipboardTextLength = strlen(clipboardText);
+			size_t clipboardTextOffset = 0;
+
+			for (size_t offset = 0; offset < clipboardTextLength; offset++)
+			{
+				if (clipboardText[offset] == '#')
+				{
+					clipboardTextOffset = offset + 1;
+					break;
+				}
+			}
+
+			game->network.join(std::string(clipboardText + clipboardTextOffset));
+
+			SDL_free(clipboardText);
+			return true;
+		}
+#endif
 	}
 	else
 	{

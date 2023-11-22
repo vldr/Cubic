@@ -44,6 +44,7 @@ public:
 	void update();
 	void render();
 
+	void log(const char* format, ...);
 	void log(const std::string& text);
 	void logMotd();
 
