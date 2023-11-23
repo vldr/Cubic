@@ -24,25 +24,25 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1
 
       - name: Build
-        run: msbuild Windows\Cubic.vcxproj -t:rebuild -property:Configuration=Release -property:Platform=x64
+        run: msbuild build\windows\Cubic.vcxproj -t:rebuild -property:Configuration=Release -property:Platform=x64
 
       - name: Bundle
         run: |
-          cd Windows\x64\Release
+          cd build\windows\x64\Release
           tar.exe -a -c -f cubic.zip Cubic.exe SDL2.dll glew32.dll
 
       - name: Publish
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Windows/x64/Release/cubic.zip
+          file: build/windows/x64/Release/cubic.zip
           asset_name: Cubic_Windows.zip
           tag: Build
           overwrite: true
           
-  build-ubuntu:
-    name: Ubuntu
-    concurrency: ci-ubuntu-${{ github.ref }}
+  build-linux:
+    name: Linux
+    concurrency: ci-linux-${{ github.ref }}
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -53,20 +53,20 @@ jobs:
 
       - name: Build
         run: |
-          cd Ubuntu
+          cd build/linux
           make -j
 
       - name: Bundle
         run: |
-          cd Ubuntu/Build
+          cd build/linux/output
           tar -a -c -f cubic.zip cubic
 
       - name: Publish
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Ubuntu/Build/cubic.zip
-          asset_name: Cubic_Ubuntu.zip
+          file: build/linux/output/cubic.zip
+          asset_name: Cubic_Linux.zip
           tag: Build
           overwrite: true
           
@@ -80,19 +80,19 @@ jobs:
 
       - name: Build
         run: |
-          cd MacOS
+          cd build/macos
           make -j
 
       - name: Bundle
         run: |
-          cd MacOS/Build
+          cd build/macos/output
           tar -a -c -f cubic.zip cubic libSDL2.dylib libGLEW.dylib
 
       - name: Publish
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: MacOS/Build/cubic.zip
+          file: build/macos/output/cubic.zip
           asset_name: Cubic_MacOS.zip
           tag: Build
           overwrite: true
@@ -120,10 +120,10 @@ jobs:
 
       - name: Build
         run: |
-          cd Web
-          make -j4
+          cd build/web
+          make -j
           
       - name: Publish
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: Web/Build
+          folder: build/web/output

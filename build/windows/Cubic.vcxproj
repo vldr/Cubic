@@ -117,7 +117,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OpenMPSupport>true</OpenMPSupport>
@@ -125,7 +125,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Libraries;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -137,7 +137,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
@@ -149,80 +149,80 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Libraries;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Source\AABB.cpp" />
-    <ClCompile Include="..\Source\Block.cpp" />
-    <ClCompile Include="..\Source\Chunk.cpp" />
-    <ClCompile Include="..\Source\CombinedNoise.cpp" />
-    <ClCompile Include="..\Source\Entity.cpp" />
-    <ClCompile Include="..\Source\FastLZ.cpp" />
-    <ClCompile Include="..\Source\Frustum.cpp" />
-    <ClCompile Include="..\Source\HeldBlock.cpp" />
-    <ClCompile Include="..\Source\Network.cpp" />
-    <ClCompile Include="..\Source\ParticleManager.cpp" />
-    <ClCompile Include="..\Source\LevelGenerator.cpp" />
-    <ClCompile Include="..\Source\LevelRenderer.cpp" />
-    <ClCompile Include="..\Source\LocalPlayer.cpp" />
-    <ClCompile Include="..\Source\Level.cpp" />
-    <ClCompile Include="..\Source\Lodepng.cpp" />
-    <ClCompile Include="..\Source\Main.cpp" />
-    <ClCompile Include="..\Source\Game.cpp" />
-    <ClCompile Include="..\Source\OctaveNoise.cpp" />
-    <ClCompile Include="..\Source\Particle.cpp" />
-    <ClCompile Include="..\Source\PerlinNoise.cpp" />
-    <ClCompile Include="..\Source\Player.cpp" />
-    <ClCompile Include="..\Source\Random.cpp" />
-    <ClCompile Include="..\Source\Resources.cpp" />
-    <ClCompile Include="..\Source\SelectedBlock.cpp" />
-    <ClCompile Include="..\Source\ShaderManager.cpp" />
-    <ClCompile Include="..\Source\Skybox.cpp" />
-    <ClCompile Include="..\Source\TextureManager.cpp" />
-    <ClCompile Include="..\Source\Timer.cpp" />
-    <ClCompile Include="..\Source\UI.cpp" />
-    <ClCompile Include="..\Source\VertexList.cpp" />
+    <ClCompile Include="..\..\src\AABB.cpp" />
+    <ClCompile Include="..\..\src\Block.cpp" />
+    <ClCompile Include="..\..\src\Chunk.cpp" />
+    <ClCompile Include="..\..\src\CombinedNoise.cpp" />
+    <ClCompile Include="..\..\src\Entity.cpp" />
+    <ClCompile Include="..\..\src\FastLZ.cpp" />
+    <ClCompile Include="..\..\src\Frustum.cpp" />
+    <ClCompile Include="..\..\src\HeldBlock.cpp" />
+    <ClCompile Include="..\..\src\Network.cpp" />
+    <ClCompile Include="..\..\src\ParticleManager.cpp" />
+    <ClCompile Include="..\..\src\LevelGenerator.cpp" />
+    <ClCompile Include="..\..\src\LevelRenderer.cpp" />
+    <ClCompile Include="..\..\src\LocalPlayer.cpp" />
+    <ClCompile Include="..\..\src\Level.cpp" />
+    <ClCompile Include="..\..\src\Lodepng.cpp" />
+    <ClCompile Include="..\..\src\Main.cpp" />
+    <ClCompile Include="..\..\src\Game.cpp" />
+    <ClCompile Include="..\..\src\OctaveNoise.cpp" />
+    <ClCompile Include="..\..\src\Particle.cpp" />
+    <ClCompile Include="..\..\src\PerlinNoise.cpp" />
+    <ClCompile Include="..\..\src\Player.cpp" />
+    <ClCompile Include="..\..\src\Random.cpp" />
+    <ClCompile Include="..\..\src\Resources.cpp" />
+    <ClCompile Include="..\..\src\SelectedBlock.cpp" />
+    <ClCompile Include="..\..\src\ShaderManager.cpp" />
+    <ClCompile Include="..\..\src\Skybox.cpp" />
+    <ClCompile Include="..\..\src\TextureManager.cpp" />
+    <ClCompile Include="..\..\src\Timer.cpp" />
+    <ClCompile Include="..\..\src\UI.cpp" />
+    <ClCompile Include="..\..\src\VertexList.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Source\AABB.h" />
-    <ClInclude Include="..\Source\AABBPosition.h" />
-    <ClInclude Include="..\Source\Block.h" />
-    <ClInclude Include="..\Source\Chunk.h" />
-    <ClInclude Include="..\Source\CombinedNoise.h" />
-    <ClInclude Include="..\Source\Entity.h" />
-    <ClInclude Include="..\Source\FastLZ.h" />
-    <ClInclude Include="..\Source\Frustum.h" />
-    <ClInclude Include="..\Source\HeldBlock.h" />
-    <ClInclude Include="..\Source\Network.h" />
-    <ClInclude Include="..\Source\ParticleManager.h" />
-    <ClInclude Include="..\Source\LevelGenerator.h" />
-    <ClInclude Include="..\Source\LevelRenderer.h" />
-    <ClInclude Include="..\Source\LocalPlayer.h" />
-    <ClInclude Include="..\Source\Level.h" />
-    <ClInclude Include="..\Source\Game.h" />
-    <ClInclude Include="..\Source\Lodepng.h" />
-    <ClInclude Include="..\Source\Noise.h" />
-    <ClInclude Include="..\Source\OctaveNoise.h" />
-    <ClInclude Include="..\Source\Particle.h" />
-    <ClInclude Include="..\Source\PerlinNoise.h" />
-    <ClInclude Include="..\Source\Player.h" />
-    <ClInclude Include="..\Source\Random.h" />
-    <ClInclude Include="..\Source\Resources.h" />
-    <ClInclude Include="..\Source\SelectedBlock.h" />
-    <ClInclude Include="..\Source\ShaderManager.h" />
-    <ClInclude Include="..\Source\Skybox.h" />
-    <ClInclude Include="..\Source\TextureManager.h" />
-    <ClInclude Include="..\Source\Timer.h" />
-    <ClInclude Include="..\Source\UI.h" />
-    <ClInclude Include="..\Source\VertexList.h" />
+    <ClInclude Include="..\..\src\AABB.h" />
+    <ClInclude Include="..\..\src\AABBPosition.h" />
+    <ClInclude Include="..\..\src\Block.h" />
+    <ClInclude Include="..\..\src\Chunk.h" />
+    <ClInclude Include="..\..\src\CombinedNoise.h" />
+    <ClInclude Include="..\..\src\Entity.h" />
+    <ClInclude Include="..\..\src\FastLZ.h" />
+    <ClInclude Include="..\..\src\Frustum.h" />
+    <ClInclude Include="..\..\src\HeldBlock.h" />
+    <ClInclude Include="..\..\src\Network.h" />
+    <ClInclude Include="..\..\src\ParticleManager.h" />
+    <ClInclude Include="..\..\src\LevelGenerator.h" />
+    <ClInclude Include="..\..\src\LevelRenderer.h" />
+    <ClInclude Include="..\..\src\LocalPlayer.h" />
+    <ClInclude Include="..\..\src\Level.h" />
+    <ClInclude Include="..\..\src\Game.h" />
+    <ClInclude Include="..\..\src\Lodepng.h" />
+    <ClInclude Include="..\..\src\Noise.h" />
+    <ClInclude Include="..\..\src\OctaveNoise.h" />
+    <ClInclude Include="..\..\src\Particle.h" />
+    <ClInclude Include="..\..\src\PerlinNoise.h" />
+    <ClInclude Include="..\..\src\Player.h" />
+    <ClInclude Include="..\..\src\Random.h" />
+    <ClInclude Include="..\..\src\Resources.h" />
+    <ClInclude Include="..\..\src\SelectedBlock.h" />
+    <ClInclude Include="..\..\src\ShaderManager.h" />
+    <ClInclude Include="..\..\src\Skybox.h" />
+    <ClInclude Include="..\..\src\TextureManager.h" />
+    <ClInclude Include="..\..\src\Timer.h" />
+    <ClInclude Include="..\..\src\UI.h" />
+    <ClInclude Include="..\..\src\VertexList.h" />
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="Libraries\glew32.dll">
+    <CopyFileToFolders Include="libs\glew32.dll">
       <DeploymentContent>false</DeploymentContent>
       <FileType>Document</FileType>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="Libraries\SDL2.dll">
+    <CopyFileToFolders Include="libs\SDL2.dll">
       <DeploymentContent>false</DeploymentContent>
       <FileType>Document</FileType>
     </CopyFileToFolders>
