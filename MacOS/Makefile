@@ -1,6 +1,6 @@
 OUTPUT = Build/cubic
 CXX = clang++
-CXXFLAGS = -arch x86_64 -arch arm64 -std=c++17 -IIncludes -O3
+CXXFLAGS = -arch x86_64 -arch arm64 -std=c++17 -Wno-deprecated-declarations -IIncludes -O3
 
 SRCS = $(wildcard ../Source/*.cpp)
 OBJS = $(patsubst ../Source/%, Objects/%, $(patsubst %.cpp, %.o, $(SRCS)))
