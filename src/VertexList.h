@@ -115,19 +115,21 @@ public:
 	};
 
 	void init(Game* game, size_t capacity = 4);
+	void destroy();
 	void update();
 	void render();
 	void reset();
 	void push(const VertexList::Vertex& vertex);
+
 private:
+	Vertex* vertices;
 	GLuint vao;
 	GLuint buffer;
 
 	size_t bufferLength;
 	size_t length;
 	size_t index;
-
-	Vertex* vertices;
 	size_t capacity;
+
 };
 

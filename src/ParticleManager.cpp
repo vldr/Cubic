@@ -12,25 +12,23 @@ void ParticleManager::tick()
 {
 	for (auto particleGroup = particleGroups.begin(); particleGroup != particleGroups.end();)
 	{
-		auto invalidCount = 0;
+		auto expiredCount = 0;
 
-		for (int i = 0; i < particlesPerAxis * particlesPerAxis * particlesPerAxis; i++)
+		for (int i = 0; i < PARTICLES_PER_AXIS * PARTICLES_PER_AXIS * PARTICLES_PER_AXIS; i++)
 		{
-			if (particleGroup->particles[i].isValid)
+			if (particleGroup->particles[i].age < particleGroup->particles[i].maxAge)
 			{
 				particleGroup->particles[i].tick();
 			}
 			else
 			{
-				invalidCount++;
+				expiredCount++;
 			}
 		}
 
-		if (invalidCount == particlesPerAxis * particlesPerAxis * particlesPerAxis)
+		if (expiredCount == PARTICLES_PER_AXIS * PARTICLES_PER_AXIS * PARTICLES_PER_AXIS)
 		{
-			glDeleteBuffers(1, &particleGroup->buffer);
-			glDeleteVertexArrays(1, &particleGroup->vao);
-
+			particleGroup->vertexList.destroy();
 			particleGroup = particleGroups.erase(particleGroup);
 		}
 		else
@@ -46,62 +44,35 @@ void ParticleManager::render()
 
 	for (auto& particleGroup : particleGroups)
 	{
-		glBindVertexArray(particleGroup.vao);
-		glBindBuffer(GL_ARRAY_BUFFER, particleGroup.buffer);
-
-		for (int i = 0; i < particlesPerAxis * particlesPerAxis * particlesPerAxis; i++)
+		for (int i = 0; i < PARTICLES_PER_AXIS * PARTICLES_PER_AXIS * PARTICLES_PER_AXIS; i++)
 		{
-			if (particleGroup.particles[i].isValid)
-			{
-				particleGroup.particles[i].update();
-			}
+			particleGroup.particles[i].update(particleGroup.vertexList);
 		}
 
-		glDrawArrays(GL_TRIANGLES, 0, (GLsizei)particleGroup.size);
+		particleGroup.vertexList.update();
+		particleGroup.vertexList.render();
 	}
 }
 
 void ParticleManager::spawn(float x, float y, float z, unsigned char blockType)
 {
-	ParticleGroup particleGroup;
-	particleGroup.size = particlesPerAxis * particlesPerAxis * particlesPerAxis * verticesPerParticle;
+	ParticleGroup particleGroup{};
+	particleGroup.vertexList.init(game, 64);
 
-	glGenVertexArrays(1, &particleGroup.vao);
-	glBindVertexArray(particleGroup.vao);
-
-	glGenBuffers(1, &particleGroup.buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, particleGroup.buffer);
-
-	glBufferData(GL_ARRAY_BUFFER,
-		particleGroup.size * sizeof(glm::vec3) +
-		particleGroup.size * sizeof(glm::vec2) +
-		particleGroup.size * sizeof(float),
-		NULL,
-		GL_DYNAMIC_DRAW
-	);
-
-	glEnableVertexAttribArray(game->positionAttribute);
-	glEnableVertexAttribArray(game->uvAttribute);
-	glEnableVertexAttribArray(game->shadeAttribute);
-
-	glVertexAttribPointer(game->positionAttribute, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glVertexAttribPointer(game->uvAttribute, 2, GL_FLOAT, GL_FALSE, 0, (void*)(particleGroup.size * sizeof(glm::vec3)));
-	glVertexAttribPointer(game->shadeAttribute, 1, GL_FLOAT, GL_FALSE, 0, (void*)(particleGroup.size * sizeof(glm::vec3) + particleGroup.size * sizeof(glm::vec2)));
-
-	for (int i = 0; i < particlesPerAxis; i++)
+	for (int i = 0; i < PARTICLES_PER_AXIS; i++)
 	{
-		for (int j = 0; j < particlesPerAxis; j++)
+		for (int j = 0; j < PARTICLES_PER_AXIS; j++)
 		{
-			for (int k = 0; k < particlesPerAxis; k++)
+			for (int k = 0; k < PARTICLES_PER_AXIS; k++)
 			{
 				float xd = x + (i + 0.5f) / 4.0f;
 				float yd = y + (j + 0.5f) / 4.0f;
 				float zd = z + (k + 0.5f) / 4.0f;
 
-				int index = (i * particlesPerAxis + j) * particlesPerAxis + k;
+				int index = (i * PARTICLES_PER_AXIS + j) * PARTICLES_PER_AXIS + k;
 
 				particleGroup.particles[index].init(
-					game, index, xd, yd, zd, xd - x - 0.5f, yd - y - 0.5f, zd - z - 0.5f, blockType
+					game, xd, yd, zd, xd - x - 0.5f, yd - y - 0.5f, zd - z - 0.5f, blockType
 				);
 			}
 		}

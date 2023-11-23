@@ -11,194 +11,194 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Source\AABB.cpp">
+    <ClCompile Include="..\..\src\AABB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Block.cpp">
+    <ClCompile Include="..\..\src\Block.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Chunk.cpp">
+    <ClCompile Include="..\..\src\Chunk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\CombinedNoise.cpp">
+    <ClCompile Include="..\..\src\CombinedNoise.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Entity.cpp">
+    <ClCompile Include="..\..\src\Entity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\HeldBlock.cpp">
+    <ClCompile Include="..\..\src\FastLZ.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\ParticleManager.cpp">
+    <ClCompile Include="..\..\src\Frustum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\LevelGenerator.cpp">
+    <ClCompile Include="..\..\src\HeldBlock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\LevelRenderer.cpp">
+    <ClCompile Include="..\..\src\Network.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\LocalPlayer.cpp">
+    <ClCompile Include="..\..\src\ParticleManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Level.cpp">
+    <ClCompile Include="..\..\src\LevelGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Lodepng.cpp">
+    <ClCompile Include="..\..\src\LevelRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Main.cpp">
+    <ClCompile Include="..\..\src\LocalPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Game.cpp">
+    <ClCompile Include="..\..\src\Level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\OctaveNoise.cpp">
+    <ClCompile Include="..\..\src\Lodepng.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Particle.cpp">
+    <ClCompile Include="..\..\src\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\PerlinNoise.cpp">
+    <ClCompile Include="..\..\src\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Random.cpp">
+    <ClCompile Include="..\..\src\OctaveNoise.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\ShaderManager.cpp">
+    <ClCompile Include="..\..\src\Particle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Skybox.cpp">
+    <ClCompile Include="..\..\src\PerlinNoise.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\TextureManager.cpp">
+    <ClCompile Include="..\..\src\Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Timer.cpp">
+    <ClCompile Include="..\..\src\Random.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\UI.cpp">
+    <ClCompile Include="..\..\src\Resources.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\VertexList.cpp">
+    <ClCompile Include="..\..\src\SelectedBlock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\SelectedBlock.cpp">
+    <ClCompile Include="..\..\src\ShaderManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Frustum.cpp">
+    <ClCompile Include="..\..\src\Skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Player.cpp">
+    <ClCompile Include="..\..\src\TextureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Network.cpp">
+    <ClCompile Include="..\..\src\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Resources.cpp">
+    <ClCompile Include="..\..\src\UI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\FastLZ.cpp">
+    <ClCompile Include="..\..\src\VertexList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Source\AABB.h">
+    <ClInclude Include="..\..\src\AABB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\AABBPosition.h">
+    <ClInclude Include="..\..\src\AABBPosition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Block.h">
+    <ClInclude Include="..\..\src\Block.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Chunk.h">
+    <ClInclude Include="..\..\src\Chunk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\CombinedNoise.h">
+    <ClInclude Include="..\..\src\CombinedNoise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Entity.h">
+    <ClInclude Include="..\..\src\Entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\HeldBlock.h">
+    <ClInclude Include="..\..\src\FastLZ.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\ParticleManager.h">
+    <ClInclude Include="..\..\src\Frustum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\LevelGenerator.h">
+    <ClInclude Include="..\..\src\HeldBlock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\LevelRenderer.h">
+    <ClInclude Include="..\..\src\Network.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\LocalPlayer.h">
+    <ClInclude Include="..\..\src\ParticleManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Level.h">
+    <ClInclude Include="..\..\src\LevelGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Game.h">
+    <ClInclude Include="..\..\src\LevelRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Lodepng.h">
+    <ClInclude Include="..\..\src\LocalPlayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Noise.h">
+    <ClInclude Include="..\..\src\Level.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\OctaveNoise.h">
+    <ClInclude Include="..\..\src\Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Particle.h">
+    <ClInclude Include="..\..\src\Lodepng.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\PerlinNoise.h">
+    <ClInclude Include="..\..\src\Noise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Random.h">
+    <ClInclude Include="..\..\src\OctaveNoise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\ShaderManager.h">
+    <ClInclude Include="..\..\src\Particle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Skybox.h">
+    <ClInclude Include="..\..\src\PerlinNoise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\TextureManager.h">
+    <ClInclude Include="..\..\src\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Timer.h">
+    <ClInclude Include="..\..\src\Random.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\UI.h">
+    <ClInclude Include="..\..\src\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\VertexList.h">
+    <ClInclude Include="..\..\src\SelectedBlock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\SelectedBlock.h">
+    <ClInclude Include="..\..\src\ShaderManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Frustum.h">
+    <ClInclude Include="..\..\src\Skybox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Player.h">
+    <ClInclude Include="..\..\src\TextureManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Network.h">
+    <ClInclude Include="..\..\src\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Resources.h">
+    <ClInclude Include="..\..\src\UI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\FastLZ.h">
+    <ClInclude Include="..\..\src\VertexList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="Libraries\glew32.dll" />
-    <CopyFileToFolders Include="Libraries\SDL2.dll" />
+    <CopyFileToFolders Include="libs\glew32.dll" />
+    <CopyFileToFolders Include="libs\SDL2.dll" />
   </ItemGroup>
 </Project>

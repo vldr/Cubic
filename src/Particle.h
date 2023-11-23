@@ -1,18 +1,28 @@
 #pragma once
 #include "Entity.h"
 
+
+class VertexList;
+
 class Particle : public Entity
 {
 public:
-	void init(Game* game, int index, float x, float y, float z, float xd, float yd, float zd, unsigned char blockType);
+	void init(Game* game, float x, float y, float z, float xd, float yd, float zd, unsigned char blockType);
 	void tick();
-	void update();
+	void update(VertexList& vertexList);
 
-	bool isValid;
-	int index;
+	friend class ParticleManager;
 private:
+	VertexList* vertexList;
+
 	int age;
-	int lifeTime;
+	int maxAge;
 	float size;
+
+	float u0;
+	float v0;
+	float u1;
+	float v1;
+	float brightness;
 };
 

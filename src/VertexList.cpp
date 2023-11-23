@@ -29,6 +29,15 @@ void VertexList::init(Game* game, size_t capacity)
 	glVertexAttribPointer(game->shadeAttribute, 1, GL_FLOAT, GL_FALSE, sizeof(VertexList::Vertex), (void*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
 }
 
+void VertexList::destroy()
+{
+	glDeleteBuffers(1, &buffer);
+	glDeleteVertexArrays(1, &vao);
+
+	std::free(vertices);
+	vertices = nullptr;
+}
+
 void VertexList::reset()
 {
 	index = 0;
