@@ -67,6 +67,33 @@ jobs:
           asset_name: Cubic_Ubuntu.zip
           tag: Build
           overwrite: true
+          
+  build-macos:
+    name: Build MacOS
+    concurrency: ci-ubuntu-${{ github.ref }}
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build
+        run: |
+          cd MacOS
+          make -j
+
+      - name: Bundle
+        run: |
+          cd MacOS/Build
+          tar -a -c -f cubic.zip cubic libSDL2.dylib libGLEW.dylib
+
+      - name: Publish
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: MacOS/Build/cubic.zip
+          asset_name: Cubic_MacOS.zip
+          tag: Build
+          overwrite: true
       
   build-deploy-web:
     name: Build and Deploy
