@@ -1,3 +1,5 @@
+name: Build and Publish
+
 on:
   push:
     branches: ["master"]
@@ -11,7 +13,7 @@ env:
 
 jobs:
   build-windows:
-    name: Build Windows
+    name: Windows
     concurrency: ci-windows-${{ github.ref }}
     runs-on: windows-latest
     steps:
@@ -39,7 +41,7 @@ jobs:
           overwrite: true
           
   build-ubuntu:
-    name: Build Ubuntu
+    name: Ubuntu
     concurrency: ci-ubuntu-${{ github.ref }}
     runs-on: ubuntu-20.04
     steps:
@@ -69,7 +71,7 @@ jobs:
           overwrite: true
           
   build-macos:
-    name: Build MacOS
+    name: MacOS
     concurrency: ci-macos-${{ github.ref }}
     runs-on: macos-latest
     steps:
@@ -95,8 +97,8 @@ jobs:
           tag: Build
           overwrite: true
       
-  build-deploy-web:
-    name: Build and Deploy
+  build-web:
+    name: Web
     concurrency: ci-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
@@ -121,7 +123,7 @@ jobs:
           cd Web
           make -j4
           
-      - name: Deploy
+      - name: Publish
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: Web/Build
