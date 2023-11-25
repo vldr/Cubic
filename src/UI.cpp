@@ -53,7 +53,7 @@ void UI::init(Game* game)
 #ifdef EMSCRIPTEN
 	this->isTouch = is_touch();
 #else
-	this->isTouch = SDL_GetNumTouchFingers(0) > 0;
+	this->isTouch = false;
 #endif
 
 	this->state = State::None;

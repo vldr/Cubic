@@ -18,31 +18,31 @@ void Particle::init(
 	setSize(0.2f, 0.2f);
 	setPosition(x, y, z);
 
-	heightOffset = aabbHeight / 2.0f;
+	this->heightOffset = aabbHeight / 2.0f;
 
-	velocity.x = xd + float(game->random.uniform() * 2.0f - 1.0f) * 0.4f;
-	velocity.y = yd + float(game->random.uniform() * 2.0f - 1.0f) * 0.4f;
-	velocity.z = zd + float(game->random.uniform() * 2.0f - 1.0f) * 0.4f;
+	this->velocity.x = xd + float(game->random.uniform() * 2.0f - 1.0f) * 0.4f;
+	this->velocity.y = yd + float(game->random.uniform() * 2.0f - 1.0f) * 0.4f;
+	this->velocity.z = zd + float(game->random.uniform() * 2.0f - 1.0f) * 0.4f;
 
-	size = 0.1f * ((float)game->random.uniform() * 0.5f + 0.5f);
-	maxAge = int(4.0f / (game->random.uniform() * 0.9f + 0.1f));
-	age = 0;
+	this->size = 0.1f * ((float)game->random.uniform() * 0.5f + 0.5f);
+	this->maxAge = int(4.0f / (game->random.uniform() * 0.9f + 0.1f));
+	this->age = 0;
 
 	float speed = float(game->random.uniform() + game->random.uniform() + 1.0f) * 0.15f * 0.4f / glm::length(velocity);
-	velocity.x *= speed;
-	velocity.y *= speed;
-	velocity.z *= speed;
-	velocity.y += 0.1f;
+	this->velocity.x *= speed;
+	this->velocity.y *= speed;
+	this->velocity.z *= speed;
+	this->velocity.y += 0.1f;
 
 	auto texture = Block::Definitions[blockType].sideTexture;
 	auto u = (float)game->random.uniform() * 3.0f;
 	auto v = (float)game->random.uniform() * 3.0f;
 
-	u0 = (texture % 16 + u / 4.0f) / 16.0f;
-	v0 = (texture / 16 + v / 4.0f) / 16.0f;
-	u1 = u0 + 0.015609375f;
-	v1 = v0 + 0.015609375f;
-	brightness = game->level.getTileBrightness((int)x, (int)y, (int)z);
+	this->u0 = (texture % 16 + u / 4.0f) / 16.0f;
+	this->v0 = (texture / 16 + v / 4.0f) / 16.0f;
+	this->u1 = u0 + 0.015609375f;
+	this->v1 = v0 + 0.015609375f;
+	this->brightness = game->level.getTileBrightness((int)x, (int)y, (int)z);
 }
 
 void Particle::tick()

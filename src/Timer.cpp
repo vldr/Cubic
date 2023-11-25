@@ -2,7 +2,7 @@
 
 #include <chrono>
 
-void Timer::init(Game* game, float ticksPerSecond)
+void Timer::init(float ticksPerSecond)
 {
 	this->ticks = 0;
 	this->elapsedDelta = 0.0;

@@ -8,7 +8,7 @@ class Timer
 public:
 	uint64_t nanoTime();
 	uint64_t milliTime();
-	void init(Game* game, float ticksPerSecond);
+	void init(float ticksPerSecond);
 	void update();
 	void tick();
 

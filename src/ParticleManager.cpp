@@ -57,7 +57,7 @@ void ParticleManager::render()
 void ParticleManager::spawn(float x, float y, float z, unsigned char blockType)
 {
 	ParticleGroup particleGroup{};
-	particleGroup.vertexList.init(game, 64);
+	particleGroup.vertexList.init(game, PARTICLES_PER_AXIS * PARTICLES_PER_AXIS * PARTICLES_PER_AXIS * VERTICES_PER_PARTICLE);
 
 	for (int i = 0; i < PARTICLES_PER_AXIS; i++)
 	{

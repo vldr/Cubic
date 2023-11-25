@@ -81,8 +81,8 @@ static const GLchar* vertexSource = R""""(#version 100
 
 void Game::init(SDL_Window* sdlWindow)
 {
-    window = sdlWindow;
-    shader = shaderManager.load(vertexSource, fragmentSource);
+    this->window = sdlWindow;
+    this->shader = shaderManager.load(vertexSource, fragmentSource);
 
     glUseProgram(shader);
 
@@ -92,36 +92,34 @@ void Game::init(SDL_Window* sdlWindow)
     glDepthFunc(GL_LEQUAL);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    fragmentOffsetUniform = glGetUniformLocation(shader, "FragmentOffset");
-    playerPositionUniform = glGetUniformLocation(shader, "PlayerPosition");
-    fogEnableUniform = glGetUniformLocation(shader, "FogEnable");
-    fogDistanceUniform = glGetUniformLocation(shader, "FogDistance");
-    fogColorUniform = glGetUniformLocation(shader, "FogColor");
-    projectionMatrixUniform = glGetUniformLocation(shader, "Projection");
-    viewMatrixUniform = glGetUniformLocation(shader, "View");
-    modelMatrixUniform = glGetUniformLocation(shader, "Model");
+    this->positionAttribute = glGetAttribLocation(shader, "position");
+    this->uvAttribute = glGetAttribLocation(shader, "uv");
+    this->shadeAttribute = glGetAttribLocation(shader, "shade");
 
-    positionAttribute = glGetAttribLocation(shader, "position");
-    uvAttribute = glGetAttribLocation(shader, "uv");
-    shadeAttribute = glGetAttribLocation(shader, "shade");
+    this->fragmentOffsetUniform = glGetUniformLocation(shader, "FragmentOffset");
+    this->playerPositionUniform = glGetUniformLocation(shader, "PlayerPosition");
+    this->fogEnableUniform = glGetUniformLocation(shader, "FogEnable");
+    this->fogDistanceUniform = glGetUniformLocation(shader, "FogDistance");
+    this->fogColorUniform = glGetUniformLocation(shader, "FogColor");
+    this->projectionMatrixUniform = glGetUniformLocation(shader, "Projection");
+    this->viewMatrixUniform = glGetUniformLocation(shader, "View");
+    this->modelMatrixUniform = glGetUniformLocation(shader, "Model");
 
-    glUniformMatrix4fv(modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(IDENTITY_MATRIX));
-
-    random.init(std::time(nullptr));
-    timer.init(this, TICK_RATE);
-    localPlayer.init(this);
-    frustum.init(this);
-    network.init(this);
-    ui.init(this);
-    heldBlock.init(this);
-    selectedBlock.init(this);
-    particleManager.init(this);
-    levelGenerator.init(this);
-    levelRenderer.init(this);
-    lastTick = timer.milliTime();
-    frameRate = 0;
-    fullscreen = false;
-    atlasTexture = textureManager.load(terrainResourceTexture, sizeof(terrainResourceTexture));
+    this->random.init(std::time(nullptr));
+    this->timer.init(TICK_RATE);
+    this->localPlayer.init(this);
+    this->frustum.init(this);
+    this->network.init(this);
+    this->ui.init(this);
+    this->heldBlock.init(this);
+    this->selectedBlock.init(this);
+    this->particleManager.init(this);
+    this->levelGenerator.init(this);
+    this->levelRenderer.init(this);
+    this->lastTick = timer.milliTime();
+    this->frameRate = 0;
+    this->fullscreen = false;
+    this->atlasTexture = textureManager.load(terrainResourceTexture, sizeof(terrainResourceTexture));
 
     resize();
 }
@@ -268,7 +266,14 @@ void Game::input(const SDL_Event& event)
 void Game::resize()
 {
     SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+
+#ifdef EMSCRIPTEN
+    width = std::lround(windowWidth * emscripten_get_device_pixel_ratio());
+    height = std::lround(windowHeight * emscripten_get_device_pixel_ratio());
+#else
     SDL_GL_GetDrawableSize(window, &width, &height);
+#endif
+
     glViewport(0, 0, width, height);
 
     scaledWidth = float(width);
