@@ -41,16 +41,13 @@ static const GLchar* fragmentSource = R""""(#version 100
 
     void main() 
     {
-        vec2 textureCoordinate = fragmentTextureCoordinate;
-
-	    vec2 size = floor(textureCoordinate);
-        if (size != vec2(0, 0))
-        {
-            vec2 position = fract(textureCoordinate);
-            vec2 flooredPosition = floor(position * 16.0) / 16.0;
-        
-	        textureCoordinate = flooredPosition + mod(((textureCoordinate - flooredPosition) * size) * 16.0, 1.0) / 16.0;
-        }
+        vec2 position = fract(fragmentTextureCoordinate) * 16.0;
+        vec2 size = floor(fragmentTextureCoordinate);
+        vec2 textureCoordinate = mix(
+            fragmentTextureCoordinate, 
+            floor(position) / 16.0 + mod(position * size, 1.0) / 16.0, 
+            float(size != vec2(0, 0))
+        );
 
         vec4 color = texture2D(TextureSample, textureCoordinate + FragmentOffset);
         color.rgb *= fragmentShade;

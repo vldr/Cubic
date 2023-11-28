@@ -149,6 +149,14 @@ inline void Chunk::generateMesh(Face* faces)
 
                     if (previousFace == face)
                     {
+                        if constexpr (faceType == FaceType::Front || faceType == FaceType::Back || faceType == FaceType::Left || faceType == FaceType::Right)
+                        {
+                            if (face.blockDefinition.height != 1.0f)
+                            {
+                                break;
+                            }
+                        }
+
                         width++;
                     }
                     else
@@ -322,7 +330,7 @@ inline void Chunk::generateMesh(Face* faces)
                     float u = height + 0.0625f * (blockDefinition.sideTexture % 16);
                     float v = width + 0.0625f * (blockDefinition.sideTexture / 16);
                     float u2 = 0.0625f + u;
-                    float v2 = 0.0625f + v;
+                    float v2 = blockDefinition.height * 0.0625f + v;
 
                     int x = position.x + column;
                     int y = position.y + row;
@@ -376,7 +384,7 @@ inline void Chunk::generateMesh(Face* faces)
                     float u = height + 0.0625f * (blockDefinition.sideTexture % 16);
                     float v = width + 0.0625f * (blockDefinition.sideTexture / 16);
                     float u2 = 0.0625f + u;
-                    float v2 = 0.0625f + v;
+                    float v2 = blockDefinition.height * 0.0625f + v;
 
                     int x = position.x + slice;
                     int y = position.y + row;
