@@ -78,17 +78,6 @@ private:
 
         glm::vec3 position;
         glm::vec2 rotation;
-
-        bool operator==(const PositionPacket& rhs)
-        {
-            return this->position == rhs.position &&
-                this->rotation == rhs.rotation;
-        }
-
-        bool operator!=(const PositionPacket& rhs)
-        {
-            return !operator==(rhs);
-        }
     };
 #pragma pack(pop)
 
@@ -106,7 +95,6 @@ private:
 	std::vector<std::unique_ptr<Player>> players;
     std::vector<PositionPacket> positionPackets;
 
-    PositionPacket lastPositionPacket;
     bool connected;
 
 	Game* game;

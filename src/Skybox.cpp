@@ -23,7 +23,7 @@ void Skybox::initBedrock()
 
     const float ground = (float)game->level.groundLevel;
     int a = glm::min(128, glm::min(Level::WIDTH, Level::DEPTH));
-    int b = 2048 / a;
+    int b = 1024 / a;
 
     for (int i = -a * b; i < Level::WIDTH + a * b; i += a)
     {
@@ -90,7 +90,7 @@ void Skybox::initWater()
 
     const float water = (float)game->level.waterLevel;
     int a = glm::min(128, glm::min(Level::WIDTH, Level::DEPTH));
-    int b = 2048 / a;
+    int b = 1024 / a;
 
     for (int i = -a * b; i < Level::WIDTH + a * b; i += a)
     {
@@ -130,9 +130,9 @@ void Skybox::initClouds()
     float y = Level::HEIGHT + 2.0f;
     float t = 0.0f;
 
-    for (int x = -2048; x < Level::WIDTH + 2048; x += 512) 
+    for (int x = -1024; x < Level::WIDTH + 1024; x += 512)
     {
-        for (int z = -2048; z < Level::DEPTH + 2048; z += 512) 
+        for (int z = -1024; z < Level::DEPTH + 1024; z += 512)
         {
             cloudsVertices.push(VertexList::Vertex(x, y, z, (x + t) / 2048.0f, z / 2048.0f, 1.0f));
             cloudsVertices.push(VertexList::Vertex(x, y, z + 512, (x + t) / 2048.0f, (z + 512) / 2048.0f, 1.0f));
@@ -162,9 +162,9 @@ void Skybox::initSky()
 
     float y = Level::HEIGHT + 10.0f;
 
-    for (int x = -2048; x < Level::WIDTH + 2048; x += 512)
+    for (int x = -1024; x < Level::WIDTH + 1024; x += 512)
     {
-        for (int z = -2048; z < Level::DEPTH + 2048; z += 512)
+        for (int z = -1024; z < Level::DEPTH + 1024; z += 512)
         {
             skyVertices.push(VertexList::Vertex(x, y, z + 512, x / 2048.0f, (z + 512) / 2048.0f, 1.0f));
             skyVertices.push(VertexList::Vertex(x, y, z, x / 2048.0f, z / 2048.0f, 1.0f));

@@ -298,12 +298,7 @@ void Network::sendPosition(const glm::vec3& position, const glm::vec2& rotation)
         packet.position = position;
         packet.rotation = rotation;
 
-        if (packet != lastPositionPacket)
-        {
-            sendBinary((unsigned char*)&packet, sizeof(packet));
-
-            lastPositionPacket = packet;
-        }
+        sendBinary((unsigned char*)&packet, sizeof(packet));
     }
 }
 

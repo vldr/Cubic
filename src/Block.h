@@ -82,7 +82,7 @@ public:
 		unsigned char sideTexture;
 		unsigned char bottomTexture;
 		float height;
-		const AABB boundingBox; 
+		AABB boundingBox; 
 		bool blocksLight;
 		DrawType draw; 
 		CollideType collide;

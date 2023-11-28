@@ -41,7 +41,18 @@ static const GLchar* fragmentSource = R""""(#version 100
 
     void main() 
     {
-        vec4 color = texture2D(TextureSample, fragmentTextureCoordinate + FragmentOffset);
+        vec2 textureCoordinate = fragmentTextureCoordinate;
+
+	    vec2 size = floor(textureCoordinate);
+        if (size != vec2(0, 0))
+        {
+            vec2 position = fract(textureCoordinate);
+            vec2 flooredPosition = floor(position * 16.0) / 16.0;
+        
+	        textureCoordinate = flooredPosition + mod(((textureCoordinate - flooredPosition) * size) * 16.0, 1.0) / 16.0;
+        }
+
+        vec4 color = texture2D(TextureSample, textureCoordinate + FragmentOffset);
         color.rgb *= fragmentShade;
 
         if (color.a == 0.0)
@@ -155,7 +166,7 @@ void Game::run()
     frustum.update();
 
     glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-
+   
     levelRenderer.render();
     particleManager.render();
     network.render();
@@ -205,6 +216,17 @@ void Game::input(const SDL_Event& event)
     }
     else if (event.type == SDL_KEYUP)
     {
+#ifndef EMSCRIPTEN
+        if (event.key.keysym.sym == SDLK_F1)
+        {
+            static bool state = false;
+
+            glPolygonMode(GL_FRONT_AND_BACK, state ? GL_FILL : GL_LINE);
+
+            state = !state;
+        }
+#endif
+
         if (event.key.keysym.sym == SDLK_F2)
         {
             ui.log("Players: " + std::to_string(network.count()));

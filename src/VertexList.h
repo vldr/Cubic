@@ -130,6 +130,5 @@ private:
 	size_t length;
 	size_t index;
 	size_t capacity;
-
 };
 
