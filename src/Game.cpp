@@ -46,7 +46,7 @@ static const GLchar* fragmentSource = R""""(#version 100
         vec2 textureCoordinate = mix(
             fragmentTextureCoordinate, 
             floor(position) / 16.0 + mod(position * size, 1.0) / 16.0, 
-            float(size != vec2(0, 0))
+            float(size != vec2(0, 0)) * (1.0 - FogEnable)
         );
 
         vec4 color = texture2D(TextureSample, textureCoordinate + FragmentOffset);
