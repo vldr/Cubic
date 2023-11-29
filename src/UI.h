@@ -45,8 +45,6 @@ public:
 	void render();
 
 	void log(const char* format, ...);
-	void log(const std::string& text);
-	void logMotd();
 
 	void openMenu(UI::State state, bool shouldUpdate = true);
 	void openStatusMenu(const char* title, const char* description, bool closeable = false);

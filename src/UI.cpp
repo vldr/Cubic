@@ -470,23 +470,6 @@ void UI::log(const char* format, ...)
 
 	update();
 }
-
-void UI::log(const std::string& text)
-{
-	Log log;
-	log.created = game->timer.milliTime();
-	log.text = text;
-
-	logs.push_back(log);
-
-	update();
-}
-
-void UI::logMotd()
-{
-	game->ui.log("Connected! Invite friends by sharing the link.");
-}
-
 bool UI::drawStatusMenu()
 {
 	int x = int(glm::ceil(game->scaledWidth / 16));

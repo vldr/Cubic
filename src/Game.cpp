@@ -13,7 +13,6 @@
 #include <glm/gtc/type_ptr.hpp> 
 #include <ctime>
 #include <cstdio>
-#include <sstream>
 
 #ifdef EMSCRIPTEN
 #include <emscripten/html5.h>
@@ -46,7 +45,7 @@ static const GLchar* fragmentSource = R""""(#version 100
         vec2 textureCoordinate = mix(
             fragmentTextureCoordinate, 
             floor(position) / 16.0 + mod(position * size, 1.0) / 16.0, 
-            float(size != vec2(0, 0)) * (1.0 - FogEnable)
+            float(size.x > 1.0 || size.y > 1.0)
         );
 
         vec4 color = texture2D(TextureSample, textureCoordinate + FragmentOffset);
@@ -226,7 +225,7 @@ void Game::input(const SDL_Event& event)
 
         if (event.key.keysym.sym == SDLK_F2)
         {
-            ui.log("Players: " + std::to_string(network.count()));
+            ui.log("Players: %d", network.count());
         }
 
         if (event.key.keysym.sym == SDLK_F3)
@@ -251,18 +250,12 @@ void Game::input(const SDL_Event& event)
             };
 
             auto hash = crc32(level.blocks.get(), Level::WIDTH * Level::HEIGHT * Level::DEPTH);
-            ui.log("CRC32 checksum: " + std::to_string(hash));
+            ui.log("CRC32 checksum: %X", hash);
         }
 
         if (event.key.keysym.sym == SDLK_F4)
         {
-            std::stringstream log{};
-            log << "Build date: ";
-            log << __DATE__;
-            log << " ";
-            log << __TIME__;
-
-            ui.log(log.str());
+            ui.log("Build date: %s %s", __DATE__, __TIME__);
         }
 
         if (event.key.keysym.sym == SDLK_F5)

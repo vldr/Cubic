@@ -451,7 +451,6 @@ void Network::onMessage(const std::string& text)
 
         url = BASE_URL + id;
 
-        game->ui.logMotd();
         game->ui.closeMenu();
     }
     else if (message["type"] == "join")
@@ -486,8 +485,6 @@ void Network::onMessage(const std::string& text)
             }
 
             players.push_back(nullptr);
-
-            game->ui.logMotd();
         }
     }
     else if (message["type"] == "leave")

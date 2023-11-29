@@ -438,7 +438,7 @@ inline void Chunk::generateMesh(Face* faces)
     }
 }
 
-void Chunk::generateFaces()
+inline void Chunk::generateFaces()
 {
     for (int x = position.x; x < (position.x + SIZE); x++)
     {
