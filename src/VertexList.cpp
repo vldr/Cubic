@@ -4,16 +4,13 @@
 #include <glm/glm.hpp>
 #include <cstdlib>
 
-void VertexList::init(Game* game, size_t capacity)
+void VertexList::init(Game* game, Allocator* allocator)
 {
+	this->allocator = allocator;
 	this->index = 0;
 	this->length = 0;
-    this->bufferLength = 0;
-    this->capacity = capacity;
-    this->vertices = static_cast<VertexList::Vertex*>(
-        std::malloc(this->capacity * sizeof(VertexList::Vertex))
-    );
-
+	this->bufferLength = 0;
+	
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
@@ -29,13 +26,17 @@ void VertexList::init(Game* game, size_t capacity)
 	glVertexAttribPointer(game->shadeAttribute, 1, GL_FLOAT, GL_FALSE, sizeof(VertexList::Vertex), (void*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
 }
 
+void VertexList::init(Game* game, size_t size)
+{
+	init(game, new Allocator(size));
+}
+
 void VertexList::destroy()
 {
 	glDeleteBuffers(1, &buffer);
 	glDeleteVertexArrays(1, &vao);
 
-	std::free(vertices);
-	vertices = nullptr;
+	delete allocator;
 }
 
 void VertexList::reset()
@@ -54,13 +55,13 @@ void VertexList::update()
 
 		if (length > bufferLength)
 		{
-			glBufferData(GL_ARRAY_BUFFER, length * sizeof(VertexList::Vertex), vertices, GL_DYNAMIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, length * sizeof(VertexList::Vertex), allocator->data, GL_DYNAMIC_DRAW);
 
 			bufferLength = length;
 		}
 		else
 		{
-			glBufferSubData(GL_ARRAY_BUFFER, 0, length * sizeof(VertexList::Vertex), vertices);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, length * sizeof(VertexList::Vertex), allocator->data);
 		}
 
 		index = 0;
@@ -78,13 +79,13 @@ void VertexList::render()
 
 void VertexList::push(const VertexList::Vertex& vertex)
 {
-    if (index == capacity)
+    if (index == allocator->size)
     {
-		capacity *= 2;
-        vertices = static_cast<VertexList::Vertex*>(
-            std::realloc(vertices, capacity * sizeof(VertexList::Vertex))
+		allocator->size *= 2;
+		allocator->data = static_cast<VertexList::Vertex*>(
+            std::realloc(allocator->data, allocator->size * sizeof(VertexList::Vertex))
         );
     }
 
-    vertices[index++] = std::move(vertex);
+	allocator->data[index++] = std::move(vertex);
 }

@@ -3,6 +3,9 @@
 #include "Game.h"
 #include "LocalPlayer.h"
 
+VertexList::Allocator* Chunk::allocator = nullptr;
+VertexList::Allocator* Chunk::waterAllocator = nullptr;
+
 Chunk::Face Chunk::topFaces[Chunk::SIZE * Chunk::SIZE * Chunk::SIZE];
 Chunk::Face Chunk::bottomFaces[Chunk::SIZE * Chunk::SIZE * Chunk::SIZE];
 Chunk::Face Chunk::leftFaces[Chunk::SIZE * Chunk::SIZE * Chunk::SIZE];
@@ -12,13 +15,23 @@ Chunk::Face Chunk::backFaces[Chunk::SIZE * Chunk::SIZE * Chunk::SIZE];
 
 void Chunk::init(Game* game, int x, int y, int z)
 {
+    if (!this->allocator)
+    {
+        this->allocator = new VertexList::Allocator;
+    }
+
+    if (!this->waterAllocator)
+    {
+        this->waterAllocator = new VertexList::Allocator;
+    }
+
     this->game = game;
     this->position = glm::ivec3(x, y, z);
     this->isVisible = false;
     this->isLoaded = false;
 
-    this->vertices.init(game);
-    this->waterVertices.init(game);
+    this->vertices.init(game, allocator);
+    this->waterVertices.init(game, waterAllocator);
 }
 
 template <Chunk::FaceType faceType>
@@ -322,7 +335,6 @@ inline void Chunk::generateMesh(Face* faces)
                     else
                     {
                         break;
-
                     }
                 }
 

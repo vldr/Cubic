@@ -114,7 +114,26 @@ public:
 		float s;
 	};
 
+	struct Allocator
+	{
+		Allocator(size_t size = 4) 
+			: size(size)
+		{
+			data = static_cast<Vertex*>(std::malloc(size * sizeof(*data)));
+		}
+
+		~Allocator() 
+		{
+			std::free(data);
+		}
+
+		Vertex* data;
+		size_t size;
+	};
+
 	void init(Game* game, size_t capacity = 4);
+	void init(Game* game, Allocator* allocator);
+
 	void destroy();
 	void update();
 	void render();
@@ -122,13 +141,13 @@ public:
 	void push(const VertexList::Vertex& vertex);
 
 private:
-	Vertex* vertices;
+	Allocator* allocator;
+
 	GLuint vao;
 	GLuint buffer;
 
 	size_t bufferLength;
 	size_t length;
 	size_t index;
-	size_t capacity;
 };
 

@@ -50,6 +50,9 @@ private:
 		}
 	};
 
+	static VertexList::Allocator* allocator;
+	static VertexList::Allocator* waterAllocator;
+
 	static Face topFaces[];
 	static Face bottomFaces[];
 	static Face leftFaces[];
