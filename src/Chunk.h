@@ -17,20 +17,18 @@ public:
 	void update();
 	float distanceToPlayer() const;
 
+	glm::ivec3 position;
+
 	bool isVisible;
 	bool isLoaded;
 
-	glm::ivec3 position;
-
+	static const int SIZE = 16;
 	struct Comparator
 	{
 		bool operator()(const Chunk* a, const Chunk* b) const;
 	};
-
-	static const int SIZE = 16;
-
 private:
-	enum class FaceType { None, Front, Back, Left, Right, Top, Bottom };
+	enum class FaceType { Front, Back, Left, Right, Top, Bottom };
 
 	struct Face
 	{
@@ -59,14 +57,14 @@ private:
 	static Face frontFaces[];
 	static Face backFaces[];
 
+	inline Face& getFace(Face* faces, int x, int y, int z);
+
+	template <FaceType faceType>
+	inline bool shouldRenderFace(const int x, const int y, const int z);
+
 	template<FaceType faceType>
 	inline void generateMesh(Face* faces);
 	inline void generateFaces();
-
-	inline Face& getFace(Face* faces, int x, int y, int z);
-
-	bool shouldRenderFace(const Block::Definition& current, const Block::Definition& neighbor, bool isBottom = false);
-	bool shouldRenderTopFace(const Block::Definition& blockDefinition, int x, int y, int z);
 
 	Game* game;
 

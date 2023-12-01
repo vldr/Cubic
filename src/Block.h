@@ -7,12 +7,12 @@ public:
 	enum class DrawType 
 	{
 		DRAW_OPAQUE,     
+		DRAW_OPAQUE_SMALL,
+		DRAW_TRANSLUCENT,
 		DRAW_TRANSPARENT,   
 		DRAW_TRANSPARENT_THICK,
-		DRAW_TRANSLUCENT,
 		DRAW_GAS,
 		DRAW_SPRITE,
-		DRAW_OPAQUE_SMALL,
 	};
 
 	enum class CollideType 

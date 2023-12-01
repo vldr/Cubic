@@ -220,13 +220,13 @@ void LevelRenderer::initChunks()
 
 void LevelRenderer::loadChunks(int x0, int y0, int z0, int x1, int y1, int z1)
 {
-    x0 /= 16;
-    y0 /= 16;
-    z0 /= 16;
+    x0 /= Chunk::SIZE;
+    y0 /= Chunk::SIZE;
+    z0 /= Chunk::SIZE;
 
-    x1 /= 16;
-    y1 /= 16;
-    z1 /= 16;
+    x1 /= Chunk::SIZE;
+    y1 /= Chunk::SIZE;
+    z1 /= Chunk::SIZE;
 
     if (x0 < 0)
     {
