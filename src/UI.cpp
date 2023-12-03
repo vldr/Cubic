@@ -1124,10 +1124,8 @@ void UI::drawBlock(unsigned char blockType, float x, float y, float scale)
 			VertexList::Vertex(1.0f, 1.0f, 1.0f, u2, v, 1.0f),
 		};
 
-		for (size_t i = 0; i < std::size(spriteVertexList); i++)
+		for (const auto& vertex : spriteVertexList)
 		{
-			const VertexList::Vertex& vertex = spriteVertexList[i];
-
 			glm::vec4 position = 
 				glm::translate(glm::mat4(1.0f), glm::vec3(x + 2.0f, y + 1.0f, 15.0f)) * 
 				glm::scale(glm::mat4(1.0f), glm::vec3(scale, -scale, scale)) *
@@ -1169,10 +1167,8 @@ void UI::drawBlock(unsigned char blockType, float x, float y, float scale)
 			VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, u2, v, 0.6f),
 		};
 
-		for (size_t i = 0; i < std::size(blockVertexList); i++)
+		for (const auto& vertex : blockVertexList)
 		{
-			const VertexList::Vertex& vertex = blockVertexList[i];
-
 			glm::vec4 position =
 				glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 15.0f)) * 
 				glm::rotate(glm::mat4(1.0f), glm::radians(-30.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *

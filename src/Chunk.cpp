@@ -154,7 +154,7 @@ inline bool Chunk::shouldRenderFace(const int x, const int y, const int z)
             {
                 if (blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID)
                 {
-                    static const std::vector<glm::ivec2> offsets = {
+                    static const glm::ivec2 offsets[] = {
                         glm::ivec2(0, 1),
                         glm::ivec2(0, -1),
                         glm::ivec2(-1, 0),
@@ -167,6 +167,11 @@ inline bool Chunk::shouldRenderFace(const int x, const int y, const int z)
 
                     for (const auto& offset : offsets)
                     {
+                        if (!game->level.isInBounds(x + offset[0], y, z + offset[1]))
+                        {
+                            continue;
+                        }
+
                         const auto topBlockType = game->level.getRenderTile(x + offset[0], y + 1, z + offset[1]);
                         const auto bottomBlockType = game->level.getRenderTile(x + offset[0], y, z + offset[1]);
 
@@ -174,8 +179,8 @@ inline bool Chunk::shouldRenderFace(const int x, const int y, const int z)
                         const auto bottomBlockDefinition = Block::Definitions[bottomBlockType];
 
                         if (
-                            bottomBlockDefinition.collide == Block::CollideType::COLLIDE_LIQUID &&
-                            topBlockDefinition.collide != Block::CollideType::COLLIDE_LIQUID &&
+                            bottomBlockDefinition.draw != Block::DrawType::DRAW_OPAQUE &&
+                            topBlockDefinition.draw != Block::DrawType::DRAW_TRANSLUCENT &&
                             topBlockDefinition.draw != Block::DrawType::DRAW_OPAQUE &&
                             topBlockDefinition.draw != Block::DrawType::DRAW_OPAQUE_SMALL
                         )
