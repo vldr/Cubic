@@ -228,6 +228,13 @@ void Network::tick()
 
 void Network::render()
 {
+    if (players.empty())
+    {
+        return;
+    }
+
+    glBindTexture(GL_TEXTURE_2D, Player::playerTexture);
+
     for (const auto& player : players)
     {
         if (player)

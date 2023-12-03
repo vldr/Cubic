@@ -17,8 +17,8 @@ void SelectedBlock::init(Game* game)
     glEnableVertexAttribArray(game->positionAttribute);
 
     glVertexAttribPointer(game->positionAttribute, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glVertexAttrib2f(1, 0.0f, 1.0f);
-    glVertexAttrib1f(2, 0.0f);
+    glVertexAttrib2f(game->uvAttribute, 0.0f, 1.0f);
+    glVertexAttrib1f(game->shadeAttribute, 0.0f);
 }
 
 void SelectedBlock::renderPost()

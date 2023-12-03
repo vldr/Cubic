@@ -6,14 +6,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-static bool initialized = false;
-static GLuint playerTexture{};
-static VertexList head{};
-static VertexList body{};
-static VertexList leftArm{};
-static VertexList rightArm{};
-static VertexList leftLeg{};
-static VertexList rightLeg{};
+GLuint Player::playerTexture{};
+VertexList Player::head{};
+VertexList Player::body{};
+VertexList Player::leftArm{};
+VertexList Player::rightArm{};
+VertexList Player::leftLeg{};
+VertexList Player::rightLeg{};
 
 void Player::init(Game* game)
 {
@@ -26,6 +25,7 @@ void Player::init(Game* game)
 	this->updates = 0;
 	this->flushUpdates = false;
 
+	static bool initialized = false;
 	if (!initialized)
 	{
 		playerTexture = game->textureManager.load(playerResourceTexture, sizeof(playerResourceTexture));
@@ -314,8 +314,6 @@ void Player::render()
 	const float legHeight = 0.705f;
 
 	const float angle = 600.0f * glm::sin(viewWalkDistance * float(M_PI)) * viewBobbing;
-
-	glBindTexture(GL_TEXTURE_2D, playerTexture);
 
 	auto matrix = game->IDENTITY_MATRIX;
 	matrix = glm::translate(matrix, viewPosition);

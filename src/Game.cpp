@@ -163,9 +163,9 @@ void Game::run()
 
     glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, glm::value_ptr(viewMatrix));
    
+    network.render();
     levelRenderer.render();
     particleManager.render();
-    network.render();
 
     selectedBlock.renderPost();
     levelRenderer.renderPost();

@@ -71,9 +71,6 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-
 #ifdef EMSCRIPTEN
 	EmscriptenWebGLContextAttributes attributes;
 	emscripten_webgl_init_context_attributes(&attributes);
@@ -111,21 +108,23 @@ int main(int argc, char** argv)
 			}
 		});
 	);
-#else
+#else	
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
 	auto context = SDL_GL_CreateContext(window);
-
 	if (!context)
 	{
 		printf("SDL_GL_CreateContext failed: %s\n", SDL_GetError());
 		return EXIT_FAILURE;
 	}
-#endif
 
 	glewInit();
+#endif
+
 	game.init(window);
 
 #ifdef EMSCRIPTEN

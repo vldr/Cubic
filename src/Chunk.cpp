@@ -545,6 +545,8 @@ inline void Chunk::generateMesh(Face* faces)
                         }
                     }
                 }
+            
+                row += width - 1;
             }
         }
     }
