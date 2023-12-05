@@ -14,7 +14,7 @@
 #include <ctime>
 #include <cstdio>
 
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
 #include <emscripten/html5.h>
 
 EM_JS(bool, is_fullscreen, (), {
@@ -125,8 +125,13 @@ void Game::init(SDL_Window* sdlWindow)
     this->levelRenderer.init(this);
     this->lastTick = timer.milliTime();
     this->frameRate = 0;
-    this->fullscreen = false;
     this->atlasTexture = textureManager.load(terrainResourceTexture, sizeof(terrainResourceTexture));
+
+#if defined(ANDROID)
+    this->fullscreen = true;
+#else
+    this->fullscreen = false;
+#endif
 
     resize();
 }
@@ -212,7 +217,7 @@ void Game::input(const SDL_Event& event)
     }
     else if (event.type == SDL_KEYUP)
     {
-#ifndef EMSCRIPTEN
+#if !defined(EMSCRIPTEN) && !defined(ANDROID)
         if (event.key.keysym.sym == SDLK_F1)
         {
             static bool state = false;
@@ -277,9 +282,10 @@ void Game::input(const SDL_Event& event)
 
 void Game::resize()
 {
+    SDL_SetWindowFullscreen(window, fullscreen);
     SDL_GetWindowSize(window, &windowWidth, &windowHeight);
 
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
     width = std::lround(windowWidth * emscripten_get_device_pixel_ratio());
     height = std::lround(windowHeight * emscripten_get_device_pixel_ratio());
 #else
@@ -294,9 +300,16 @@ void Game::resize()
     int maxScaleFactor = 3;
     int scaleFactor = 1;
 
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
     maxScaleFactor *= emscripten_get_device_pixel_ratio();
     fullscreen = is_fullscreen();
+#elif defined(ANDROID)
+    float dpi = 96.0f;
+
+    if (SDL_GetDisplayDPI(0, &dpi, nullptr, nullptr) == 0)
+    {
+        maxScaleFactor *= dpi / 96.0f;
+    }
 #endif
 
     while (scaleFactor < maxScaleFactor && scaledWidth / (scaleFactor + 1) >= 320 && scaledHeight / (scaleFactor + 1) >= 240)

@@ -39,7 +39,7 @@ private:
 
     const char* BASE_URL = "https://cubic.vldr.org/#";
 
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
 	const char* URI = "wss://relay.vldr.org/";
 #else
 	const char* URI = "ws://vldr.org:1234";

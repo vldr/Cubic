@@ -85,6 +85,7 @@ public:
 	glm::mat4 viewMatrix;
 
 	const glm::mat4 IDENTITY_MATRIX = glm::mat4(1.0f);
+
 	const float FIELD_OF_VIEW = 70.0f;
 	const float NEAR_PLANE = 0.01f;
 	const float FAR_PLANE = 1000.0f;

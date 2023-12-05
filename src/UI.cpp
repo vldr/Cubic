@@ -12,7 +12,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
 #include <emscripten/html5.h>
 
 EM_JS(void, copy_to_clipboard, (const char* text), {
@@ -50,10 +50,12 @@ void UI::init(Game* game)
 {
 	this->game = game;
 
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
 	this->isTouch = is_touch();
+#elif defined(ANDROID)
+	this->isTouch = true;
 #else
-	this->isTouch = false;
+    this->isTouch = false;
 #endif
 
 	this->state = State::None;
@@ -74,7 +76,7 @@ void UI::openMenu(UI::State newState, bool shouldUpdate)
 	{
 		SDL_SetRelativeMouseMode(SDL_FALSE);
 
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
 		emscripten_exit_pointerlock();
 #endif
 
@@ -271,8 +273,10 @@ void UI::refresh()
 
 	saves.clear();
 
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
 	for (const auto& entry : std::filesystem::directory_iterator("saves/"))
+#elif defined(ANDROID)
+	for (const auto& entry : std::filesystem::directory_iterator(SDL_AndroidGetInternalStoragePath()))
 #else
 	for (const auto& entry : std::filesystem::directory_iterator("."))
 #endif
@@ -329,8 +333,10 @@ void UI::save(size_t index)
 {
 	std::stringstream filename;
 
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
 	filename << "saves/Save " << index;
+#elif defined(ANDROID)
+	filename << SDL_AndroidGetInternalStoragePath() << "/Save " << index;
 #else
 	filename << "Save " << index;
 #endif
@@ -351,11 +357,11 @@ void UI::save(size_t index)
 		fwrite(game->level.blocks.get(), Level::WIDTH * Level::HEIGHT * Level::DEPTH, sizeof(unsigned char), file);
 		fclose(file);
 
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
 		EM_ASM(
 			FS.syncfs(false, function(err) {
-			console.log(err);
-		});
+				console.log(err);
+			});
 		);
 #endif
 	}
@@ -485,7 +491,7 @@ bool UI::drawStatusMenu()
 
 	if (statusCloseable)
 	{
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
 		drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 25.0f, 0.6f);
 		drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 12.0f, 1.0f);
 
@@ -503,42 +509,66 @@ bool UI::drawStatusMenu()
 			return true;
 		}
 #else
-		drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 38.0f + 2.0f, 0.6f);
-		drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 25.0f + 2.0f, 1.0f);
-
-		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - 10.0f + 2.0f, game->network.isConnected() ? "Create a new room" : "Create a new room (offline)"))
+		if (game->network.isConnected())
 		{
-			if (game->network.isConnected())
-			{
-				game->network.create();
-			}
-			else
-			{
-				closeMenu();
-			}
+			float offset = -2.0f;
 
-			return true;
-		}
+			drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 38.0f + 2.0f + offset, 0.6f);
+			drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 25.0f + 2.0f + offset, 1.0f);
 
-		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 13.0f + 2.0f, 1.0f, "Join room", game->network.isConnected()))
-		{
-			char* clipboardText = SDL_GetClipboardText();
-			size_t clipboardTextLength = strlen(clipboardText);
-			size_t clipboardTextOffset = 0;
-
-			for (size_t offset = 0; offset < clipboardTextLength; offset++)
+			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - 10.0f + 2.0f + offset, game->network.isConnected() ? "Create a new room" : "Create a new room (offline)"))
 			{
-				if (clipboardText[offset] == '#')
+				if (game->network.isConnected())
 				{
-					clipboardTextOffset = offset + 1;
-					break;
+					game->network.create();
 				}
+				else
+				{
+					closeMenu();
+				}
+
+				return true;
 			}
 
-			game->network.join(std::string(clipboardText + clipboardTextOffset));
+			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 13.0f + 2.0f + offset, 1.0f, "Join room", game->network.isConnected()))
+			{
+				char* clipboardText = SDL_GetClipboardText();
+				size_t clipboardTextLength = strlen(clipboardText);
+				size_t clipboardTextOffset = 0;
 
-			SDL_free(clipboardText);
-			return true;
+				for (size_t offset = 0; offset < clipboardTextLength; offset++)
+				{
+					if (clipboardText[offset] == '#')
+					{
+						clipboardTextOffset = offset + 1;
+						break;
+					}
+				}
+
+				game->network.join(std::string(clipboardText + clipboardTextOffset));
+
+				SDL_free(clipboardText);
+				return true;
+			}
+		}
+		else
+		{
+			drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 25.0f, 0.6f);
+			drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 12.0f, 1.0f);
+
+			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 5.0f, game->network.isConnected() ? "Create a new room" : "Play offline"))
+			{
+				if (game->network.isConnected())
+				{
+					game->network.create();
+				}
+				else
+				{
+					closeMenu();
+				}
+
+				return true;
+			}
 		}
 #endif
 	}
@@ -674,7 +704,7 @@ bool UI::drawMainMenu()
 
 	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + optionsOffset + 24 + 16, 65.0f, game->timer.milliTime() - mainMenuLastCopy < 1000 ? "Copied!" : "Copy"))
 	{
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
 		copy_to_clipboard(game->network.url.c_str());
 #else
 		SDL_SetClipboardText(game->network.url.c_str());
@@ -966,8 +996,12 @@ bool UI::drawTouchControls()
 
 	if (drawTouchButton(UI::Cancel_Hold, game->scaledWidth / 2 - otherButtonSize - otherButtonOffsetX + 1.0f, otherButtonOffsetY, buttonOffsetZ, game->fullscreen ? "\x17" : "\x16", otherButtonSize, otherButtonSize, false))
 	{
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
 		toggle_fullscreen();
+#else
+		game->fullscreen = !game->fullscreen;
+
+		SDL_SetWindowFullscreen(game->window, game->fullscreen);
 #endif
 	}
 

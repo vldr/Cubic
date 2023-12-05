@@ -7,7 +7,7 @@
 
 static Network* network;
 
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
 #include <emscripten/emscripten.h>
 #include <emscripten/websocket.h>
 
@@ -18,7 +18,7 @@ EM_JS(char*, get_hash, (), {
     return stringToNewUTF8(
         location.hash.replace("#","")
     );
-    });
+});
 
 EM_BOOL emscripten_on_message(int event_type, const EmscriptenWebSocketMessageEvent* websocket_event, void* user_data)
 {
@@ -117,7 +117,7 @@ void Network::connect()
 {
     game->ui.openStatusMenu("Connecting", "Attempting to connect...");
 
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
     EmscriptenWebSocketCreateAttributes ws_attrs = {
         URI,
         NULL,
@@ -164,7 +164,7 @@ void Network::connect()
 
 void Network::tick()
 {
-#ifndef EMSCRIPTEN
+#if !defined(EMSCRIPTEN)
     if (socket_client)
     {
         socket_client->poll();
@@ -246,7 +246,7 @@ void Network::render()
 
 void Network::send(const std::string& text)
 {
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
     EMSCRIPTEN_RESULT result = emscripten_websocket_send_utf8_text(socket, text.c_str());
     if (result)
     {
@@ -272,7 +272,7 @@ void Network::send(const std::string& text)
 
 void Network::sendBinary(unsigned char* data, size_t size)
 {
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
     EMSCRIPTEN_RESULT result = emscripten_websocket_send_binary(socket, (void*)data, size);
     if (result)
     {
@@ -405,7 +405,7 @@ void Network::onOpen()
 {
     connected = true;
 
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
     const char* hash = get_hash();
 
     if (*hash)
@@ -427,7 +427,7 @@ void Network::onClose()
 {
     connected = false;
 
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
     set_hash("");
 #endif
 
@@ -452,7 +452,7 @@ void Network::onMessage(const std::string& text)
 
         players.push_back(nullptr);
 
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
         set_hash(id.c_str());
 #endif
 
