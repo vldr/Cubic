@@ -31,12 +31,13 @@ jobs:
         run: |
           cd build/android
           chmod +x gradlew
-          ./gradlew assemble --stacktrace
+          ./gradlew assembleRelease --stacktrace
 
       - name: Bundle
         run: |
           cd build/android/app/build/outputs/apk/debug
-          tar -a -c -f cubic.zip app-debug.apk
+          jarsigner -verbose -keystore ~/.android/debug.keystore -storepass android -keypass android app.apk androiddebugkey
+          zip cubic.zip app.apk
 
       - name: Publish
         uses: svenstaro/upload-release-action@v2
