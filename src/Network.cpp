@@ -61,10 +61,21 @@ EM_BOOL emscripten_on_open(int event_type, const EmscriptenWebSocketOpenEvent* w
 #define _WEBSOCKETPP_CPP11_RANDOM_DEVICE_
 #define _WEBSOCKETPP_CPP11_TYPE_TRAITS_
 
+#if defined(_WIN32)
 #pragma warning(push, 0)
+#else
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Weverything"
+#endif
+
 #include <websocketpp/config/asio_no_tls_client.hpp>
 #include <websocketpp/client.hpp>
+
+#if defined(_WIN32)
 #pragma warning(pop)
+#else
+#pragma clang diagnostic pop
+#endif
 
 typedef websocketpp::client<websocketpp::config::asio_client> websocketpp_client;
 typedef websocketpp::config::asio_client::message_type::ptr websocketpp_message_ptr;

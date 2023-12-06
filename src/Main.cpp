@@ -3,7 +3,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 
-#ifdef _WIN32
+#if defined(_WIN32)
 #include <Windows.h>
 #endif
 
@@ -49,7 +49,7 @@ void loop()
 
 int main(int argc, char** argv)
 {
-#ifdef _WIN32
+#if defined(_WIN32)
 	SetProcessDPIAware();
 #endif
 

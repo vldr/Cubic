@@ -33,6 +33,20 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --stacktrace
 
+      - name: Bundle
+        run: |
+          cd build/android/app/build/outputs/apk/debug
+          tar -a -c -f cubic.zip app-debug.apk
+
+      - name: Publish
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/android/app/build/outputs/apk/debug/cubic.zip
+          asset_name: Cubic_Android.zip
+          tag: Build
+          overwrite: true
+
   build-windows:
     name: Windows
     concurrency: ci-windows-${{ github.ref }}
