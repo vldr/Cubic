@@ -36,8 +36,8 @@ jobs:
       - name: Bundle
         run: |
           cd build/android/app/build/outputs/apk/release
-          jarsigner -verbose -keystore ../../../../../debug.keystore -storepass android -keypass android app.apk androiddebugkey
-          zip cubic.zip app.apk
+          jarsigner -verbose -keystore ../../../../../debug.keystore -storepass android -keypass android app-release.apk androiddebugkey
+          zip cubic.zip app-release.apk
 
       - name: Publish
         uses: svenstaro/upload-release-action@v2
