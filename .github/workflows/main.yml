@@ -96,7 +96,7 @@ jobs:
       - name: Bundle
         run: |
           cd build/linux/output
-          tar -a -c -f cubic.zip cubic
+          zip cubic.zip cubic
 
       - name: Publish
         uses: svenstaro/upload-release-action@v2
