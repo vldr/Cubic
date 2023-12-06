@@ -31,7 +31,7 @@ jobs:
         run: |
           cd build/android
           chmod +x gradlew
-          ./gradlew assembleDebug --stacktrace
+          ./gradlew assemble --stacktrace
 
       - name: Bundle
         run: |
