@@ -35,14 +35,14 @@ jobs:
 
       - name: Bundle
         run: |
-          cd build/android/app/build/outputs/apk/release
+          cd build/android/app/release
           zip cubic.zip app-release.apk
 
       - name: Publish
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/android/app/build/outputs/apk/debug/cubic.zip
+          file: build/android/app/release/cubic.zip
           asset_name: Cubic_Android.zip
           tag: Build
           overwrite: true
