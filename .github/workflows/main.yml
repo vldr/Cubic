@@ -35,7 +35,7 @@ jobs:
 
       - name: Bundle
         run: |
-          cd build/android/app/build/outputs/apk/debug
+          cd build/android/app/build/outputs/apk/release
           jarsigner -verbose -keystore ~/.android/debug.keystore -storepass android -keypass android app.apk androiddebugkey
           zip cubic.zip app.apk
 
