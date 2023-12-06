@@ -35,8 +35,10 @@ jobs:
 
       - name: Bundle
         run: |
-          cd build/android/app/release
-          zip cubic.zip app-release.apk
+          cd build/android/app/build/outputs/apk/release
+          ls .
+          jarsigner -verbose -keystore ../../../../../debug.keystore -storepass android -keypass android app.apk androiddebugkey
+          zip cubic.zip app.apk
 
       - name: Publish
         uses: svenstaro/upload-release-action@v2
