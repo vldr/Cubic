@@ -6,8 +6,28 @@
 
 A multiplayer WebGL voxel sandbox game written in C++, inspired by the classic version of Minecraft.
 
-## [Try it out](https://cubic.vldr.org/)
-You can play around with the game by clicking the above link.
+## Try it out
+
+### Web
+You can play the game from the web by visiting: [https://cubic.vldr.org/](https://cubic.vldr.org/)
+
+### Windows/MacOS/Linux/Android
+
+Alternatively, you can play the game by downloading the precompiled binaries for your platform:
+
+- #### [Windows](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Windows.zip)  
+  Download and unzip all files, then run the *Cubic.exe* executable.
+- #### [Linux (Ubuntu)](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Linux.zip)  
+  Download and unzip all files, then in a terminal, run:
+  * `sudo apt install libgl-dev libglew-dev libsdl2-dev`
+  * `chmod +x cubic`
+  * `./cubic`
+- #### [MacOS](https://github.com/vldr/Cubic/releases/download/Build/Cubic_MacOS.zip)  
+  Download and unzip all files, then:
+  * Run the *cubic* executable from Finder.
+  * Go to **Apple menu > System Settings > Privacy & Security** and allow each file (you will have to relaunch the executable each time).
+- #### [Android](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Android.zip)  
+  Download and unzip all files, then install the *Cubic.apk* package:
 
 ## Controls
 
@@ -19,43 +39,40 @@ You can play around with the game by clicking the above link.
 ## Building
 
 ### Web (Emscripten)
-> [!NOTE]  
-> The following instructions assume that you are in a terminal and are using a Unix based machine (Windows Subsystem, Linux, etc).
 
-1. Install [Emscripten](https://emscripten.org/docs/getting_started/downloads.html) and [Make](https://www.gnu.org/software/make/manual/make.html).
-2. Navigate to the `build/web/` directory.
-3. Run `make -j`
+1. Open a terminal.
+2. Install [Emscripten](https://emscripten.org/docs/getting_started/downloads.html) and [Make](https://www.gnu.org/software/make/manual/make.html).
+3. Navigate to the `build/web/` directory.
+4. Run `make -j`
 
 After the build process completes, the output HTML, JS, and WASM files will be located in the `build/web/output/` directory.
 
 ### Windows
-> [!NOTE]  
-> The included compiled SDL2 and GLEW dynamic link binaries are built for x86_64 machines only.
+**Note:** The included compiled SDL2 and GLEW dynamic link binaries are built for x86_64 machines only.
 
 1. Install [Visual Studio](https://visualstudio.microsoft.com/#vs-section).
 2. Open `build/windows/Cubic.sln` in Visual Studio.
 3. Optionally, if needed, upgrade the project's platform toolset to your Visual Studio's available platform toolset.
-4. Select either `Debug` or `Release` from the build dropdown menu (top-center).
-5. Press `F7` or click `Build > Build Solution` to build the project.
+4. Select either **Debug** or **Release** from the build dropdown menu (top-center).
+5. Press **F7** or click **Build > Build Solution** to build the project.
 
-After the build process completes, the output executable will be located either in `build/windows/x64/Debug` or `build/windows/x64/Release` depending if you've compiled a debug or release build.
+After the build process completes, the output executable will be located either in `build/windows/x64/Debug` or 
+`build/windows/x64/Release` depending if you've compiled a debug or release build.
 
 ### Linux
-> [!NOTE]  
-> The following instructions assume that you are in a terminal.
 
-1. Install [clang](https://clang.llvm.org/) and [Make](https://www.gnu.org/software/make/manual/make.html).
+1. Open a terminal.
+2. Install [clang](https://clang.llvm.org/) and [Make](https://www.gnu.org/software/make/manual/make.html).
 * On Ubuntu/Debian, run `sudo apt install clang build-essential`
-2. Install [SDL2](https://wiki.libsdl.org/SDL2/Installation#linuxunix) and [GLEW](https://glew.sourceforge.net/install.html) 
+3. Install [SDL2](https://wiki.libsdl.org/SDL2/Installation#linuxunix) and [GLEW](https://glew.sourceforge.net/install.html) 
 * On Ubuntu/Debian, run `sudo apt install libgl-dev libglew-dev libsdl2-dev`
-2. Navigate to the `build/linux/` directory.
-3. Run `make -j`
+4. Navigate to the `build/linux/` directory.
+5. Run `make -j`
 
 After the build process completes, the output executable will be located in the `build/linux/output/` directory.
 
 ### MacOS
-> [!NOTE]  
-> The included compiled SDL2 and GLEW dynamic link binaries are built for x86_64 and arm64 machines only.
+**Note:** The included compiled SDL2 and GLEW dynamic link binaries are built for x86_64 and arm64 machines only.
 
 1. Install [Xcode Command Line Tools](https://mac.install.guide/commandlinetools/4.html).
 2. Open Terminal. 
@@ -63,3 +80,19 @@ After the build process completes, the output executable will be located in the 
 4. Run `make -j`
 
 After the build process completes, the output executable will be located in the `build/macos/output/` directory.
+
+### Android
+
+1. Install [Android Studio](https://developer.android.com/studio).
+2. Open the `build/android/` directory in Android Studio.
+3. Click **Build > Generate Signed Bundle / APK** from the top menu.
+4. Select **APK** and press **Next**.
+5. For the **Key store path** entry, select the `debug.keystore` file located in the `build/android/` directory.
+6. For the **Key store password** entry, enter `android`.
+7. For the **Key alias** entry, enter `androiddebugkey`.
+8. For the **Key password** entry, enter `android` and press **Next**.
+9. Select either `release` or `debug` as the variant and press **Create**.
+
+After the build process completes, the output executable will be located either in `build/android/app/debug/` or 
+`build/android/app/release/` depending if you've selected a debug or release variant.
+

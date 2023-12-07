@@ -516,7 +516,7 @@ bool UI::drawStatusMenu()
 			drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 38.0f + 2.0f + offset, 0.6f);
 			drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 25.0f + 2.0f + offset, 1.0f);
 
-			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - 10.0f + 2.0f + offset, game->network.isConnected() ? "Create a new room" : "Create a new room (offline)"))
+			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - 10.0f + 2.0f + offset, "Create a new room"))
 			{
 				if (game->network.isConnected())
 				{
@@ -530,7 +530,7 @@ bool UI::drawStatusMenu()
 				return true;
 			}
 
-			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 13.0f + 2.0f + offset, 1.0f, "Join room", game->network.isConnected()))
+			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 13.0f + 2.0f + offset, 1.0f, "Join room"))
 			{
 				char* clipboardText = SDL_GetClipboardText();
 				size_t clipboardTextLength = strlen(clipboardText);
@@ -556,17 +556,9 @@ bool UI::drawStatusMenu()
 			drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 25.0f, 0.6f);
 			drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 12.0f, 1.0f);
 
-			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 5.0f, game->network.isConnected() ? "Create a new room" : "Play offline"))
+			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 5.0f, "Play offline"))
 			{
-				if (game->network.isConnected())
-				{
-					game->network.create();
-				}
-				else
-				{
-					closeMenu();
-				}
-
+				closeMenu();
 				return true;
 			}
 		}
