@@ -31,9 +31,10 @@ public:
 	float bobbing;
 	float oldBobbing;
 
-	static const int inventorySize = 9;
+	static const int INVENTORY_SIZE = 9;
+
 	int inventoryIndex = 0;
-	unsigned char inventory[inventorySize] = {
+	unsigned char inventory[INVENTORY_SIZE] = {
 		(unsigned char)Block::Type::BLOCK_STONE,
 		(unsigned char)Block::Type::BLOCK_COBBLE,
 		(unsigned char)Block::Type::BLOCK_BRICK,
@@ -48,25 +49,25 @@ public:
 	AABBPosition selected;
 	int selectedIndex;
 private:
-	enum Move {
-		Move_None = 0,
-		Move_Left = 1 << 0,
-		Move_Right = 1 << 1,
-		Move_Forward = 1 << 2,
-		Move_Backward = 1 << 3,
-		Move_Jump = 1 << 4,
-		Move_Sprint = 1 << 5,
+	enum class Move {
+		None = 0,
+		Left = 1 << 0,
+		Right = 1 << 1,
+		Forward = 1 << 2,
+		Backward = 1 << 3,
+		Jump = 1 << 4,
+		Sprint = 1 << 5,
 	};
 
-	enum Interact {
-		Interact_None = 0,
-		Interact_Left = 1 << 0,
-		Interact_Right = 1 << 1,
-		Interact_Middle = 1 << 2,
+	enum class Interact {
+		None = 0,
+		Left = 1 << 0,
+		Right = 1 << 1,
+		Middle = 1 << 2,
 	};
 
-	unsigned int moveState = Move::Move_None;
-	unsigned int interactState = Interact::Interact_None;
+	unsigned int moveState = (unsigned int)Move::None;
+	unsigned int interactState = (unsigned int)Interact::None;
 
 	uint64_t lastClick;
 

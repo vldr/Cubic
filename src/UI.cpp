@@ -59,6 +59,7 @@ void UI::init(Game* game)
 #endif
 
 	this->state = State::None;
+	this->touchState = (unsigned int)TouchState::None;
 	this->mousePosition = glm::vec2();
 
 	this->blockVertices.init(game);
@@ -145,7 +146,12 @@ bool UI::input(const SDL_Event& event)
 				}
 			}
 
-			update();
+			auto previousTouchState = touchState;
+
+			if (drawTouchControls(true) || touchState != previousTouchState || state != UI::State::None)
+			{
+				update();
+			}
 		}
 		else if (event.type == SDL_FINGERDOWN)
 		{
@@ -159,7 +165,12 @@ bool UI::input(const SDL_Event& event)
 				false,
 			});
 
-			update();
+			auto previousTouchState = touchState;
+
+			if (drawTouchControls(true) || touchState != previousTouchState || state != UI::State::None)
+			{
+				update();
+			}
 		}
 		else if (event.type == SDL_FINGERUP)
 		{
@@ -169,13 +180,13 @@ bool UI::input(const SDL_Event& event)
 				{
 					if (touchPosition->isHolding)
 					{
-						game->localPlayer.interactState &= ~LocalPlayer::Interact::Interact_Left;
+						game->localPlayer.interactState &= ~(unsigned int)LocalPlayer::Interact::Left;
 					}
 					else if (touchPosition->hold && game->timer.milliTime() - touchPosition->startTime <= 200)
 					{
-						game->localPlayer.interactState |= LocalPlayer::Interact::Interact_Right;
+						game->localPlayer.interactState |= (unsigned int)LocalPlayer::Interact::Right;
 						game->localPlayer.interact();
-						game->localPlayer.interactState &= ~LocalPlayer::Interact::Interact_Right;
+						game->localPlayer.interactState &= ~(unsigned int)LocalPlayer::Interact::Right;
 					}
 
 					touchPositions.erase(touchPosition);
@@ -187,7 +198,12 @@ bool UI::input(const SDL_Event& event)
 			mousePosition.y = event.tfinger.y * game->scaledHeight;
 			mouseState = MouseState::Down;
 
-			update();
+			auto previousTouchState = touchState;
+
+			if (drawTouchControls(true) || touchState != previousTouchState || state != UI::State::None)
+			{
+				update();
+			}
 
 			mouseState = MouseState::Up;		
 		}
@@ -448,10 +464,10 @@ void UI::think()
 				touchPosition->hold &&
 				!touchPosition->isHolding &&
 				game->timer.milliTime() - touchPosition->startTime >= 350 &&
-				!(game->localPlayer.interactState & LocalPlayer::Interact::Interact_Left)
+				!(game->localPlayer.interactState & (unsigned int)LocalPlayer::Interact::Left)
 			)
 			{
-				game->localPlayer.interactState |= LocalPlayer::Interact::Interact_Left;
+				game->localPlayer.interactState |= (unsigned int)LocalPlayer::Interact::Left;
 
 				touchPosition->isHolding = true;
 			}
@@ -787,12 +803,12 @@ bool UI::drawTouchButton(unsigned int flag, float x, float y, float z, const cha
 
 		if (hover)
 		{
-			if (flag & UI::Cancel_Hold)
+			if (flag & (unsigned int)UI::Cancellable::Hold)
 			{
 				touchPosition->hold = false;
 			}
 
-			if (flag & UI::Cancel_Swipe)
+			if (flag & (unsigned int)UI::Cancellable::Swipe)
 			{
 				touchPosition->swipe = false;
 			}
@@ -915,7 +931,7 @@ bool UI::drawButton(float x, float y, const char* text)
 	return hover && clicked;
 }
 
-bool UI::drawTouchControls()
+bool UI::drawTouchControls(bool invisible)
 {
 	float buttonOffsetX = 30.0f;
 	float buttonOffsetY = 25.0f;
@@ -924,84 +940,125 @@ bool UI::drawTouchControls()
 	float buttonSize = std::max(game->scaledHeight, game->scaledWidth) * 0.06f;
 	float jumpButtonSize = std::max(game->scaledHeight, game->scaledWidth) * 0.0625f;
 
-	bool middleTouch = drawTouchButton(UI::Cancel_Hold | UI::Cancel_Swipe, buttonOffsetX + buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "", buttonSize, buttonSize);
-
-	if (drawTouchButton(UI::Cancel_Hold | UI::Cancel_Swipe, buttonOffsetX + buttonSize, game->scaledHeight - buttonSize - buttonOffsetY, buttonOffsetZ, "\x1F", buttonSize, buttonSize))
+	bool middleTouch = drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "", buttonSize, buttonSize, true, invisible);
+	if (middleTouch)
 	{
-		game->localPlayer.moveState |= LocalPlayer::Move::Move_Backward;
+		touchState |= (unsigned int)UI::TouchState::Middle;
+	}
+	else
+	{
+		touchState &= ~(unsigned int)UI::TouchState::Middle;
+	}
+
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + buttonSize, game->scaledHeight - buttonSize - buttonOffsetY, buttonOffsetZ, "\x1F", buttonSize, buttonSize, true, invisible))
+	{
+		game->localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Backward;
+		touchState |= (unsigned int)UI::TouchState::Down;
 	}
 	else if (!middleTouch)
 	{
-		game->localPlayer.moveState &= ~LocalPlayer::Move::Move_Backward;
+		game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Backward;
+		touchState &= ~(unsigned int)UI::TouchState::Down;
 	}
 
-	if (drawTouchButton(UI::Cancel_Hold | UI::Cancel_Swipe, buttonOffsetX, game->scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x11", buttonSize, buttonSize))
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX, game->scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x11", buttonSize, buttonSize, true, invisible))
 	{
-		game->localPlayer.moveState |= LocalPlayer::Move::Move_Left;
+		game->localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Left;
+		touchState |= (unsigned int)UI::TouchState::Left;
 	}
 	else if (!middleTouch)
 	{
-		game->localPlayer.moveState &= ~LocalPlayer::Move::Move_Left;
+		game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Left;
+		touchState &= ~(unsigned int)UI::TouchState::Left;
 	}
 
-	if (drawTouchButton(UI::Cancel_Hold | UI::Cancel_Swipe, buttonOffsetX + 2 * buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x10", buttonSize, buttonSize))
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + 2 * buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x10", buttonSize, buttonSize, true, invisible))
 	{
-		game->localPlayer.moveState |= LocalPlayer::Move::Move_Right;
+		game->localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Right;
+		touchState |= (unsigned int)UI::TouchState::Right;
 	}
 	else if (!middleTouch)
 	{
-		game->localPlayer.moveState &= ~LocalPlayer::Move::Move_Right;
+		game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Right;
+		touchState &= ~(unsigned int)UI::TouchState::Right;
 	}
 
-	if (drawTouchButton(UI::Cancel_Hold | UI::Cancel_Swipe, buttonOffsetX + buttonSize, game->scaledHeight - 3 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x1E", buttonSize, buttonSize))
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + buttonSize, game->scaledHeight - 3 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x1E", buttonSize, buttonSize, true, invisible))
 	{
-		game->localPlayer.moveState |= LocalPlayer::Move::Move_Forward;
+		game->localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Forward;
+		touchState |= (unsigned int)UI::TouchState::Up;
 	}
 	else if (!middleTouch)
 	{
-		game->localPlayer.moveState &= ~LocalPlayer::Move::Move_Forward;
+		game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Forward;
+		touchState &= ~(unsigned int)UI::TouchState::Up;
 	}
 
-	if (drawTouchButton(UI::Cancel_Hold, game->scaledWidth - buttonOffsetX - 1.5f * buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, game->localPlayer.noPhysics ? "\x7" : "\x4", jumpButtonSize, jumpButtonSize))
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold, game->scaledWidth - buttonOffsetX - 1.5f * buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, game->localPlayer.noPhysics ? "\x7" : "\x4", jumpButtonSize, jumpButtonSize, true, invisible))
 	{
-		if (middleTouch && game->localPlayer.moveState == LocalPlayer::Move::Move_None)
+		if (middleTouch && game->localPlayer.moveState == (unsigned int)LocalPlayer::Move::None)
 		{
 			game->localPlayer.noPhysics = !game->localPlayer.noPhysics;
 		}
 
-		game->localPlayer.moveState |= LocalPlayer::Move::Move_Jump;
+		game->localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Jump;
+		touchState |= (unsigned int)UI::TouchState::Jump;
 	}
 	else
 	{
-		game->localPlayer.moveState &= ~LocalPlayer::Move::Move_Jump;
+		game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Jump;
+		touchState &= ~(unsigned int)UI::TouchState::Jump;
 	}
 
 	float otherButtonOffsetX = 1.5f;
 	float otherButtonOffsetY = 3.0f;
 	float otherButtonSize = std::max(game->scaledHeight, game->scaledWidth) * 0.03f;
 
-	if (drawTouchButton(UI::Cancel_Hold, game->scaledWidth / 2 + otherButtonOffsetX, otherButtonOffsetY, buttonOffsetZ, "\xF0", otherButtonSize, otherButtonSize, false))
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold, game->scaledWidth / 2 + otherButtonOffsetX, otherButtonOffsetY, buttonOffsetZ, "\xF0", otherButtonSize, otherButtonSize, invisible, invisible))
 	{
-		openMainMenu();
-		return true;
+		if (!invisible)
+		{
+			openMainMenu();
+
+			return true;
+		}
+		else
+		{
+			touchState |= (unsigned int)UI::TouchState::Menu;
+		}
+	}
+	else if (invisible)
+	{
+		touchState &= ~(unsigned int)UI::TouchState::Menu;
 	}
 
-	if (drawTouchButton(UI::Cancel_Hold, game->scaledWidth / 2 - otherButtonSize - otherButtonOffsetX + 1.0f, otherButtonOffsetY, buttonOffsetZ, game->fullscreen ? "\x17" : "\x16", otherButtonSize, otherButtonSize, false))
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold, game->scaledWidth / 2 - otherButtonSize - otherButtonOffsetX + 1.0f, otherButtonOffsetY, buttonOffsetZ, game->fullscreen ? "\x17" : "\x16", otherButtonSize, otherButtonSize, invisible, invisible))
 	{
+		if (!invisible)
+		{
 #if defined(EMSCRIPTEN)
-		toggle_fullscreen();
+			toggle_fullscreen();
 #else
-		game->fullscreen = !game->fullscreen;
+			game->fullscreen = !game->fullscreen;
 
-		SDL_SetWindowFullscreen(game->window, game->fullscreen);
+			SDL_SetWindowFullscreen(game->window, game->fullscreen);
 #endif
+		}
+		else
+		{
+			touchState |= (unsigned int)UI::TouchState::Fullscreen;
+		}
+	}
+	else if (invisible)
+	{
+		touchState &= ~(unsigned int)UI::TouchState::Fullscreen;
 	}
 
-	for (int i = 0; i < game->localPlayer.inventorySize + 1; i++)
+	for (int i = 0; i < LocalPlayer::INVENTORY_SIZE + 1; i++)
 	{
-		bool touched = drawTouchButton(UI::Cancel_Hold | UI::Cancel_Swipe, game->scaledWidth / 2 - 90 + float(i) * 20 - 21 / 2, game->scaledHeight - 22 - 3.0f, buttonOffsetZ, "", 20, 22, false, true);
+		bool touched = drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, game->scaledWidth / 2 - 90 + float(i) * 20 - 21 / 2, game->scaledHeight - 22 - 3.0f, buttonOffsetZ, "", 20, 22, false, true);
 
-		if (i == game->localPlayer.inventorySize)
+		if (i == LocalPlayer::INVENTORY_SIZE)
 		{
 			if (touched)
 			{
@@ -1118,7 +1175,7 @@ void UI::drawHotbar()
 
 	drawInterface(game->scaledWidth / 2 - 92 + float(game->localPlayer.inventoryIndex) * 20 - (isTouch * 21 / 2), game->scaledHeight - 23, 0, 22, 24, 24);
 
-	for (int i = 0; i < game->localPlayer.inventorySize; i++)
+	for (int i = 0; i < LocalPlayer::INVENTORY_SIZE; i++)
 	{
 		auto blockType = game->localPlayer.inventory[i];
 

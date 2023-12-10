@@ -86,9 +86,9 @@ void LocalPlayer::interact()
 
     if (game->ui.state == UI::State::None)
     {
-        if (interactState & Interact::Interact_Left) { interactLeft = true; }
-        if (interactState & Interact::Interact_Middle) { interactMiddle = true; }
-        if (interactState & Interact::Interact_Right) { interactRight = true; }
+        if (interactState & (unsigned int)Interact::Left) { interactLeft = true; }
+        if (interactState & (unsigned int)Interact::Middle) { interactMiddle = true; }
+        if (interactState & (unsigned int)Interact::Right) { interactRight = true; }
     }
 
     if (game->ui.isTouch)
@@ -212,12 +212,12 @@ void LocalPlayer::tick()
 
     if (game->ui.state == UI::State::None)
     {
-        if (moveState & Move::Move_Backward) { moveY = -0.98f; }
-        if (moveState & Move::Move_Forward) { moveY = 0.98f; }
-        if (moveState & Move::Move_Left) { moveX = 0.98f; }
-        if (moveState & Move::Move_Right) { moveX = -0.98f; }
-        if (moveState & Move::Move_Jump) { jumping = true; }
-        if (moveState & Move::Move_Sprint) { sprinting = true; }
+        if (moveState & (unsigned int)Move::Backward) { moveY = -0.98f; }
+        if (moveState & (unsigned int)Move::Forward) { moveY = 0.98f; }
+        if (moveState & (unsigned int)Move::Left) { moveX = 0.98f; }
+        if (moveState & (unsigned int)Move::Right) { moveX = -0.98f; }
+        if (moveState & (unsigned int)Move::Jump) { jumping = true; }
+        if (moveState & (unsigned int)Move::Sprint) { sprinting = true; }
     }
 
     if (noPhysics)
@@ -343,64 +343,64 @@ void LocalPlayer::input(const SDL_Event& event)
         }
 
         if (event.key.keysym.sym == SDLK_a || event.key.keysym.sym == SDLK_LEFT)
-            moveState |= Move::Move_Left;
+            moveState |= (unsigned int)Move::Left;
 
         if (event.key.keysym.sym == SDLK_d || event.key.keysym.sym == SDLK_RIGHT)
-            moveState |= Move::Move_Right;
+            moveState |= (unsigned int)Move::Right;
 
         if (event.key.keysym.sym == SDLK_w || event.key.keysym.sym == SDLK_UP)
-            moveState |= Move::Move_Forward;
+            moveState |= (unsigned int)Move::Forward;
 
         if (event.key.keysym.sym == SDLK_s || event.key.keysym.sym == SDLK_DOWN)
-            moveState |= Move::Move_Backward;
+            moveState |= (unsigned int)Move::Backward;
 
         if (event.key.keysym.sym == SDLK_SPACE)
-            moveState |= Move::Move_Jump;
+            moveState |= (unsigned int)Move::Jump;
 
         if (event.key.keysym.sym == SDLK_LSHIFT)
-            moveState |= Move::Move_Sprint;
+            moveState |= (unsigned int)Move::Sprint;
     }
     else if (event.type == SDL_KEYUP)
     {
         if (event.key.keysym.sym == SDLK_a || event.key.keysym.sym == SDLK_LEFT)
-            moveState &= ~Move::Move_Left;
+            moveState &= ~(unsigned int)Move::Left;
 
         if (event.key.keysym.sym == SDLK_d || event.key.keysym.sym == SDLK_RIGHT)
-            moveState &= ~Move::Move_Right;
+            moveState &= ~(unsigned int)Move::Right;
 
         if (event.key.keysym.sym == SDLK_w || event.key.keysym.sym == SDLK_UP)
-            moveState &= ~Move::Move_Forward;
+            moveState &= ~(unsigned int)Move::Forward;
 
         if (event.key.keysym.sym == SDLK_s || event.key.keysym.sym == SDLK_DOWN)
-            moveState &= ~Move::Move_Backward;
+            moveState &= ~(unsigned int)Move::Backward;
 
         if (event.key.keysym.sym == SDLK_SPACE)
-            moveState &= ~Move::Move_Jump;
+            moveState &= ~(unsigned int)Move::Jump;
 
         if (event.key.keysym.sym == SDLK_LSHIFT)
-            moveState &= ~Move::Move_Sprint;
+            moveState &= ~(unsigned int)Move::Sprint;
     }
     else if (event.type == SDL_MOUSEBUTTONDOWN)
     {
         if (event.button.button == SDL_BUTTON_LEFT)
-            interactState |= Interact::Interact_Left;
+            interactState |= (unsigned int)Interact::Left;
 
         if (event.button.button == SDL_BUTTON_MIDDLE)
-            interactState |= Interact::Interact_Middle;
+            interactState |= (unsigned int)Interact::Middle;
 
         if (event.button.button == SDL_BUTTON_RIGHT)
-            interactState |= Interact::Interact_Right;
+            interactState |= (unsigned int)Interact::Right;
     }
     else if (event.type == SDL_MOUSEBUTTONUP)
     {
         if (event.button.button == SDL_BUTTON_LEFT)
-            interactState &= ~Interact::Interact_Left;
+            interactState &= ~(unsigned int)Interact::Left;
 
         if (event.button.button == SDL_BUTTON_MIDDLE)
-            interactState &= ~Interact::Interact_Middle;
+            interactState &= ~(unsigned int)Interact::Middle;
 
         if (event.button.button == SDL_BUTTON_RIGHT)
-            interactState &= ~Interact::Interact_Right;  
+            interactState &= ~(unsigned int)Interact::Right;
     }
     else if (game->ui.state == UI::State::None)
     {
@@ -408,7 +408,7 @@ void LocalPlayer::input(const SDL_Event& event)
         {
             if (event.wheel.y < 0)
             {
-                inventoryIndex = (inventoryIndex + 1) % inventorySize;
+                inventoryIndex = (inventoryIndex + 1) % LocalPlayer::INVENTORY_SIZE;
 
                 game->heldBlock.update();
                 game->ui.update();
@@ -418,7 +418,7 @@ void LocalPlayer::input(const SDL_Event& event)
                 inventoryIndex--;
                 if (inventoryIndex < 0)
                 {
-                    inventoryIndex = inventorySize - 1;
+                    inventoryIndex = LocalPlayer::INVENTORY_SIZE - 1;
                 }
 
                 game->heldBlock.update();

@@ -29,14 +29,22 @@ public:
 
 	enum class TouchState
 	{
-		Up,
-		Down
+		None = 0,
+		Up = 1 << 0,
+		Down = 1 << 1,
+		Left = 1 << 2,
+		Right = 1 << 3,
+		Middle = 1 << 4,
+		Jump = 1 << 5,
+		Fullscreen = 1 << 6,
+		Menu = 1 << 7,
 	};
 
-	enum Cancellable {
-		Cancel_None = 0,
-		Cancel_Hold = 1 << 0,
-		Cancel_Swipe = 1 << 1,
+	enum class Cancellable
+	{
+		None = 0,
+		Hold = 1 << 0,
+		Swipe = 1 << 1,
 	};
 
 	void init(Game* game);
@@ -54,6 +62,7 @@ public:
 
 	UI::State state;
 	UI::MouseState mouseState;
+	unsigned int touchState;
 
 	glm::vec2 mousePosition;
 	bool isTouch;
@@ -70,7 +79,8 @@ private:
 		std::string name;
 	};
 
-	struct TouchPosition {
+	struct TouchPosition 
+	{
 		int64_t id;
 		float x;
 		float y;
@@ -94,7 +104,7 @@ private:
 	void drawHotbar();
 	void drawBlock(unsigned char blockType, float x, float y, float scale);
 
-	bool drawTouchControls();
+	bool drawTouchControls(bool invisible = false);
 	bool drawMainMenu();
 	bool drawStatusMenu();
 

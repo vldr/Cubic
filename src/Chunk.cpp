@@ -15,6 +15,11 @@ Chunk::Face Chunk::backFaces[Chunk::SIZE * Chunk::SIZE * Chunk::SIZE];
 
 void Chunk::init(Game* game, int x, int y, int z)
 {
+    this->game = game;
+    this->position = glm::ivec3(x, y, z);
+    this->isVisible = false;
+    this->isLoaded = false;
+
     if (!this->allocator)
     {
         this->allocator = new VertexList::Allocator;
@@ -24,11 +29,6 @@ void Chunk::init(Game* game, int x, int y, int z)
     {
         this->waterAllocator = new VertexList::Allocator;
     }
-
-    this->game = game;
-    this->position = glm::ivec3(x, y, z);
-    this->isVisible = false;
-    this->isLoaded = false;
 
     this->vertices.init(game, allocator);
     this->waterVertices.init(game, waterAllocator);
