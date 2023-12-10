@@ -9,24 +9,28 @@ A multiplayer WebGL voxel sandbox game written in C++, inspired by the classic v
 ## Try it out
 
 ### Web
-You can play the game from the web by visiting: [https://cubic.vldr.org/](https://cubic.vldr.org/)
+You can play the game from the web — [cubic.vldr.org](https://cubic.vldr.org/)
 
-### Windows/MacOS/Linux/Android
+### Desktop
 
 Alternatively, you can play the game by downloading the precompiled binaries for your platform:
 
-- #### [Windows](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Windows.zip)  
+- [Windows](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Windows.zip)
+
   Download and unzip all files, then run the *Cubic.exe* executable.
-- #### [Linux (Ubuntu)](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Linux.zip)  
+- [Linux (Ubuntu/Debian)](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Linux.zip)
+
   Download and unzip all files, then in a terminal, run:
   * `sudo apt install libgl-dev libglew-dev libsdl2-dev`
   * `chmod +x cubic`
   * `./cubic`
-- #### [MacOS](https://github.com/vldr/Cubic/releases/download/Build/Cubic_MacOS.zip)  
+- [MacOS](https://github.com/vldr/Cubic/releases/download/Build/Cubic_MacOS.zip)
+
   Download and unzip all files, then:
   * Run the *cubic* executable from Finder.
   * Go to **Apple menu > System Settings > Privacy & Security** and allow each file (you will have to relaunch the executable each time).
-- #### [Android](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Android.zip)  
+- [Android](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Android.zip)
+
   Download and unzip all files, then install the *Cubic.apk* package:
 
 ## Controls
@@ -38,7 +42,7 @@ Alternatively, you can play the game by downloading the precompiled binaries for
 
 ## Building
 
-### Web (Emscripten)
+### Web
 
 1. Open a terminal.
 2. Install [Emscripten](https://emscripten.org/docs/getting_started/downloads.html) and [Make](https://www.gnu.org/software/make/manual/make.html).
