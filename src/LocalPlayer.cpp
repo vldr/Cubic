@@ -206,14 +206,14 @@ void LocalPlayer::tick()
     oldTilt = tilt;
      
     float moveX = 0.0f;
-    float moveY = 0.0f;
+    float moveZ = 0.0f;
     bool jumping = false;
     bool sprinting = false;
 
     if (game->ui.state == UI::State::None)
     {
-        if (moveState & (unsigned int)Move::Backward) { moveY = -0.98f; }
-        if (moveState & (unsigned int)Move::Forward) { moveY = 0.98f; }
+        if (moveState & (unsigned int)Move::Backward) { moveZ = -0.98f; }
+        if (moveState & (unsigned int)Move::Forward) { moveZ = 0.98f; }
         if (moveState & (unsigned int)Move::Left) { moveX = 0.98f; }
         if (moveState & (unsigned int)Move::Right) { moveX = -0.98f; }
         if (moveState & (unsigned int)Move::Jump) { jumping = true; }
@@ -225,7 +225,7 @@ void LocalPlayer::tick()
         float speed = 1.0f;
         if (sprinting) { speed *= 4; }
 
-        velocity = moveY * speed * lookAt;
+        velocity = moveZ * speed * lookAt;
         velocity -= moveX * speed * glm::normalize(glm::cross(lookAt, UP));
 
         if (jumping) { velocity.y = speed; }
@@ -244,29 +244,25 @@ void LocalPlayer::tick()
             else if (onGround) { velocity.y = 0.42f; }
         }
 
-        if (isInWater())
+        if (isInWater() || isInLava())
         {
-            moveRelative(moveX, moveY, 0.02f);
+            moveRelative(moveX, moveZ, 0.02f);
             move(velocity.x, velocity.y, velocity.z);
 
-            velocity.x *= 0.8f;
-            velocity.y *= 0.8f;
-            velocity.z *= 0.8f;
-            velocity.y -= 0.02f;
+            float speed;
 
-            if (horizontalCollision && isFree(velocity.x, velocity.y + 0.6f, velocity.z))
+            if (isInWater())
             {
-                velocity.y = 0.3f;
+                speed = 0.8f;
             }
-        }
-        else if (isInLava())
-        {
-            moveRelative(moveX, moveY, 0.02f);
-            move(velocity.x, velocity.y, velocity.z);
+            else
+            {
+                speed = 0.5f;
+            }
 
-            velocity.x *= 0.5f;
-            velocity.y *= 0.5f;
-            velocity.z *= 0.5f;
+            velocity.x *= speed;
+            velocity.y *= speed;
+            velocity.z *= speed;
             velocity.y -= 0.02f;
 
             if (horizontalCollision && isFree(velocity.x, velocity.y + 0.6f, velocity.z))
@@ -276,7 +272,7 @@ void LocalPlayer::tick()
         }
         else
         {
-            moveRelative(moveX, moveY, onGround ? 0.1f : 0.02f);
+            moveRelative(moveX, moveZ, onGround ? 0.1f : 0.02f);
             move(velocity.x, velocity.y, velocity.z);
 
             velocity.x *= 0.91f;

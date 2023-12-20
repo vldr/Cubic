@@ -27,8 +27,8 @@ void Entity::init(Game* game)
 
 void Entity::setSize(float w, float h) 
 {
-	this->aabbWidth = w;
-	this->aabbHeight = h;
+	aabbWidth = w;
+	aabbHeight = h;
 }
 
 void Entity::setPosition(float x, float y, float z)
