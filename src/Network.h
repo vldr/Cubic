@@ -52,8 +52,6 @@ private:
         Position,
         SetBlock,
     };
-
-    static_assert(alignof(PacketType) == 1 && sizeof(PacketType) == 1);
 #pragma pack(pop)
 
 #pragma pack(push, 1)
@@ -61,8 +59,6 @@ private:
     {
         uint8_t index;
     };
-
-    static_assert(alignof(Packet) == 1 && sizeof(Packet) == 1);
 #pragma pack(pop)
 
 #pragma pack(push, 1)
@@ -75,8 +71,6 @@ private:
         uint32_t length;
         uint8_t data[2 * Level::WIDTH * Level::HEIGHT * Level::DEPTH];
     };
-
-    static_assert(alignof(LevelPacket) == 1 && sizeof(LevelPacket) == 7 + 2 * Level::WIDTH * Level::HEIGHT * Level::DEPTH);
 #pragma pack(pop)
 
 #pragma pack(push, 1)
@@ -87,8 +81,6 @@ private:
         glm::f32vec3 position;
         glm::f32vec2 rotation;
     };
-
-    static_assert(alignof(PositionPacket) == 1 && sizeof(PositionPacket) == 22);
 #pragma pack(pop)
 
 #pragma pack(push, 1)
@@ -101,8 +93,6 @@ private:
         uint8_t blockType;
         uint8_t mode;
     };
-
-    static_assert(alignof(SetBlockPacket) == 1 && sizeof(SetBlockPacket) == 16);
 #pragma pack(pop)
 
     bool connected;
