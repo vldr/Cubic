@@ -304,8 +304,8 @@ void Game::resize()
         scaleFactor++;
     }
 
-    scaledWidth = float(width) / scaleFactor;
-    scaledHeight = float(height) / scaleFactor;
+    scaledWidth = float(width) / float(scaleFactor);
+    scaledHeight = float(height) / float(scaleFactor);
 
     orthographicProjectionMatrix = glm::ortho(0.0f, scaledWidth, scaledHeight, 0.0f, -1000.0f, 1000.0f);
     perspectiveProjectionMatrix = glm::perspective(
