@@ -267,6 +267,8 @@ void Game::input(const SDL_Event& event)
         {
             ui.isTouch = !ui.isTouch;
             ui.update();
+
+            resize();
         }
     }
     else if (event.type == SDL_QUIT)
@@ -294,31 +296,16 @@ void Game::resize()
 
     glViewport(0, 0, width, height);
 
-    scaledWidth = float(width);
-    scaledHeight = float(height);
-
-    int maxScaleFactor = 3;
     int scaleFactor = 1;
+    int maxScaleFactor = ui.isTouch ? 6 : 3;
 
-#if defined(EMSCRIPTEN)
-    maxScaleFactor *= emscripten_get_device_pixel_ratio();
-    fullscreen = is_fullscreen();
-#elif defined(ANDROID)
-    float dpi = 96.0f;
-
-    if (SDL_GetDisplayDPI(0, &dpi, nullptr, nullptr) == 0)
-    {
-        maxScaleFactor *= dpi / 96.0f;
-    }
-#endif
-
-    while (scaleFactor < maxScaleFactor && scaledWidth / (scaleFactor + 1) >= 320 && scaledHeight / (scaleFactor + 1) >= 240)
+    while (scaleFactor < maxScaleFactor && width / (scaleFactor + 1) >= 280 && height / (scaleFactor + 1) >= 200)
     {
         scaleFactor++;
     }
 
-    scaledWidth /= scaleFactor;
-    scaledHeight /= scaleFactor;
+    scaledWidth = float(width) / scaleFactor;
+    scaledHeight = float(height) / scaleFactor;
 
     orthographicProjectionMatrix = glm::ortho(0.0f, scaledWidth, scaledHeight, 0.0f, -1000.0f, 1000.0f);
     perspectiveProjectionMatrix = glm::perspective(
