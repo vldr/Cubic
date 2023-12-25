@@ -205,7 +205,13 @@ bool UI::input(const SDL_Event& event)
 				update();
 			}
 
-			mouseState = MouseState::Up;		
+			mousePosition = {};
+			mouseState = MouseState::Up;
+
+			if (state != UI::State::None)
+			{
+				update();
+			}
 		}
 
 		return false;
@@ -718,6 +724,7 @@ bool UI::drawMainMenu()
 		SDL_SetClipboardText(game->network.url.c_str());
 #endif
 		mainMenuLastCopy = game->timer.milliTime();
+
 		return true;
 	}
 
