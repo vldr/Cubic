@@ -300,7 +300,7 @@ void Game::resize()
     int scaleFactor = 1;
     int maxScaleFactor = ui.isTouch ? 6 : 3;
 
-    while (scaleFactor < maxScaleFactor && width / (scaleFactor + 1) >= 320 && height / (scaleFactor + 1) >= 240)
+    while (scaleFactor < maxScaleFactor && width / (scaleFactor + 1) >= 280 && height / (scaleFactor + 1) >= 200)
         scaleFactor++;
 
     scaledWidth = float(width) / float(scaleFactor);
