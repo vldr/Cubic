@@ -13,6 +13,7 @@ android {
     }
     compileSdkVersion 34
     defaultConfig {
+        applicationId "org.vldr.cubic"
         minSdkVersion 19
         targetSdkVersion 34
         versionCode 1
