@@ -288,6 +288,7 @@ void Game::resize()
     SDL_GetWindowSize(window, &windowWidth, &windowHeight);
 
 #if defined(EMSCRIPTEN)
+    fullscreen = is_fullscreen();
     width = std::lround(windowWidth * emscripten_get_device_pixel_ratio());
     height = std::lround(windowHeight * emscripten_get_device_pixel_ratio());
 #else
@@ -299,10 +300,8 @@ void Game::resize()
     int scaleFactor = 1;
     int maxScaleFactor = ui.isTouch ? 6 : 3;
 
-    while (scaleFactor < maxScaleFactor && width / (scaleFactor + 1) >= 280 && height / (scaleFactor + 1) >= 200)
-    {
+    while (scaleFactor < maxScaleFactor && width / (scaleFactor + 1) >= 320 && height / (scaleFactor + 1) >= 240)
         scaleFactor++;
-    }
 
     scaledWidth = float(width) / float(scaleFactor);
     scaledHeight = float(height) / float(scaleFactor);
