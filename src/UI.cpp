@@ -268,7 +268,9 @@ bool UI::input(const SDL_Event& event)
 		{
 			if (state != State::None)
 			{
+				mouseState = MouseState::Down;
 				update();
+
 				return false;
 			}
 		}
@@ -276,11 +278,8 @@ bool UI::input(const SDL_Event& event)
 		{
 			if (state != State::None)
 			{
-				mouseState = MouseState::Down;
-
-				update();
-
 				mouseState = MouseState::Up;
+				update();
 
 				return false;
 			}
@@ -1042,7 +1041,8 @@ bool UI::drawTouchControls(bool invisible)
 
 	for (int i = 0; i < LocalPlayer::INVENTORY_SIZE + 1; i++)
 	{
-		bool touched = drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, game->scaledWidth / 2 - 90 + float(i) * 20 - 21 / 2, game->scaledHeight - 22 - 3.0f, buttonOffsetZ, "", 20, 22, false, true);
+		bool touched = (state == State::None || state == State::SelectBlockMenu) && 
+			drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, game->scaledWidth / 2 - 90 + float(i) * 20 - 21 / 2, game->scaledHeight - 22 - 3.0f, buttonOffsetZ, "", 20, 22, false, true);
 
 		if (i == LocalPlayer::INVENTORY_SIZE)
 		{
@@ -1069,6 +1069,7 @@ bool UI::drawTouchControls(bool invisible)
 
 				mouseState = MouseState::Up;
 				update();
+
 				return true;
 			}
 		}
