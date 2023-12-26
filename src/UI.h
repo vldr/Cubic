@@ -61,11 +61,13 @@ public:
 	void closeMenu();
 
 	UI::State state;
-	UI::MouseState mouseState;
-	unsigned int touchState;
 
 	glm::vec2 mousePosition;
+	UI::MouseState mouseState;
+
 	bool isTouch;
+	unsigned int touchState;
+
 private:
 	struct Log
 	{
@@ -115,9 +117,7 @@ private:
 	bool drawSelectBlockButton(unsigned char blockType, unsigned char& selectedBlockType, float x, float y, float width, float height);
 
 	bool drawTouchButton(unsigned int flag, float x, float y, float z, const char* text, float width = 200.0f, float height = 20.0f, bool multiTouch = true, bool invisible = false);
-
 	bool drawButton(float x, float y, float z, const char* text, int state = 1, float width = 200.0f, float height = 20.0f);
-	bool drawButton(float x, float y, const char* text);
 
 	void drawInterface(float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1, float shade, float z);
 	void drawInterface(float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1, float shade);

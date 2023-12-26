@@ -60,7 +60,9 @@ void UI::init(Game* game)
 
 	this->state = State::None;
 	this->touchState = (unsigned int)TouchState::None;
+
 	this->mousePosition = glm::vec2();
+	this->mouseState = MouseState::Up;
 
 	this->blockVertices.init(game);
 
@@ -81,6 +83,7 @@ void UI::openMenu(UI::State newState, bool shouldUpdate)
 		emscripten_exit_pointerlock();
 #endif
 
+		mousePosition = {};
 		mouseState = MouseState::Up;
 		state = newState;
 
@@ -111,6 +114,7 @@ void UI::closeMenu()
 {
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 
+	mousePosition = {};
 	mouseState = MouseState::Up;
 	state = State::None;
 
@@ -142,11 +146,12 @@ bool UI::input(const SDL_Event& event)
 
 					touchPosition->x = event.tfinger.x * game->scaledWidth;
 					touchPosition->y = event.tfinger.y * game->scaledHeight;
+
 					break;
 				}
 			}
 
-			auto previousTouchState = touchState;
+			const auto previousTouchState = touchState;
 
 			if (drawTouchControls(true) || touchState != previousTouchState || state != UI::State::None)
 			{
@@ -165,7 +170,7 @@ bool UI::input(const SDL_Event& event)
 				false,
 			});
 
-			auto previousTouchState = touchState;
+			const auto previousTouchState = touchState;
 
 			if (drawTouchControls(true) || touchState != previousTouchState || state != UI::State::None)
 			{
@@ -198,7 +203,7 @@ bool UI::input(const SDL_Event& event)
 			mousePosition.y = event.tfinger.y * game->scaledHeight;
 			mouseState = MouseState::Down;
 
-			auto previousTouchState = touchState;
+			const auto previousTouchState = touchState;
 
 			if (drawTouchControls(true) || touchState != previousTouchState || state != UI::State::None)
 			{
@@ -207,11 +212,6 @@ bool UI::input(const SDL_Event& event)
 
 			mousePosition = {};
 			mouseState = MouseState::Up;
-
-			if (state != UI::State::None)
-			{
-				update();
-			}
 		}
 
 		return false;
@@ -268,8 +268,6 @@ bool UI::input(const SDL_Event& event)
 		{
 			if (state != State::None)
 			{
-				mouseState = MouseState::Down;
-
 				update();
 				return false;
 			}
@@ -278,9 +276,12 @@ bool UI::input(const SDL_Event& event)
 		{
 			if (state != State::None)
 			{
-				mouseState = MouseState::Up;
+				mouseState = MouseState::Down;
 
 				update();
+
+				mouseState = MouseState::Up;
+
 				return false;
 			}
 		}
@@ -517,7 +518,7 @@ bool UI::drawStatusMenu()
 		drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 25.0f, 0.6f);
 		drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 12.0f, 1.0f);
 
-		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 5.0f, game->network.isConnected() ? "Create a new room" : "Play offline"))
+		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 5.0f, 1.0f, game->network.isConnected() ? "Create a new room" : "Play offline"))
 		{
 			if (game->network.isConnected())
 			{
@@ -538,7 +539,7 @@ bool UI::drawStatusMenu()
 			drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 38.0f + 2.0f + offset, 0.6f);
 			drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 25.0f + 2.0f + offset, 1.0f);
 
-			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - 10.0f + 2.0f + offset, "Create a new room"))
+			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - 10.0f + 2.0f + offset, 1.0f, "Create a new room"))
 			{
 				if (game->network.isConnected())
 				{
@@ -578,7 +579,7 @@ bool UI::drawStatusMenu()
 			drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 25.0f, 0.6f);
 			drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 12.0f, 1.0f);
 
-			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 5.0f, "Play offline"))
+			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 5.0f, 1.0f, "Play offline"))
 			{
 				closeMenu();
 				return true;
@@ -724,6 +725,9 @@ bool UI::drawMainMenu()
 		SDL_SetClipboardText(game->network.url.c_str());
 #endif
 		mainMenuLastCopy = game->timer.milliTime();
+
+		mouseState = MouseState::Up;
+		update();
 
 		return true;
 	}
@@ -913,31 +917,6 @@ bool UI::drawButton(float x, float y, float z, const char* text, int state, floa
 	return state && hover && clicked;
 }
 
-bool UI::drawButton(float x, float y, const char* text)
-{
-	float width = 200;
-	float height = 20;
-
-	bool clicked = mouseState == MouseState::Down;
-
-	float hoverX = x;
-	float hoverY = y;
-
-	bool hover = mousePosition.x >= hoverX &&
-		mousePosition.x <= hoverX + width &&
-		mousePosition.y >= hoverY &&
-		mousePosition.y <= hoverY + height;
-
-	int state = 1;
-	if (hover) { state = 2; }
-
-	drawInterface(x, y, 0.0f, 46.0f + state * 19.99f, width / 2, height, 1.0f, 0.9f);
-	drawInterface(x + width / 2, y, 200 - width / 2, 46.0f + state * 19.99f, width / 2, height, 1.0f, 0.9f);
-	drawCenteredFont(text, x + width / 2, y + (height - 8) / 2, 1.0f);
-
-	return hover && clicked;
-}
-
 bool UI::drawTouchControls(bool invisible)
 {
 	float buttonOffsetX = 30.0f;
@@ -1090,7 +1069,6 @@ bool UI::drawTouchControls(bool invisible)
 
 				mouseState = MouseState::Up;
 				update();
-
 				return true;
 			}
 		}
