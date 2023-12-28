@@ -5,9 +5,7 @@
 
 #if defined(_WIN32)
 #include <Windows.h>
-#endif
-
-#if defined(EMSCRIPTEN)
+#elif defined(EMSCRIPTEN)
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #endif
@@ -72,10 +70,20 @@ int main(int argc, char** argv)
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
+	unsigned int flags = {};
+	flags |= SDL_WINDOW_OPENGL;
+	flags |= SDL_WINDOW_SHOWN;
+	flags |= SDL_WINDOW_RESIZABLE;
+	flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+
+#if defined(ANDROID)
+	flags |= SDL_WINDOW_FULLSCREEN;
+#endif
+
 	auto window = SDL_CreateWindow("Cubic",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		1280, 720,
-		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI
+		flags
 	);
 
 	if (!window)

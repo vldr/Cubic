@@ -284,7 +284,6 @@ void Game::input(const SDL_Event& event)
 
 void Game::resize()
 {
-    SDL_SetWindowFullscreen(window, fullscreen);
     SDL_GetWindowSize(window, &windowWidth, &windowHeight);
 
 #if defined(EMSCRIPTEN)
