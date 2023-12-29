@@ -461,6 +461,8 @@ void LevelGenerator::update()
 	case State::Destroy:
 		game->level.calculateLightDepths(0, 0, Level::WIDTH, Level::DEPTH);
 		game->level.calculateSpawnPosition();
+		game->level.reset();
+
 		game->levelRenderer.initChunks();
 		game->network.connect();
 

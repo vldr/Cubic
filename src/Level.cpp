@@ -345,6 +345,11 @@ bool Level::containsLiquid(AABB box, Block::Type blockType)
 	return false;
 }
 
+void Level::reset()
+{
+	liquidUpdates = {};
+}
+
 void Level::calculateSpawnPosition()
 {
 	glm::vec3 maxPosition = glm::vec3(-INFINITY, -INFINITY, -INFINITY);

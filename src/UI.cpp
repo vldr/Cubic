@@ -347,6 +347,8 @@ void UI::load(size_t index)
 		game->levelRenderer.loadChunks(0, 0, 0, Level::WIDTH, Level::HEIGHT, Level::DEPTH);
 
 		game->level.calculateSpawnPosition();
+		game->level.reset();
+
 		game->network.sendLevel(UCHAR_MAX, true);
 	}
 }

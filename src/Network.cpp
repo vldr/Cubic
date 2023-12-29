@@ -585,6 +585,7 @@ void Network::onBinaryMessage(const unsigned char* data, size_t size)
             game->level.calculateSpawnPosition();
         }
 
+        game->level.reset();
         game->ui.closeMenu();
     }
     else if (type == (unsigned char)PacketType::Position)

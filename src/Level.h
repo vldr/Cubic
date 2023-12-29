@@ -24,6 +24,7 @@ public:
 
 	void init(Game* game);
 	void tick();
+	void reset();
 
 	void setTile(int x, int y, int z, unsigned char blockType, bool mode = false);
 	bool setTileWithNeighborChange(int x, int y, int z, unsigned char blockType, bool mode = false);
@@ -62,6 +63,7 @@ public:
 
 	bool containsAnyLiquid(AABB box);
 	bool containsLiquid(AABB box, Block::Type blockType);
+
 	AABBPosition clip(glm::vec3 start, glm::vec3 end, const glm::ivec3* expected = nullptr);
 
 	int groundLevel;
