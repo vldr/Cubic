@@ -1496,7 +1496,7 @@ static int SDL_UpdateFullscreenMode(SDL_Window *window, SDL_bool fullscreen)
     SDL_SetDisplayModeForDisplay(display, NULL);
 
     if (_this->SetWindowFullscreen) {
-        _this->SetWindowFullscreen(_this, window, display, SDL_FALSE);
+        _this->SetWindowFullscreen(_this, window, display, fullscreen);
     }
     display->fullscreen_window = NULL;
 
