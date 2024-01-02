@@ -36,8 +36,7 @@ jobs:
       - name: Bundle
         run: |
           cd build/android/app/build/outputs/apk/release
-          mv app-release-unsigned.apk Cubic.apk
-          jarsigner -verbose -keystore ../../../../../debug.keystore -storepass android -keypass android Cubic.apk androiddebugkey
+          mv app-release.apk Cubic.apk
           zip cubic.zip Cubic.apk
 
       - name: Publish
