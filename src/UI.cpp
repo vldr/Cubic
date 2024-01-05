@@ -940,44 +940,64 @@ bool UI::drawTouchControls(bool invisible)
 	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + buttonSize, game->scaledHeight - buttonSize - buttonOffsetY, buttonOffsetZ, "\x1F", buttonSize, buttonSize, true, invisible))
 	{
 		game->localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Backward;
+
 		touchState |= (unsigned int)UI::TouchState::Down;
 	}
-	else if (!middleTouch)
+	else 
 	{
-		game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Backward;
+		if (!middleTouch)
+		{
+			game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Backward;
+		}
+
 		touchState &= ~(unsigned int)UI::TouchState::Down;
 	}
 
 	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX, game->scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x11", buttonSize, buttonSize, true, invisible))
 	{
 		game->localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Left;
+
 		touchState |= (unsigned int)UI::TouchState::Left;
 	}
-	else if (!middleTouch)
+	else 
 	{
-		game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Left;
+		if (!middleTouch)
+		{
+			game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Left;
+		}
+
 		touchState &= ~(unsigned int)UI::TouchState::Left;
 	}
 
 	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + 2 * buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x10", buttonSize, buttonSize, true, invisible))
 	{
 		game->localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Right;
+
 		touchState |= (unsigned int)UI::TouchState::Right;
 	}
-	else if (!middleTouch)
+	else 
 	{
-		game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Right;
+		if (!middleTouch)
+		{
+			game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Right;
+		}
+
 		touchState &= ~(unsigned int)UI::TouchState::Right;
 	}
 
 	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + buttonSize, game->scaledHeight - 3 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x1E", buttonSize, buttonSize, true, invisible))
 	{
 		game->localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Forward;
+
 		touchState |= (unsigned int)UI::TouchState::Up;
 	}
-	else if (!middleTouch)
+	else 
 	{
-		game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Forward;
+		if (!middleTouch)
+		{
+			game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Forward;
+		}
+
 		touchState &= ~(unsigned int)UI::TouchState::Up;
 	}
 
@@ -989,11 +1009,13 @@ bool UI::drawTouchControls(bool invisible)
 		}
 
 		game->localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Jump;
+
 		touchState |= (unsigned int)UI::TouchState::Jump;
 	}
 	else
 	{
 		game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Jump;
+
 		touchState &= ~(unsigned int)UI::TouchState::Jump;
 	}
 
