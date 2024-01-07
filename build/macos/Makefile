@@ -27,7 +27,6 @@ build: $(OBJS)
 	cp -rf libs/libSDL2.dylib output/libSDL2.dylib
 	cp -rf libs/libGLEW.dylib output/libGLEW.dylib
 
-
 objs/%.o: ../../src/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 

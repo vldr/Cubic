@@ -34,6 +34,11 @@ void Chunk::init(Game* game, int x, int y, int z)
     this->waterVertices.init(game, waterAllocator);
 }
 
+inline Chunk::Face& Chunk::getFace(Chunk::Face* faces, int x, int y, int z)
+{
+    return faces[(z * Chunk::SIZE + y) * Chunk::SIZE + x];
+}
+
 template <Chunk::FaceType faceType>
 inline bool Chunk::shouldRenderFace(const int x, const int y, const int z)
 {
@@ -200,11 +205,6 @@ inline bool Chunk::shouldRenderFace(const int x, const int y, const int z)
     }
 
     return false;
-}
-
-inline Chunk::Face& Chunk::getFace(Chunk::Face* faces, int x, int y, int z)
-{
-   return faces[(z * Chunk::SIZE + y) * Chunk::SIZE + x];
 }
 
 template <Chunk::FaceType faceType>

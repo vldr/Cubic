@@ -50,16 +50,6 @@ private:
 		}
 	};
 
-	static VertexList::Allocator* allocator;
-	static VertexList::Allocator* waterAllocator;
-
-	static Face topFaces[];
-	static Face bottomFaces[];
-	static Face leftFaces[];
-	static Face rightFaces[];
-	static Face frontFaces[];
-	static Face backFaces[];
-
 	inline Face& getFace(Face* faces, int x, int y, int z);
 
 	template <FaceType faceType>
@@ -73,5 +63,15 @@ private:
 
 	VertexList vertices;
 	VertexList waterVertices;
+
+	static VertexList::Allocator* allocator;
+	static VertexList::Allocator* waterAllocator;
+
+	static Face topFaces[];
+	static Face bottomFaces[];
+	static Face leftFaces[];
+	static Face rightFaces[];
+	static Face frontFaces[];
+	static Face backFaces[];
 };
 
