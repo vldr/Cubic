@@ -265,7 +265,7 @@ void LocalPlayer::tick()
             velocity.z *= speed;
             velocity.y -= 0.02f;
 
-            if (horizontalCollision && isFree(velocity.x, velocity.y + 0.6f, velocity.z))
+            if (jumping && horizontalCollision && isFree(velocity.x, velocity.y + 0.6f, velocity.z))
             {
                 velocity.y = 0.3f;
             }
