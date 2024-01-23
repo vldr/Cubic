@@ -89,6 +89,11 @@ void LocalPlayer::interact()
         if (interactState & (unsigned int)Interact::Left) { interactLeft = true; }
         if (interactState & (unsigned int)Interact::Middle) { interactMiddle = true; }
         if (interactState & (unsigned int)Interact::Right) { interactRight = true; }
+
+        if (glm::abs(controllerState.x) > CONTROLLER_DEAD_ZONE || glm::abs(controllerState.y) > CONTROLLER_DEAD_ZONE)
+        {
+            turn(controllerState.x * CONTROLLER_SPEED, controllerState.y * CONTROLLER_SPEED);
+        }
     }
 
     if (game->ui.isTouch)
@@ -398,37 +403,163 @@ void LocalPlayer::input(const SDL_Event& event)
         if (event.button.button == SDL_BUTTON_RIGHT)
             interactState &= ~(unsigned int)Interact::Right;
     }
-    else if (game->ui.state == UI::State::None)
+    else if (event.type == SDL_CONTROLLERBUTTONDOWN)
     {
-        if (event.type == SDL_MOUSEWHEEL)
+        if (event.jbutton.button == SDL_CONTROLLER_BUTTON_A)
         {
-            if (event.wheel.y < 0)
-            {
-                inventoryIndex = (inventoryIndex + 1) % LocalPlayer::INVENTORY_SIZE;
-
-                game->heldBlock.update();
-                game->ui.update();
-            }
-            else if (event.wheel.y > 0)
-            {
-                inventoryIndex--;
-                if (inventoryIndex < 0)
-                {
-                    inventoryIndex = LocalPlayer::INVENTORY_SIZE - 1;
-                }
-
-                game->heldBlock.update();
-                game->ui.update();
-            }
+            moveState |= (unsigned int)Move::Jump;
         }
-        else if (event.type == SDL_MOUSEMOTION)
+        else if (event.jbutton.button == SDL_CONTROLLER_BUTTON_RIGHTSHOULDER)
         {
-            turn(
-                (float)event.motion.xrel * 0.15f,
-                (float)event.motion.yrel * 0.15f
-            );
+            nextInventorySlot();
+        }
+        else if (event.jbutton.button == SDL_CONTROLLER_BUTTON_LEFTSHOULDER)
+        {
+            previousInventorySlot();
+        }
+        else if (event.jbutton.button == SDL_CONTROLLER_BUTTON_LEFTSTICK)
+        {
+            noPhysics = !noPhysics;
+        }
+        else if (event.jbutton.button == SDL_CONTROLLER_BUTTON_RIGHTSTICK)
+        {
+            interactState |= (unsigned int)Interact::Middle;
         }
     }
+    else if (event.type == SDL_CONTROLLERBUTTONUP)
+    {
+        if (event.jbutton.button == SDL_CONTROLLER_BUTTON_A)
+        {
+            moveState &= ~(unsigned int)Move::Jump;
+        }
+        else if (event.jbutton.button == SDL_CONTROLLER_BUTTON_RIGHTSTICK)
+        {
+            interactState &= ~(unsigned int)Interact::Middle;
+        }
+    }
+    else if (event.type == SDL_CONTROLLERAXISMOTION)
+    {
+        switch (event.caxis.axis)
+        {
+        case SDL_CONTROLLER_AXIS_LEFTY:
+            if (event.caxis.value < -CONTROLLER_Y_OFFSET)
+            {
+                moveState |= (unsigned int)Move::Forward;
+            }
+            else if (event.caxis.value > CONTROLLER_Y_OFFSET)
+            {
+                moveState |= (unsigned int)Move::Backward;
+            }
+            else
+            {
+                moveState &= ~((unsigned int)Move::Forward | (unsigned int)Move::Backward);
+            }
+
+            break;
+        case SDL_CONTROLLER_AXIS_LEFTX:
+            if (event.caxis.value < -CONTROLLER_X_OFFSET)
+            {
+                moveState |= (unsigned int)Move::Left;
+
+            }
+            else if (event.caxis.value > CONTROLLER_X_OFFSET)
+            {
+                moveState |= (unsigned int)Move::Right;
+            }
+            else
+            {
+                moveState &= ~((unsigned int)Move::Left | (unsigned int)Move::Right);
+            }
+
+            break;
+        case SDL_CONTROLLER_AXIS_RIGHTY:
+            controllerState.y = float(event.caxis.value) / float(SHRT_MAX);
+            break;
+        case SDL_CONTROLLER_AXIS_RIGHTX:
+            controllerState.x = float(event.caxis.value) / float(SHRT_MAX);
+            break;
+        case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
+            if (event.caxis.value > CONTROLLER_TRIGGER_OFFSET)
+            {
+                interactState |= (unsigned int)Interact::Right;
+            }
+            else
+            {
+                interactState &= ~(unsigned int)Interact::Right;
+            }
+
+            break;
+        case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
+            if (event.caxis.value > CONTROLLER_TRIGGER_OFFSET)
+            {
+                interactState |= (unsigned int)Interact::Left;
+            }
+            else
+            {
+                interactState &= ~(unsigned int)Interact::Left;
+            }
+
+            break;
+        }
+    }
+    else if (event.type == SDL_MOUSEWHEEL)
+    {
+        if (event.wheel.y < 0)
+        {
+            previousInventorySlot();
+        }
+        else if (event.wheel.y > 0)
+        {
+            nextInventorySlot();
+        }
+    }
+    else if (event.type == SDL_MOUSEMOTION)
+    {
+        turn(
+            (float)event.motion.xrel * 0.15f,
+            (float)event.motion.yrel * 0.15f
+        );
+    }
+}
+
+void LocalPlayer::turn(float rx, float ry)
+{
+    if (game->ui.state != UI::State::None)
+    {
+        return;
+    }
+
+    Entity::turn(rx, ry);
+}
+
+void LocalPlayer::previousInventorySlot()
+{
+    if (game->ui.state != UI::State::None)
+    {
+        return;
+    }
+
+    inventoryIndex--;
+    if (inventoryIndex < 0)
+    {
+        inventoryIndex = LocalPlayer::INVENTORY_SIZE - 1;
+    }
+
+    game->heldBlock.update();
+    game->ui.update();
+}
+
+void LocalPlayer::nextInventorySlot()
+{
+    if (game->ui.state != UI::State::None)
+    {
+        return;
+    }
+
+    inventoryIndex = (inventoryIndex + 1) % LocalPlayer::INVENTORY_SIZE;
+
+    game->heldBlock.update();
+    game->ui.update();
 }
 
 void LocalPlayer::setPosition(float x, float y, float z)

@@ -66,10 +66,21 @@ private:
 		Middle = 1 << 2,
 	};
 
+	void turn(float rx, float ry);
+	void previousInventorySlot();
+	void nextInventorySlot();
+
+	glm::vec2 controllerState = glm::vec2();
 	unsigned int moveState = (unsigned int)Move::None;
 	unsigned int interactState = (unsigned int)Interact::None;
 
 	uint64_t lastClick;
+
+	const float CONTROLLER_DEAD_ZONE = 0.20f;
+	const float CONTROLLER_SPEED = 1.85f;
+	const int CONTROLLER_TRIGGER_OFFSET = 10000;
+	const int CONTROLLER_Y_OFFSET = 10000;
+	const int CONTROLLER_X_OFFSET = 20000;
 
 	const float CAMERA_OFFSET = 0.10f;
 	const float BUILD_SPEED = 5.0f;

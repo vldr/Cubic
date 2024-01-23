@@ -28,6 +28,8 @@ public:
 	void resize();
 
 	SDL_Window* window;
+	SDL_GameController* controller;
+
 	TextureManager textureManager;
 	ShaderManager shaderManager;
 	ParticleManager particleManager;

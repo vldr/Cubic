@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 	SetProcessDPIAware();
 #endif
 
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)
 	{
 		printf("SDL_Init failed: %s\n", SDL_GetError());
 		return EXIT_FAILURE;

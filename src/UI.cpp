@@ -210,7 +210,6 @@ bool UI::input(const SDL_Event& event)
 				update();
 			}
 
-			mousePosition = {};
 			mouseState = MouseState::Up;
 		}
 
@@ -218,11 +217,11 @@ bool UI::input(const SDL_Event& event)
 	}
 	else
 	{
-		if (event.type == SDL_KEYUP)
+		if (event.type == SDL_KEYUP || event.type == SDL_CONTROLLERBUTTONUP)
 		{
-			if (event.key.keysym.sym == SDLK_ESCAPE)
+			if (event.key.keysym.sym == SDLK_ESCAPE || event.jbutton.button == SDL_CONTROLLER_BUTTON_START || event.jbutton.button == SDL_CONTROLLER_BUTTON_B)
 			{
-				if (state == State::None)
+				if (state == State::None && event.jbutton.button != SDL_CONTROLLER_BUTTON_B)
 				{
 					openMainMenu();
 					return false;
@@ -239,17 +238,86 @@ bool UI::input(const SDL_Event& event)
 				}
 			}
 
-			if (event.key.keysym.sym == SDLK_b || event.key.keysym.sym == SDLK_e)
+			if (event.key.keysym.sym == SDLK_b || event.key.keysym.sym == SDLK_e || event.jbutton.button == SDL_CONTROLLER_BUTTON_Y || event.jbutton.button == SDL_CONTROLLER_BUTTON_B)
 			{
 				if (state == State::SelectBlockMenu)
 				{
 					closeMenu();
 					return false;
 				}
-				else if (state == State::None)
+				else if (state == State::None && event.jbutton.button != SDL_CONTROLLER_BUTTON_B)
 				{
 					openMenu(State::SelectBlockMenu);
 					return false;
+				}
+			}	
+		}
+		else if (event.type == SDL_CONTROLLERBUTTONDOWN)
+		{
+			if (state != State::None)
+			{
+				if (event.jbutton.button == SDL_CONTROLLER_BUTTON_A)
+				{
+					mouseState = MouseState::Down;
+
+					update();
+
+					mouseState = MouseState::Up;
+
+					return false;
+				}
+				else if (
+					event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT ||
+					event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_RIGHT ||
+					event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_UP ||
+					event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN
+				) 
+				{
+					glm::vec2* selectedButtonPosition = nullptr;
+
+					for (auto& buttonPosition : buttonPositions)
+					{
+						if (buttonPosition.x == mousePosition.x && buttonPosition.y == mousePosition.y)
+						{
+							selectedButtonPosition = &buttonPosition;
+							break;
+						}
+					}
+
+					if (selectedButtonPosition)
+					{
+						glm::vec2* closestButtonPosition = nullptr;
+
+						for (auto& buttonPosition : buttonPositions)
+						{
+							if (
+								(event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_RIGHT && buttonPosition.x > selectedButtonPosition->x) ||
+								(event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT && buttonPosition.x < selectedButtonPosition->x) ||
+								(event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN && buttonPosition.y > selectedButtonPosition->y) ||
+								(event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_UP && buttonPosition.y < selectedButtonPosition->y)
+							)
+							{
+								if (!closestButtonPosition || glm::distance(buttonPosition, *selectedButtonPosition) < glm::distance(*closestButtonPosition, *selectedButtonPosition))
+								{
+									closestButtonPosition = &buttonPosition;
+								}
+							}
+						}
+
+						selectedButtonPosition = closestButtonPosition;
+					}
+					else if (!buttonPositions.empty())
+					{
+						selectedButtonPosition = &buttonPositions.front();
+					}
+
+					if (selectedButtonPosition)
+					{
+						mousePosition = { selectedButtonPosition->x, selectedButtonPosition->y };
+						update();
+
+						return false;
+					}
 				}
 			}
 		}
@@ -308,12 +376,12 @@ void UI::refresh()
 
 		if (filename.u8string().rfind("Save") == 0)
 		{
-			auto last_write_time = entry.last_write_time();
-			auto last_write_system_time = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
-				last_write_time - std::filesystem::file_time_type::clock::now() + std::chrono::system_clock::now()
+			auto lastWriteTime = entry.last_write_time();
+			auto lastWriteSystemTime = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+				lastWriteTime - std::filesystem::file_time_type::clock::now() + std::chrono::system_clock::now()
 			);
 
-			std::time_t time = std::chrono::system_clock::to_time_t(last_write_system_time);
+			std::time_t time = std::chrono::system_clock::to_time_t(lastWriteSystemTime);
 
 			std::stringstream name;
 			name << filename.u8string();
@@ -396,6 +464,11 @@ void UI::update()
 	fontVertices.reset();
 	interfaceVertices.reset();
 	blockVertices.reset();
+
+	if (state != State::None)
+	{
+		buttonPositions.clear();
+	}
 
 	if (state == State::StatusMenu)
 	{
@@ -604,6 +677,17 @@ bool UI::drawLoadMenu()
 	drawInterface(0.0f, 0.0f, game->scaledWidth, game->scaledHeight, 183, 0, 16, 16, 0.08f, 64.0f);
 	drawCenteredFont("Load Level", game->scaledWidth / 2, game->scaledHeight / 2 - offset, 1.0f, 65.0f);
 
+	for (int i = 0; i < 4; i++)
+	{
+		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 * i, 65.0f, saves.size() >= i + 1 + 4 * page ? saves[i + 4 * page].name.c_str() : "-", saves.size() >= i + 1 + 4 * page))
+		{
+			load(i + 4 * page);
+
+			closeMenu();
+			return true;
+		}
+	}
+
 	if (drawButton(game->scaledWidth / 2 - 130.0f, game->scaledHeight / 2 - offset + 16 + 24 + 24 - 10.0f, 65.0f, "<", page > 0, 20.0f))
 	{
 		page--;
@@ -618,17 +702,6 @@ bool UI::drawLoadMenu()
 
 		openMenu(State::LoadMenu);
 		return true;
-	}
-
-	for (int i = 0; i < 4; i++)
-	{
-		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 * i, 65.0f, saves.size() >= i + 1 + 4 * page ? saves[i + 4 * page].name.c_str() : "-", saves.size() >= i + 1 + 4 * page))
-		{
-			load(i + 4 * page);
-
-			closeMenu();
-			return true;
-		}
 	}
 
 	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 + 24 + 24 + 36, 65.0f, "Back to Menu"))
@@ -647,6 +720,17 @@ bool UI::drawSaveMenu()
 	drawInterface(0.0f, 0.0f, game->scaledWidth, game->scaledHeight, 183, 0, 16, 16, 0.08f, 64.0f);
 	drawCenteredFont("Save Level", game->scaledWidth / 2, game->scaledHeight / 2 - offset, 1.0f, 65.0f);
 
+	for (int i = 0; i < 4; i++)
+	{
+		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 * i, 65.0f, saves.size() >= i + 1 + 4 * page ? saves[i + 4 * page].name.c_str() : "-", saves.size() >= i + 4 * page))
+		{
+			save(i + 4 * page);
+
+			openMainMenu();
+			return true;
+		}
+	}
+
 	if (drawButton(game->scaledWidth / 2 - 130.0f, game->scaledHeight / 2 - offset + 16 + 24 + 24 - 10.0f, 65.0f, "<", page > 0, 20.0f))
 	{
 		page--;
@@ -663,16 +747,6 @@ bool UI::drawSaveMenu()
 		return true;
 	}
 
-	for (int i = 0; i < 4; i++)
-	{
-		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 * i, 65.0f, saves.size() >= i + 1 + 4 * page ? saves[i + 4 * page].name.c_str() : "-", saves.size() >= i + 4 * page))
-		{
-			save(i + 4 * page);
-
-			openMainMenu();
-			return true;
-		}
-	}
 
 	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 + 24 + 24 + 36, 65.0f, "Back to Menu"))
 	{
@@ -747,8 +821,11 @@ bool UI::drawSelectBlockMenu()
 	{
 		if (!game->level.isAirTile(blockType) && !game->level.isWaterTile(blockType) && !game->level.isLavaTile(blockType))
 		{
-			float x = 10.0f + left + 23.0f * (index % 8);
-			float y = 23.5f + top + 21.0f * (index / 8);
+			int col = index % 8;
+			int row = index / 8;
+
+			float x = 10.0f + left + 23.0f * col;
+			float y = 23.5f + top + 21.0f * row;
 
 			float width = 23.5f;
 			float height = 23.0f;
@@ -792,6 +869,8 @@ bool UI::drawSelectBlockButton(unsigned char blockType, unsigned char& selectedB
 	{
 		drawBlock(blockType, x, y, 10.0f);
 	}
+
+	buttonPositions.push_back({ x, y });
 
 	return hover && clicked;
 }
@@ -888,6 +967,8 @@ bool UI::drawButton(float x, float y, float z, const char* text, int state, floa
 	if (state)
 	{
 		drawCenteredFont(text, x + width / 2, y + (height - 8) / 2, 1.0f, z + 100.0f);
+
+		buttonPositions.push_back({ x, y });
 	}
 	else
 	{

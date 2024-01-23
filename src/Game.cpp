@@ -215,6 +215,18 @@ void Game::input(const SDL_Event& event)
             }
         }
     }
+    else if (event.type == SDL_CONTROLLERDEVICEADDED)
+    {
+        if (!controller && !SDL_GameControllerOpen(event.cdevice.which))
+        {
+            ui.log("Error: %s", SDL_GetError());
+        }
+    }
+    else if (event.type == SDL_CONTROLLERDEVICEREMOVED )
+    {
+        SDL_GameControllerClose(controller);
+        controller = nullptr;
+    }
     else if (event.type == SDL_KEYUP)
     {
 #if !defined(EMSCRIPTEN) && !defined(ANDROID)
@@ -266,8 +278,6 @@ void Game::input(const SDL_Event& event)
         if (event.key.keysym.sym == SDLK_F5)
         {
             ui.isTouch = !ui.isTouch;
-            ui.update();
-
             resize();
         }
     }

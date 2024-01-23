@@ -151,6 +151,7 @@ private:
 		6, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
 	};
 
+	std::vector<glm::vec2> buttonPositions;
 	std::vector<TouchPosition> touchPositions;
 	std::vector<Log> logs;
 
