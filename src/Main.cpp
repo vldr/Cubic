@@ -130,7 +130,6 @@ int main(int argc, char** argv)
 		});
 	);
 #else
-
 	auto context = SDL_GL_CreateContext(window);
 	if (!context)
 	{
@@ -139,6 +138,8 @@ int main(int argc, char** argv)
 	}
 
 	glewInit();
+	
+	SDL_GL_SetSwapInterval(1);
 #endif
 
 	game.init(window);
