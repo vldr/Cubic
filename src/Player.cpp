@@ -14,9 +14,9 @@ VertexList Player::rightArm{};
 VertexList Player::leftLeg{};
 VertexList Player::rightLeg{};
 
-void Player::init(Game* game)
+void Player::init()
 {
-	Entity::init(game);
+	Entity::init();
 
 	this->footSize = 0.5f;
 	this->heightOffset = 1.62f;
@@ -28,14 +28,14 @@ void Player::init(Game* game)
 	static bool initialized = false;
 	if (!initialized)
 	{
-		playerTexture = game->textureManager.load(playerResourceTexture, sizeof(playerResourceTexture));
+		playerTexture = game.textureManager.load(playerResourceTexture, sizeof(playerResourceTexture));
 
-		head.init(game, 36);
-		body.init(game, 36);
-		leftArm.init(game, 36);
-		rightArm.init(game, 36);
-		leftLeg.init(game, 36);
-		rightLeg.init(game, 36);
+		head.init(36);
+		body.init(36);
+		leftArm.init(36);
+		rightArm.init(36);
+		leftLeg.init(36);
+		rightLeg.init(36);
 
 		leftLeg.push(VertexList::Vertex(0.000000f, 0.705000f, 0.117500f, 0.000000f, 0.312500f, 1.000000f));
 		leftLeg.push(VertexList::Vertex(0.000000f, 0.000000f, 0.117500f, 0.000000f, 0.500000f, 1.000000f));
@@ -304,10 +304,10 @@ void Player::move(float x, float y, float z)
 
 void Player::render()
 {
-	const auto viewPosition = oldPosition + ((position - oldPosition) * game->timer.delta);
-	const auto viewRotation = oldRotation + ((rotation - oldRotation) * game->timer.delta);
-	const auto viewBobbing = oldBobbing + ((bobbing - oldBobbing) * game->timer.delta);
-	const auto viewWalkDistance = oldWalkDistance + ((walkDistance - oldWalkDistance) * game->timer.delta);
+	const auto viewPosition = oldPosition + ((position - oldPosition) * game.timer.delta);
+	const auto viewRotation = oldRotation + ((rotation - oldRotation) * game.timer.delta);
+	const auto viewBobbing = oldBobbing + ((bobbing - oldBobbing) * game.timer.delta);
+	const auto viewWalkDistance = oldWalkDistance + ((walkDistance - oldWalkDistance) * game.timer.delta);
 
 	const float headHeight = 1.410000f;
 	const float armHeight = 1.410000f;
@@ -315,7 +315,7 @@ void Player::render()
 
 	const float angle = 600.0f * glm::sin(viewWalkDistance * float(M_PI)) * viewBobbing;
 
-	auto matrix = game->IDENTITY_MATRIX;
+	auto matrix = game.IDENTITY_MATRIX;
 	matrix = glm::translate(matrix, viewPosition);
 	matrix = glm::rotate(matrix, viewRotation.x + glm::radians(180.0f), glm::vec3(0, 1, 0));
 
@@ -324,7 +324,7 @@ void Player::render()
 	subMatrix = glm::rotate(subMatrix, viewRotation.y, glm::vec3(1.0f, 0.0f, 0.0f));
 	subMatrix = glm::translate(subMatrix, glm::vec3(0, -headHeight, 0));
 
-	glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(subMatrix));
+	glUniformMatrix4fv(game.modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(subMatrix));
 	head.render();
 
 	subMatrix = matrix;
@@ -332,7 +332,7 @@ void Player::render()
 	subMatrix = glm::rotate(subMatrix, glm::radians(-angle), glm::vec3(1.0f, 0.0f, 0.0f));
 	subMatrix = glm::translate(subMatrix, glm::vec3(0, -armHeight, 0));
 
-	glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(subMatrix));
+	glUniformMatrix4fv(game.modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(subMatrix));
 	leftArm.render();
 
 	subMatrix = matrix;
@@ -340,7 +340,7 @@ void Player::render()
 	subMatrix = glm::rotate(subMatrix, glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f));
 	subMatrix = glm::translate(subMatrix, glm::vec3(0, -armHeight, 0));
 
-	glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(subMatrix));
+	glUniformMatrix4fv(game.modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(subMatrix));
 	rightArm.render();
 
 	subMatrix = matrix;
@@ -348,7 +348,7 @@ void Player::render()
 	subMatrix = glm::rotate(subMatrix, glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f));
 	subMatrix = glm::translate(subMatrix, glm::vec3(0, -legHeight, 0));
 
-	glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(subMatrix));
+	glUniformMatrix4fv(game.modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(subMatrix));
 	leftLeg.render();
 
 	subMatrix = matrix;
@@ -356,11 +356,11 @@ void Player::render()
 	subMatrix = glm::rotate(subMatrix, glm::radians(-angle), glm::vec3(1.0f, 0.0f, 0.0f));
 	subMatrix = glm::translate(subMatrix, glm::vec3(0, -legHeight, 0));
 
-	glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(subMatrix));
+	glUniformMatrix4fv(game.modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(subMatrix));
 	rightLeg.render();
 
-	glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(matrix));
+	glUniformMatrix4fv(game.modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(matrix));
 	body.render();
 
-	glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(game->IDENTITY_MATRIX));
+	glUniformMatrix4fv(game.modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(game.IDENTITY_MATRIX));
 }

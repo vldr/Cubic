@@ -5,15 +5,14 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-void Frustum::init(Game* game)
+void Frustum::init()
 {
-	this->game = game;
 }
 
 void Frustum::update()
 {
-	float* projection = glm::value_ptr(game->perspectiveProjectionMatrix);
-	float* view = glm::value_ptr(game->viewMatrix);
+	float* projection = glm::value_ptr(game.perspectiveProjectionMatrix);
+	float* view = glm::value_ptr(game.viewMatrix);
 
 	clip[0] = view[0] * projection[0] + view[1] * projection[4] + view[2] * projection[8] + view[3] * projection[12];
 	clip[1] = view[0] * projection[1] + view[1] * projection[5] + view[2] * projection[9] + view[3] * projection[13];

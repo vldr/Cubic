@@ -3,10 +3,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-void ParticleManager::init(Game* game)
-{
-	this->game = game;
-}
+void ParticleManager::init() {}
 
 void ParticleManager::tick()
 {
@@ -40,7 +37,7 @@ void ParticleManager::tick()
 
 void ParticleManager::render()
 {
-	glBindTexture(GL_TEXTURE_2D, game->atlasTexture);
+	glBindTexture(GL_TEXTURE_2D, game.atlasTexture);
 
 	for (auto& particleGroup : particleGroups)
 	{
@@ -57,7 +54,7 @@ void ParticleManager::render()
 void ParticleManager::spawn(float x, float y, float z, unsigned char blockType)
 {
 	ParticleGroup particleGroup{};
-	particleGroup.vertexList.init(game, PARTICLES_PER_AXIS * PARTICLES_PER_AXIS * PARTICLES_PER_AXIS * VERTICES_PER_PARTICLE);
+	particleGroup.vertexList.init(PARTICLES_PER_AXIS * PARTICLES_PER_AXIS * PARTICLES_PER_AXIS * VERTICES_PER_PARTICLE);
 
 	for (int i = 0; i < PARTICLES_PER_AXIS; i++)
 	{
@@ -72,7 +69,7 @@ void ParticleManager::spawn(float x, float y, float z, unsigned char blockType)
 				int index = (i * PARTICLES_PER_AXIS + j) * PARTICLES_PER_AXIS + k;
 
 				particleGroup.particles[index].init(
-					game, xd, yd, zd, xd - x - 0.5f, yd - y - 0.5f, zd - z - 0.5f, blockType
+					xd, yd, zd, xd - x - 0.5f, yd - y - 0.5f, zd - z - 0.5f, blockType
 				);
 			}
 		}

@@ -1,12 +1,11 @@
 #pragma once
 
 class Chunk;
-class Game;
 
 class Frustum 
 {
 public:
-	void init(Game* game);
+	void init();
 	void update();
 	bool contains(Chunk* chunk);
 private:
@@ -14,6 +13,4 @@ private:
 
 	float planes[6][16];
 	float clip[16];
-
-	Game* game;
 };

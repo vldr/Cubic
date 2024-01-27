@@ -7,7 +7,6 @@
 #include <queue>
 #include <memory>
 
-class Game;
 class AABB;
 
 class Level {
@@ -22,7 +21,7 @@ public:
 		unsigned char blockType;
 	};
 
-	void init(Game* game);
+	void init();
 	void tick();
 	void reset();
 
@@ -73,7 +72,6 @@ public:
 	std::unique_ptr<unsigned char[]> blocks;
 
 private:
-	Game* game;
 	std::queue<Level::Tile> liquidUpdates;
 	std::unique_ptr<int[]> lightDepths;
 };

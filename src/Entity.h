@@ -3,12 +3,10 @@
 
 #include <glm/glm.hpp>
 
-class Game;
-
 class Entity
 {
 public:
-	void init(Game* game);
+	void init();
 	void tick();
 
 	void setSize(float w, float h);
@@ -33,8 +31,6 @@ public:
 
 	AABB aabb;
 protected:
-	Game* game;
-
 	bool noPhysics;
 	bool onGround;
 	bool collision;

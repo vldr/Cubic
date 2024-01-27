@@ -12,12 +12,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-void LevelGenerator::init(Game* game)
+void LevelGenerator::init()
 {
-	this->game = game;
-	this->game->level.init(game);
+	game.level.init();
 
-	this->state = State::Init;
+	state = State::Init;
 }
 
 void LevelGenerator::generateHeightMap()
@@ -57,7 +56,7 @@ void LevelGenerator::generateDirtStoneLava()
 		for (int x = 0; x < Level::WIDTH; x++)
 		{
 			int noise3Value = (int)(noise3->compute((float)x, (float)z) / 24.0f) - 4;
-			int heightValue = heights[x + z * Level::WIDTH] + game->level.waterLevel;
+			int heightValue = heights[x + z * Level::WIDTH] + game.level.waterLevel;
 			int combinedValue = heightValue + noise3Value;
 
 			heights[x + z * Level::WIDTH] = heightValue > combinedValue ? heightValue : combinedValue;
@@ -72,7 +71,7 @@ void LevelGenerator::generateDirtStoneLava()
 				if (height <= combinedValue) { tile = Block::Type::BLOCK_STONE; }
 				if (height == 0) { tile = Block::Type::BLOCK_LAVA; }
 
-				game->level.setTile(x, height, z, (unsigned char)tile);
+				game.level.setTile(x, height, z, (unsigned char)tile);
 			}
 		}
 	}
@@ -86,11 +85,11 @@ void LevelGenerator::generateWater()
 		{
 			int heightValue = heights[x + z * Level::WIDTH];
 
-			for (auto height = heightValue; height < game->level.waterLevel; height++)
+			for (auto height = heightValue; height < game.level.waterLevel; height++)
 			{
-				if (game->level.getTile(x, height, z) == (unsigned char)Block::Type::BLOCK_AIR)
+				if (game.level.getTile(x, height, z) == (unsigned char)Block::Type::BLOCK_AIR)
 				{
-					game->level.setTile(x, height, z, (unsigned char)Block::Type::BLOCK_WATER);
+					game.level.setTile(x, height, z, (unsigned char)Block::Type::BLOCK_WATER);
 				}
 			}
 		}
@@ -147,19 +146,19 @@ void LevelGenerator::generateCaves()
 
 							if (distanceX * distanceX + 2.0 * distanceY * distanceY + distanceZ * distanceZ < radius * radius && blockX >= 1 && blockY >= 1 && blockZ >= 1 && blockX < Level::WIDTH - 1 && blockY < Level::HEIGHT - 1 && blockZ < Level::DEPTH - 1) {
 								if (
-									game->level.getTile(blockX, blockY + 1, blockZ) != (unsigned char)Block::Type::BLOCK_WATER &&
-									game->level.getTile(blockX, blockY - 1, blockZ) != (unsigned char)Block::Type::BLOCK_WATER &&
-									game->level.getTile(blockX + 1, blockY, blockZ) != (unsigned char)Block::Type::BLOCK_WATER &&
-									game->level.getTile(blockX - 1, blockY, blockZ) != (unsigned char)Block::Type::BLOCK_WATER &&
-									game->level.getTile(blockX, blockY, blockZ + 1) != (unsigned char)Block::Type::BLOCK_WATER &&
-									game->level.getTile(blockX, blockY, blockZ - 1) != (unsigned char)Block::Type::BLOCK_WATER
+									game.level.getTile(blockX, blockY + 1, blockZ) != (unsigned char)Block::Type::BLOCK_WATER &&
+									game.level.getTile(blockX, blockY - 1, blockZ) != (unsigned char)Block::Type::BLOCK_WATER &&
+									game.level.getTile(blockX + 1, blockY, blockZ) != (unsigned char)Block::Type::BLOCK_WATER &&
+									game.level.getTile(blockX - 1, blockY, blockZ) != (unsigned char)Block::Type::BLOCK_WATER &&
+									game.level.getTile(blockX, blockY, blockZ + 1) != (unsigned char)Block::Type::BLOCK_WATER &&
+									game.level.getTile(blockX, blockY, blockZ - 1) != (unsigned char)Block::Type::BLOCK_WATER
 								)
 								{
 									if (
-										game->level.getTile(blockX, blockY, blockZ) == (unsigned char)Block::Type::BLOCK_STONE
+										game.level.getTile(blockX, blockY, blockZ) == (unsigned char)Block::Type::BLOCK_STONE
 									)
 									{
-										game->level.setTile(blockX, blockY, blockZ, (unsigned char)Block::Type::BLOCK_AIR);
+										game.level.setTile(blockX, blockY, blockZ, (unsigned char)Block::Type::BLOCK_AIR);
 									}
 								}
 							}
@@ -212,9 +211,9 @@ void LevelGenerator::generateOre(Block::Type blockType, int amount)
 
 						if (distanceX * distanceX + 2.0 * distanceY * distanceY + distanceZ * distanceZ < radius * radius && blockX >= 1 && blockY >= 1 && blockZ >= 1 && blockX < Level::WIDTH - 1 && blockY < Level::HEIGHT - 1 && blockZ < Level::DEPTH - 1)
 						{
-							if (game->level.getTile(blockX, blockY, blockZ) == (unsigned char)Block::Type::BLOCK_STONE)
+							if (game.level.getTile(blockX, blockY, blockZ) == (unsigned char)Block::Type::BLOCK_STONE)
 							{
-								game->level.setTile(blockX, blockY, blockZ, (unsigned char)blockType);
+								game.level.setTile(blockX, blockY, blockZ, (unsigned char)blockType);
 							}
 						}
 					}
@@ -235,22 +234,22 @@ void LevelGenerator::generateGrassSandGravel()
 			bool isNoise1 = noise1->compute((float)x, (float)z) > 8.0f;
 			bool isNoise2 = noise2->compute((float)x, (float)z) > 12.0f;
 
-			auto blockAbove = game->level.getTile(x, height + 1, z);
+			auto blockAbove = game.level.getTile(x, height + 1, z);
 
 			if (blockAbove == (unsigned char)Block::Type::BLOCK_WATER && height <= (Level::HEIGHT / 2) - 1 && isNoise2) 
 			{
-				game->level.setTile(x, height, z, (unsigned char)Block::Type::BLOCK_GRAVEL);
+				game.level.setTile(x, height, z, (unsigned char)Block::Type::BLOCK_GRAVEL);
 			}
 
 			if (blockAbove == (unsigned char)Block::Type::BLOCK_AIR) 
 			{
 				if (height <= (Level::HEIGHT / 2) - 1 && isNoise1) 
 				{
-					game->level.setTile(x, height, z, (unsigned char)Block::Type::BLOCK_SAND);
+					game.level.setTile(x, height, z, (unsigned char)Block::Type::BLOCK_SAND);
 				}
 				else 
 				{
-					game->level.setTile(x, height, z, (unsigned char)Block::Type::BLOCK_GRASS);
+					game.level.setTile(x, height, z, (unsigned char)Block::Type::BLOCK_GRASS);
 				}
 			}
 		}
@@ -281,10 +280,10 @@ void LevelGenerator::generateFlowers()
 				{
 					int yCoord = heights[currXCoord + currZCoord * Level::WIDTH];
 
-					if (game->level.getTile(currXCoord, yCoord, currZCoord) == (unsigned char)Block::Type::BLOCK_GRASS) 
+					if (game.level.getTile(currXCoord, yCoord, currZCoord) == (unsigned char)Block::Type::BLOCK_GRASS) 
 					{
-						if (flowerType == 0) { game->level.setTile(currXCoord, yCoord + 1, currZCoord, (unsigned char)Block::Type::BLOCK_DANDELION); }
-						else if (flowerType == 1) { game->level.setTile(currXCoord, yCoord + 1, currZCoord, (unsigned char)Block::Type::BLOCK_ROSE); }
+						if (flowerType == 0) { game.level.setTile(currXCoord, yCoord + 1, currZCoord, (unsigned char)Block::Type::BLOCK_DANDELION); }
+						else if (flowerType == 1) { game.level.setTile(currXCoord, yCoord + 1, currZCoord, (unsigned char)Block::Type::BLOCK_ROSE); }
 					}
 				}
 			}
@@ -317,10 +316,10 @@ void LevelGenerator::generateMushrooms()
 
 				if ((mushroomType < 2 || random->integerRange(0, 3) == 0) && currentX >= 0 && currentZ >= 0 && currentY >= 1 && currentX < Level::WIDTH && currentZ < Level::DEPTH && currentY < heights[currentX + currentZ * Level::WIDTH] - 1) 
 				{
-					if (game->level.getTile(currentX, blockY, currentZ) == (unsigned char)Block::Type::BLOCK_AIR) {
-						if (game->level.getTile(currentX, blockY - 1, currentZ) == (unsigned char)Block::Type::BLOCK_STONE) {
-							if (mushroomType == 0) { game->level.setTile(currentX, blockY, currentZ, (unsigned char)Block::Type::BLOCK_BROWN_SHROOM); }
-							else { game->level.setTile(currentX, blockY, currentZ, (unsigned char)Block::Type::BLOCK_RED_SHROOM); }
+					if (game.level.getTile(currentX, blockY, currentZ) == (unsigned char)Block::Type::BLOCK_AIR) {
+						if (game.level.getTile(currentX, blockY - 1, currentZ) == (unsigned char)Block::Type::BLOCK_STONE) {
+							if (mushroomType == 0) { game.level.setTile(currentX, blockY, currentZ, (unsigned char)Block::Type::BLOCK_BROWN_SHROOM); }
+							else { game.level.setTile(currentX, blockY, currentZ, (unsigned char)Block::Type::BLOCK_RED_SHROOM); }
 						}
 					}
 				}
@@ -341,9 +340,9 @@ void LevelGenerator::generateTrees()
 			{
 				int treeTrunkSize = (int)random->integerRange(0, 2) + 5;
 
-				if (game->level.getTile(x, treeHeight, z) == (unsigned char)Block::Type::BLOCK_GRASS && treeHeight < Level::DEPTH - treeTrunkSize - 1)
+				if (game.level.getTile(x, treeHeight, z) == (unsigned char)Block::Type::BLOCK_GRASS && treeHeight < Level::DEPTH - treeTrunkSize - 1)
 				{
-					game->level.setTile(x, treeHeight, z, (unsigned char)Block::Type::BLOCK_DIRT);
+					game.level.setTile(x, treeHeight, z, (unsigned char)Block::Type::BLOCK_DIRT);
 
 					for (int treeLeavesLevel = treeHeight - 3 + treeTrunkSize; treeLeavesLevel <= treeHeight + treeTrunkSize; ++treeLeavesLevel) 
 					{
@@ -359,7 +358,7 @@ void LevelGenerator::generateTrees()
 								int zDistanceFromBase = treeLeavesZ - z;
 								if (abs(xDistanceFromBase) != treeLeavesWidth || abs(zDistanceFromBase) != treeLeavesWidth || (random->integerRange(0, 1) != 0 && treeLeavesDistanceFromTop != 0)) 
 								{
-									game->level.setTile(treeLeavesX, treeLeavesLevel, treeLeavesZ, (unsigned char)Block::Type::BLOCK_LEAVES);
+									game.level.setTile(treeLeavesX, treeLeavesLevel, treeLeavesZ, (unsigned char)Block::Type::BLOCK_LEAVES);
 								}
 							}
 						}
@@ -367,7 +366,7 @@ void LevelGenerator::generateTrees()
 
 					for (int treeTrunkLevel = 0; treeTrunkLevel < treeTrunkSize; treeTrunkLevel++)
 					{
-						game->level.setTile(x, treeHeight + treeTrunkLevel, z, (unsigned char)Block::Type::BLOCK_LOG);
+						game.level.setTile(x, treeHeight + treeTrunkLevel, z, (unsigned char)Block::Type::BLOCK_LOG);
 					}
 				}
 			}
@@ -380,7 +379,7 @@ void LevelGenerator::update()
 	switch (state)
 	{
 	case State::Init:
-		game->ui.openStatusMenu("Generating World", "Generating height map...");
+		game.ui.openStatusMenu("Generating World", "Generating height map...");
 
 		heights = std::make_unique<int[]>(Level::WIDTH * Level::DEPTH);
 
@@ -394,35 +393,35 @@ void LevelGenerator::update()
 		state = State::HeightMap;
 		break;
 	case State::HeightMap:
-		game->ui.openStatusMenu("Generating World", "Generating dirt, stone and lava...");
+		game.ui.openStatusMenu("Generating World", "Generating dirt, stone and lava...");
 
 		generateHeightMap();
 
 		state = State::DirtStoneLava;
 		break;
 	case State::DirtStoneLava:
-		game->ui.openStatusMenu("Generating World", "Generating water...");
+		game.ui.openStatusMenu("Generating World", "Generating water...");
 
 		generateDirtStoneLava();
 
 		state = State::Water;
 		break;
 	case State::Water:
-		game->ui.openStatusMenu("Generating World", "Generating caves...");
+		game.ui.openStatusMenu("Generating World", "Generating caves...");
 
 		generateWater();
 
 		state = State::Caves;
 		break;
 	case State::Caves:
-		game->ui.openStatusMenu("Generating World", "Generating ores...");
+		game.ui.openStatusMenu("Generating World", "Generating ores...");
 
 		generateCaves();
 
 		state = State::Ore;
 		break;
 	case State::Ore:
-		game->ui.openStatusMenu("Generating World", "Generating grass, sand and gravel...");
+		game.ui.openStatusMenu("Generating World", "Generating grass, sand and gravel...");
 
 		generateOre(Block::Type::BLOCK_COAL_ORE, 90);
 		generateOre(Block::Type::BLOCK_IRON_ORE, 70);
@@ -431,40 +430,40 @@ void LevelGenerator::update()
 		state = State::GrassSandGravel;
 		break;
 	case State::GrassSandGravel:
-		game->ui.openStatusMenu("Generating World", "Generating flowers...");
+		game.ui.openStatusMenu("Generating World", "Generating flowers...");
 
 		generateGrassSandGravel();
 
 		state = State::Flowers;
 		break;
 	case State::Flowers:
-		game->ui.openStatusMenu("Generating World", "Generating mushrooms...");
+		game.ui.openStatusMenu("Generating World", "Generating mushrooms...");
 
 		generateFlowers();
 
 		state = State::Mushrooms;
 		break;
 	case State::Mushrooms:
-		game->ui.openStatusMenu("Generating World", "Generating trees...");
+		game.ui.openStatusMenu("Generating World", "Generating trees...");
 
 		generateMushrooms();
 
 		state = State::Trees;
 		break;
 	case State::Trees:
-		game->ui.openStatusMenu("Generating World", "Generating light depths...");
+		game.ui.openStatusMenu("Generating World", "Generating light depths...");
 
 		generateTrees();
 
 		state = State::Destroy;
 		break;
 	case State::Destroy:
-		game->level.calculateLightDepths(0, 0, Level::WIDTH, Level::DEPTH);
-		game->level.calculateSpawnPosition();
-		game->level.reset();
+		game.level.calculateLightDepths(0, 0, Level::WIDTH, Level::DEPTH);
+		game.level.calculateSpawnPosition();
+		game.level.reset();
 
-		game->levelRenderer.initChunks();
-		game->network.connect();
+		game.levelRenderer.initChunks();
+		game.network.connect();
 
 		heights.reset();
 		random.reset();

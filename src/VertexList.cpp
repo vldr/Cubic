@@ -4,12 +4,12 @@
 #include <glm/glm.hpp>
 #include <cstdlib>
 
-void VertexList::init(Game* game, Allocator* allocator)
+void VertexList::init(Allocator* allocator_)
 {
-	this->allocator = allocator;
-	this->index = 0;
-	this->length = 0;
-	this->bufferLength = 0;
+	allocator = allocator_;
+	index = 0;
+	length = 0;
+	bufferLength = 0;
 	
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -17,18 +17,18 @@ void VertexList::init(Game* game, Allocator* allocator)
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 
-	glEnableVertexAttribArray(game->positionAttribute);
-	glEnableVertexAttribArray(game->uvAttribute);
-	glEnableVertexAttribArray(game->shadeAttribute);
+	glEnableVertexAttribArray(game.positionAttribute);
+	glEnableVertexAttribArray(game.uvAttribute);
+	glEnableVertexAttribArray(game.shadeAttribute);
 
-	glVertexAttribPointer(game->positionAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexList::Vertex), 0);
-	glVertexAttribPointer(game->uvAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(VertexList::Vertex), (void*)sizeof(glm::vec3));
-	glVertexAttribPointer(game->shadeAttribute, 1, GL_FLOAT, GL_FALSE, sizeof(VertexList::Vertex), (void*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
+	glVertexAttribPointer(game.positionAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(VertexList::Vertex), 0);
+	glVertexAttribPointer(game.uvAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(VertexList::Vertex), (void*)sizeof(glm::vec3));
+	glVertexAttribPointer(game.shadeAttribute, 1, GL_FLOAT, GL_FALSE, sizeof(VertexList::Vertex), (void*)(sizeof(glm::vec3) + sizeof(glm::vec2)));
 }
 
-void VertexList::init(Game* game, size_t size)
+void VertexList::init(size_t size)
 {
-	init(game, new Allocator(size));
+	init(new Allocator(size));
 }
 
 void VertexList::destroy()

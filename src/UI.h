@@ -6,8 +6,6 @@
 #include <glm/glm.hpp>
 #include <string>
 
-class Game;
-
 class UI
 {
 public:
@@ -47,7 +45,7 @@ public:
 		Swipe = 1 << 1,
 	};
 
-	void init(Game* game);
+	void init();
 	bool input(const SDL_Event& event);
 	void update();
 	void render();
@@ -57,7 +55,6 @@ public:
 	void openMenu(UI::State state, bool shouldUpdate = true);
 	void openStatusMenu(const char* title, const char* description, bool closeable = false);
 	void openMainMenu();
-
 	void closeMenu();
 
 	UI::State state;
@@ -107,11 +104,11 @@ private:
 	void drawBlock(unsigned char blockType, float x, float y, float scale);
 
 	bool drawTouchControls(bool invisible = false);
-	bool drawMainMenu();
 	bool drawStatusMenu();
 
 	bool drawLoadMenu();
 	bool drawSaveMenu();
+	bool drawMainMenu();
 
 	bool drawSelectBlockMenu();
 	bool drawSelectBlockButton(unsigned char blockType, unsigned char& selectedBlockType, float x, float y, float width, float height);
@@ -171,7 +168,5 @@ private:
 	GLuint interfaceTexture;
 
 	VertexList blockVertices;
-
-	Game* game;
 };
 

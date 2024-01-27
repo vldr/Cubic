@@ -13,25 +13,24 @@ Chunk::Face Chunk::rightFaces[Chunk::SIZE * Chunk::SIZE * Chunk::SIZE];
 Chunk::Face Chunk::frontFaces[Chunk::SIZE * Chunk::SIZE * Chunk::SIZE];
 Chunk::Face Chunk::backFaces[Chunk::SIZE * Chunk::SIZE * Chunk::SIZE];
 
-void Chunk::init(Game* game, int x, int y, int z)
+void Chunk::init(int x, int y, int z)
 {
-    this->game = game;
-    this->position = glm::ivec3(x, y, z);
-    this->isVisible = false;
-    this->isLoaded = false;
-
-    if (!this->allocator)
+    if (!allocator)
     {
-        this->allocator = new VertexList::Allocator;
+        allocator = new VertexList::Allocator;
     }
 
-    if (!this->waterAllocator)
+    if (!waterAllocator)
     {
-        this->waterAllocator = new VertexList::Allocator;
+        waterAllocator = new VertexList::Allocator;
     }
 
-    this->vertices.init(game, allocator);
-    this->waterVertices.init(game, waterAllocator);
+    position = glm::ivec3(x, y, z);
+    isVisible = false;
+    isLoaded = false;
+
+    vertices.init(allocator);
+    waterVertices.init(waterAllocator);
 }
 
 inline Chunk::Face& Chunk::getFace(Chunk::Face* faces, int x, int y, int z)
@@ -42,32 +41,32 @@ inline Chunk::Face& Chunk::getFace(Chunk::Face* faces, int x, int y, int z)
 template <Chunk::FaceType faceType>
 inline bool Chunk::shouldRenderFace(const int x, const int y, const int z)
 {
-    Block::Definition blockDefinition = Block::Definitions[game->level.getRenderTile(x, y, z)];
+    Block::Definition blockDefinition = Block::Definitions[game.level.getRenderTile(x, y, z)];
     Block::Definition blockDefinitionAdjacent;
 
     if constexpr (faceType == FaceType::Right)
     {
-        blockDefinitionAdjacent = Block::Definitions[game->level.getRenderTile(x + 1, y, z)];
+        blockDefinitionAdjacent = Block::Definitions[game.level.getRenderTile(x + 1, y, z)];
     }
     else if constexpr (faceType == FaceType::Left)
     {
-        blockDefinitionAdjacent = Block::Definitions[game->level.getRenderTile(x - 1, y, z)];
+        blockDefinitionAdjacent = Block::Definitions[game.level.getRenderTile(x - 1, y, z)];
     }
     else if constexpr (faceType == FaceType::Top)
     {
-        blockDefinitionAdjacent = Block::Definitions[game->level.getRenderTile(x, y + 1, z)];
+        blockDefinitionAdjacent = Block::Definitions[game.level.getRenderTile(x, y + 1, z)];
     }
     else if constexpr (faceType == FaceType::Bottom)
     {
-        blockDefinitionAdjacent = Block::Definitions[game->level.getRenderTile(x, y - 1, z)];
+        blockDefinitionAdjacent = Block::Definitions[game.level.getRenderTile(x, y - 1, z)];
     }
     else if constexpr (faceType == FaceType::Front)
     {
-        blockDefinitionAdjacent = Block::Definitions[game->level.getRenderTile(x, y, z + 1)];
+        blockDefinitionAdjacent = Block::Definitions[game.level.getRenderTile(x, y, z + 1)];
     }
     else if constexpr (faceType == FaceType::Back)
     {
-        blockDefinitionAdjacent = Block::Definitions[game->level.getRenderTile(x, y, z - 1)];
+        blockDefinitionAdjacent = Block::Definitions[game.level.getRenderTile(x, y, z - 1)];
     }
 
     if (blockDefinition.draw == Block::DrawType::DRAW_OPAQUE)
@@ -172,13 +171,13 @@ inline bool Chunk::shouldRenderFace(const int x, const int y, const int z)
 
                     for (const auto& offset : offsets)
                     {
-                        if (!game->level.isInBounds(x + offset[0], y, z + offset[1]))
+                        if (!game.level.isInBounds(x + offset[0], y, z + offset[1]))
                         {
                             continue;
                         }
 
-                        const auto topBlockType = game->level.getRenderTile(x + offset[0], y + 1, z + offset[1]);
-                        const auto bottomBlockType = game->level.getRenderTile(x + offset[0], y, z + offset[1]);
+                        const auto topBlockType = game.level.getRenderTile(x + offset[0], y + 1, z + offset[1]);
+                        const auto bottomBlockType = game.level.getRenderTile(x + offset[0], y, z + offset[1]);
 
                         const auto topBlockDefinition = Block::Definitions[topBlockType];
                         const auto bottomBlockDefinition = Block::Definitions[bottomBlockType];
@@ -369,7 +368,7 @@ inline void Chunk::generateMesh(Face* faces)
                 const auto& mirror = face.mirror;
 
                 VertexList* vertices;
-                if (game->level.isWaterTile(blockType))
+                if (game.level.isWaterTile(blockType))
                 {
                     vertices = &this->waterVertices;
                 }
@@ -569,7 +568,7 @@ inline void Chunk::generateFaces()
                 frontFaces[index].valid = false;
                 backFaces[index].valid = false;
 
-                auto blockType = game->level.getRenderTile(x, y, z);
+                auto blockType = game.level.getRenderTile(x, y, z);
                 if (!blockType)
                 {
                     continue;
@@ -625,8 +624,8 @@ inline void Chunk::generateFaces()
                         }
 
                         auto blockShift = 0.0f;
-                        auto brightness = game->level.isLavaTile(blockType) ? game->level.getTileBrightness(x, y, z) : game->level.getTileBrightness(x, y + 1, z);
-                        auto mirror = game->level.isInBounds(x, y + 1, z) && blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID;
+                        auto brightness = game.level.isLavaTile(blockType) ? game.level.getTileBrightness(x, y, z) : game.level.getTileBrightness(x, y + 1, z);
+                        auto mirror = game.level.isInBounds(x, y + 1, z) && blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID;
 
                         topFaces[index] = {
                             true,
@@ -641,8 +640,8 @@ inline void Chunk::generateFaces()
                     if (shouldRenderFace<FaceType::Bottom>(x, y, z))
                     {
                         auto blockShift = 0.0f;
-                        auto brightness = game->level.isLavaTile(blockType) ? game->level.getTileBrightness(x, y, z) : game->level.getTileBrightness(x, y - 1, z);
-                        auto mirror = game->level.isInBounds(x, y - 1, z) && blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID;
+                        auto brightness = game.level.isLavaTile(blockType) ? game.level.getTileBrightness(x, y, z) : game.level.getTileBrightness(x, y - 1, z);
+                        auto mirror = game.level.isInBounds(x, y - 1, z) && blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID;
 
                         bottomFaces[index] = {
                             true,
@@ -660,14 +659,14 @@ inline void Chunk::generateFaces()
 
                         if (
                             blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID &&
-                            game->level.getRenderTile(x, y, z) == game->level.getRenderTile(x, y - 1, z + 1)
+                            game.level.getRenderTile(x, y, z) == game.level.getRenderTile(x, y - 1, z + 1)
                         )
                         {
                             blockShift = -0.1f;
                         }
 
-                        auto brightness = game->level.isLavaTile(blockType) ? game->level.getTileBrightness(x, y, z) : game->level.getTileBrightness(x, y, z + 1);
-                        auto mirror = game->level.isInBounds(x, y, z + 1) && blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID;
+                        auto brightness = game.level.isLavaTile(blockType) ? game.level.getTileBrightness(x, y, z) : game.level.getTileBrightness(x, y, z + 1);
+                        auto mirror = game.level.isInBounds(x, y, z + 1) && blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID;
 
                         frontFaces[index] = {
                             true,
@@ -685,14 +684,14 @@ inline void Chunk::generateFaces()
 
                         if (
                             blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID &&
-                            game->level.getRenderTile(x, y, z) == game->level.getRenderTile(x, y - 1, z - 1)
+                            game.level.getRenderTile(x, y, z) == game.level.getRenderTile(x, y - 1, z - 1)
                         )
                         {
                             blockShift = -0.1f;
                         }
 
-                        auto brightness = game->level.isLavaTile(blockType) ? game->level.getTileBrightness(x, y, z) : game->level.getTileBrightness(x, y, z - 1);
-                        auto mirror = game->level.isInBounds(x, y, z - 1) && blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID;
+                        auto brightness = game.level.isLavaTile(blockType) ? game.level.getTileBrightness(x, y, z) : game.level.getTileBrightness(x, y, z - 1);
+                        auto mirror = game.level.isInBounds(x, y, z - 1) && blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID;
 
                         backFaces[index] = {
                             true,
@@ -710,14 +709,14 @@ inline void Chunk::generateFaces()
 
                         if (
                             blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID &&
-                            game->level.getRenderTile(x, y, z) == game->level.getRenderTile(x + 1, y - 1, z)
+                            game.level.getRenderTile(x, y, z) == game.level.getRenderTile(x + 1, y - 1, z)
                         )
                         {
                             blockShift = -0.1f;
                         }
 
-                        auto brightness = game->level.isLavaTile(blockType) ? game->level.getTileBrightness(x, y, z) : game->level.getTileBrightness(x + 1, y, z);
-                        auto mirror = game->level.isInBounds(x + 1, y, z) && blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID;
+                        auto brightness = game.level.isLavaTile(blockType) ? game.level.getTileBrightness(x, y, z) : game.level.getTileBrightness(x + 1, y, z);
+                        auto mirror = game.level.isInBounds(x + 1, y, z) && blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID;
 
                         rightFaces[index] = {
                             true,
@@ -735,14 +734,14 @@ inline void Chunk::generateFaces()
 
                         if (
                             blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID &&
-                            game->level.getRenderTile(x, y, z) == game->level.getRenderTile(x - 1, y - 1, z)
+                            game.level.getRenderTile(x, y, z) == game.level.getRenderTile(x - 1, y - 1, z)
                         )
                         {
                             blockShift = -0.1f;
                         }
 
-                        auto brightness = game->level.isLavaTile(blockType) ? game->level.getTileBrightness(x, y, z) : game->level.getTileBrightness(x - 1, y, z);
-                        auto mirror = game->level.isInBounds(x - 1, y, z) && blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID;
+                        auto brightness = game.level.isLavaTile(blockType) ? game.level.getTileBrightness(x, y, z) : game.level.getTileBrightness(x - 1, y, z);
+                        auto mirror = game.level.isInBounds(x - 1, y, z) && blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID;
 
                         leftFaces[index] = {
                             true,
@@ -786,9 +785,9 @@ void Chunk::renderWater()
 
 float Chunk::distanceToPlayer() const
 {
-    float distanceX = game->localPlayer.position.x - (float)position.x;
-    float distanceY = game->localPlayer.position.y - (float)position.y;
-    float distanceZ = game->localPlayer.position.z - (float)position.z;
+    float distanceX = game.localPlayer.position.x - (float)position.x;
+    float distanceY = game.localPlayer.position.y - (float)position.y;
+    float distanceZ = game.localPlayer.position.z - (float)position.z;
 
     return distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ;
 }

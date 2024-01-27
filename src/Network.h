@@ -6,12 +6,10 @@
 #include <string>
 #include <memory>
 
-class Game;
-
 class Network
 {
 public:
-    void init(Game* game);
+    void init();
     void connect();
     void tick();
     void render();
@@ -99,6 +97,4 @@ private:
 
     std::vector<std::unique_ptr<Player>> players;
     std::vector<PositionPacket> positionPackets;
-
-    Game* game;
 };

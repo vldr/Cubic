@@ -14,7 +14,7 @@ struct AABBPosition;
 class LocalPlayer : public Entity
 {
 public:
-	void init(Game* game);
+	void init();
 	void input(const SDL_Event& event);
 
 	void tick();

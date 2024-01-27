@@ -8,20 +8,19 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-void HeldBlock::init(Game* game)
+void HeldBlock::init()
 {
-	this->game = game;
-    this->swingOffset = 0;
-    this->isSwinging = false;
-    this->height = 1.0f;
-    this->vertices.init(game, 36);
+    swingOffset = 0;
+    isSwinging = false;
+    height = 1.0f;
+    vertices.init(36);
 
     update();
 }
 
 void HeldBlock::update()
 {
-    auto blockType = game->localPlayer.inventory[game->localPlayer.inventoryIndex];
+    auto blockType = game.localPlayer.inventory[game.localPlayer.inventoryIndex];
     auto blockDefinition = Block::Definitions[blockType];
 
     float uTop = 0.0625f * (blockDefinition.topTexture % 16);
@@ -163,19 +162,19 @@ void HeldBlock::tick()
 
 void HeldBlock::render()
 {
-    float height = this->lastHeight + (this->height - this->lastHeight) * game->timer.delta;
-    float walk = game->localPlayer.walkDistance + (game->localPlayer.walkDistance - game->localPlayer.oldWalkDistance) * game->timer.delta;
-    float bob = game->localPlayer.oldBobbing + (game->localPlayer.bobbing - game->localPlayer.oldBobbing) * game->timer.delta;
-    float tilt = game->localPlayer.oldTilt + (game->localPlayer.tilt - game->localPlayer.oldTilt) * game->timer.delta;
+    float height = this->lastHeight + (this->height - this->lastHeight) * game.timer.delta;
+    float walk = game.localPlayer.walkDistance + (game.localPlayer.walkDistance - game.localPlayer.oldWalkDistance) * game.timer.delta;
+    float bob = game.localPlayer.oldBobbing + (game.localPlayer.bobbing - game.localPlayer.oldBobbing) * game.timer.delta;
+    float tilt = game.localPlayer.oldTilt + (game.localPlayer.tilt - game.localPlayer.oldTilt) * game.timer.delta;
     
-    auto matrix = game->IDENTITY_MATRIX;
+    auto matrix = game.IDENTITY_MATRIX;
     matrix = glm::translate(matrix, glm::vec3(0.45f, -0.55f - (0.25f * (1.0f - height)), -0.8f));
     matrix = glm::translate(matrix, glm::vec3(glm::sin(walk * M_PI) * bob * 0.5, -glm::abs(glm::cos(walk * M_PI) * bob), 0.0));
     matrix = glm::translate(matrix, glm::vec3(0, glm::radians(tilt), 0));
 
     if (isSwinging)
     {
-        float swingOffsetDelta = (swingOffset + game->timer.delta) / 7.0f;
+        float swingOffsetDelta = (swingOffset + game.timer.delta) / 7.0f;
         matrix = glm::translate(matrix, glm::vec3(-glm::sin(glm::sqrt(swingOffsetDelta) * M_PI) * 0.4, glm::sin(glm::sqrt(swingOffsetDelta) * M_PI * 2.0) * 0.2, -glm::sin(swingOffsetDelta * M_PI) * 0.2));
     }
 
@@ -186,15 +185,15 @@ void HeldBlock::render()
 
     if (isSwinging) 
     {
-        float swingOffsetDelta = (swingOffset + game->timer.delta) / 7.0f;
+        float swingOffsetDelta = (swingOffset + game.timer.delta) / 7.0f;
         matrix = glm::rotate(matrix, glm::radians(glm::sin(glm::sqrt(swingOffsetDelta) * (float)M_PI) * 80.0f), glm::vec3(0.0, 1.0, 0.0));
         matrix = glm::rotate(matrix, glm::radians(-glm::sin(swingOffsetDelta * swingOffsetDelta * (float)M_PI)), glm::vec3(1.0, 0.0, 0.0));
     }
 
-    glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(matrix));
+    glUniformMatrix4fv(game.modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(matrix));
 
-    glBindTexture(GL_TEXTURE_2D, game->atlasTexture);
+    glBindTexture(GL_TEXTURE_2D, game.atlasTexture);
     vertices.render();
 
-    glUniformMatrix4fv(game->modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(game->IDENTITY_MATRIX));
+    glUniformMatrix4fv(game.modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(game.IDENTITY_MATRIX));
 }

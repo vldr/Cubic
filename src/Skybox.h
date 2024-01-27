@@ -4,13 +4,12 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-class Game;
 class Level;
 
 class Skybox
 {
 public:
-	void init(Game* game);
+	void init();
 	void renderBedrock();
 	void updateWater(unsigned char* waterTextureData);
 	void renderWater();
@@ -21,8 +20,6 @@ private:
 	void initWater();
 	void initClouds();
 	void initSky();
-
-	Game* game;
 
 	VertexList bedrockVertices;
 	GLuint bedrockTexture;

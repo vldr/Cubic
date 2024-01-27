@@ -131,8 +131,8 @@ public:
 		size_t size;
 	};
 
-	void init(Game* game, size_t capacity = 4);
-	void init(Game* game, Allocator* allocator);
+	void init(size_t capacity = 4);
+	void init(Allocator* allocator);
 
 	void destroy();
 	void update();

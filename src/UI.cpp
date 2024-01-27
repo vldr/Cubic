@@ -46,79 +46,29 @@ EM_JS(bool, is_touch, (), {
 });
 #endif
 
-void UI::init(Game* game)
+void UI::init()
 {
-	this->game = game;
-
 #if defined(EMSCRIPTEN)
-	this->isTouch = is_touch();
+	isTouch = is_touch();
 #elif defined(ANDROID)
-	this->isTouch = true;
+	isTouch = true;
 #else
-    this->isTouch = false;
+    isTouch = false;
 #endif
 
-	this->state = State::None;
-	this->touchState = (unsigned int)TouchState::None;
-
-	this->mousePosition = glm::vec2();
-	this->mouseState = MouseState::Up;
-
-	this->blockVertices.init(game);
-
-	this->fontVertices.init(game);
-	this->fontTexture = game->textureManager.load(fontResourceTexture, sizeof(fontResourceTexture));
-
-	this->interfaceVertices.init(game);
-	this->interfaceTexture = game->textureManager.load(interfaceResourceTexture, sizeof(interfaceResourceTexture));
-}
-
-void UI::openMenu(UI::State newState, bool shouldUpdate)
-{
-	if (newState != State::None)
-	{
-		SDL_SetRelativeMouseMode(SDL_FALSE);
-
-#if defined(EMSCRIPTEN)
-		emscripten_exit_pointerlock();
-#endif
-
-		mousePosition = {};
-		mouseState = MouseState::Up;
-		state = newState;
-
-		if (shouldUpdate)
-		{
-			update();
-		}
-	}
-}
-
-void UI::openStatusMenu(const char* title, const char* description, bool closeable)
-{
-	statusTitle = title;
-	statusDescription = description;
-	statusCloseable = closeable;
-
-	openMenu(State::StatusMenu);
-}
-
-void UI::openMainMenu()
-{
-	mainMenuLastCopy = 0;
-
-	openMenu(State::MainMenu);
-}
-
-void UI::closeMenu()
-{
-	SDL_SetRelativeMouseMode(SDL_TRUE);
-
-	mousePosition = {};
-	mouseState = MouseState::Up;
 	state = State::None;
+	touchState = (unsigned int)TouchState::None;
 
-	update();
+	mousePosition = glm::vec2();
+	mouseState = MouseState::Up;
+
+	blockVertices.init();
+
+	fontVertices.init();
+	fontTexture = game.textureManager.load(fontResourceTexture, sizeof(fontResourceTexture));
+
+	interfaceVertices.init();
+	interfaceTexture = game.textureManager.load(interfaceResourceTexture, sizeof(interfaceResourceTexture));
 }
 
 bool UI::input(const SDL_Event& event)
@@ -127,8 +77,8 @@ bool UI::input(const SDL_Event& event)
 	{
 		if (event.type == SDL_FINGERMOTION)
 		{
-			mousePosition.x = event.tfinger.x * game->scaledWidth;
-			mousePosition.y = event.tfinger.y * game->scaledHeight;
+			mousePosition.x = event.tfinger.x * game.scaledWidth;
+			mousePosition.y = event.tfinger.y * game.scaledHeight;
 
 			for (auto touchPosition = touchPositions.begin(); touchPosition != touchPositions.end(); touchPosition++)
 			{
@@ -141,11 +91,11 @@ bool UI::input(const SDL_Event& event)
 
 					if (state == State::None && touchPosition->swipe)
 					{
-						game->localPlayer.turn(event.tfinger.dx * 360.0f, event.tfinger.dy * 180.0f);
+						game.localPlayer.turn(event.tfinger.dx * 360.0f, event.tfinger.dy * 180.0f);
 					}
 
-					touchPosition->x = event.tfinger.x * game->scaledWidth;
-					touchPosition->y = event.tfinger.y * game->scaledHeight;
+					touchPosition->x = event.tfinger.x * game.scaledWidth;
+					touchPosition->y = event.tfinger.y * game.scaledHeight;
 
 					break;
 				}
@@ -162,9 +112,9 @@ bool UI::input(const SDL_Event& event)
 		{
 			touchPositions.push_back({
 				event.tfinger.fingerId,
-				event.tfinger.x * game->scaledWidth,
-				event.tfinger.y * game->scaledHeight,
-				game->timer.milliTime(),
+				event.tfinger.x * game.scaledWidth,
+				event.tfinger.y * game.scaledHeight,
+				game.timer.milliTime(),
 				true,
 				true,
 				false,
@@ -185,13 +135,13 @@ bool UI::input(const SDL_Event& event)
 				{
 					if (touchPosition->isHolding)
 					{
-						game->localPlayer.interactState &= ~(unsigned int)LocalPlayer::Interact::Left;
+						game.localPlayer.interactState &= ~(unsigned int)LocalPlayer::Interact::Left;
 					}
-					else if (touchPosition->hold && game->timer.milliTime() - touchPosition->startTime <= 200)
+					else if (touchPosition->hold && game.timer.milliTime() - touchPosition->startTime <= 200)
 					{
-						game->localPlayer.interactState |= (unsigned int)LocalPlayer::Interact::Right;
-						game->localPlayer.interact();
-						game->localPlayer.interactState &= ~(unsigned int)LocalPlayer::Interact::Right;
+						game.localPlayer.interactState |= (unsigned int)LocalPlayer::Interact::Right;
+						game.localPlayer.interact();
+						game.localPlayer.interactState &= ~(unsigned int)LocalPlayer::Interact::Right;
 					}
 
 					touchPositions.erase(touchPosition);
@@ -199,8 +149,8 @@ bool UI::input(const SDL_Event& event)
 				}
 			}
 
-			mousePosition.x = event.tfinger.x * game->scaledWidth;
-			mousePosition.y = event.tfinger.y * game->scaledHeight;
+			mousePosition.x = event.tfinger.x * game.scaledWidth;
+			mousePosition.y = event.tfinger.y * game.scaledHeight;
 			mouseState = MouseState::Down;
 
 			const auto previousTouchState = touchState;
@@ -325,8 +275,8 @@ bool UI::input(const SDL_Event& event)
 		{
 			if (state != State::None)
 			{
-				mousePosition.x = float(event.motion.x) / float(game->windowWidth) * game->scaledWidth;
-				mousePosition.y = float(event.motion.y) / float(game->windowHeight) * game->scaledHeight;
+				mousePosition.x = float(event.motion.x) / float(game.windowWidth) * game.scaledWidth;
+				mousePosition.y = float(event.motion.y) / float(game.windowHeight) * game.scaledHeight;
 
 				update();
 				return false;
@@ -355,108 +305,6 @@ bool UI::input(const SDL_Event& event)
 	}
 
 	return true;
-}
-
-void UI::refresh()
-{
-	page = 0;
-
-	saves.clear();
-
-#if defined(EMSCRIPTEN)
-	for (const auto& entry : std::filesystem::directory_iterator("saves/"))
-#elif defined(ANDROID)
-	for (const auto& entry : std::filesystem::directory_iterator(SDL_AndroidGetInternalStoragePath()))
-#else
-	for (const auto& entry : std::filesystem::directory_iterator("."))
-#endif
-	{
-		auto path = entry.path();
-		auto filename = path.filename();
-
-		if (filename.u8string().rfind("Save") == 0)
-		{
-			auto lastWriteTime = entry.last_write_time();
-			auto lastWriteSystemTime = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
-				lastWriteTime - std::filesystem::file_time_type::clock::now() + std::chrono::system_clock::now()
-			);
-
-			std::time_t time = std::chrono::system_clock::to_time_t(lastWriteSystemTime);
-
-			std::stringstream name;
-			name << filename.u8string();
-			name << std::put_time(std::localtime(&time), " - %m/%d/%Y %H:%M:%S");
-
-			Save save;
-			save.name = name.str();
-			save.path = path.u8string();
-
-			saves.push_back(save);
-		}
-	}
-}
-
-void UI::load(size_t index)
-{
-	if (index >= saves.size())
-	{
-		return;
-	}
-
-	FILE* file;
-	file = fopen(saves[index].path.c_str(), "r");
-
-	if (file)
-	{
-		fread(game->level.blocks.get(), Level::WIDTH * Level::HEIGHT * Level::DEPTH, sizeof(unsigned char), file);
-		fclose(file);
-
-		game->level.calculateLightDepths(0, 0, Level::WIDTH, Level::DEPTH);
-		game->levelRenderer.loadChunks(0, 0, 0, Level::WIDTH, Level::HEIGHT, Level::DEPTH);
-
-		game->level.calculateSpawnPosition();
-		game->level.reset();
-
-		game->network.sendLevel(UCHAR_MAX, true);
-	}
-}
-
-void UI::save(size_t index)
-{
-	std::stringstream filename;
-
-#if defined(EMSCRIPTEN)
-	filename << "saves/Save " << index;
-#elif defined(ANDROID)
-	filename << SDL_AndroidGetInternalStoragePath() << "/Save " << index;
-#else
-	filename << "Save " << index;
-#endif
-
-	FILE* file;
-
-	if (saves.size() > index)
-	{
-		file = fopen(saves[index].path.c_str(), "w");
-	}
-	else
-	{
-		file = fopen(filename.str().c_str(), "w");
-	}
-
-	if (file)
-	{
-		fwrite(game->level.blocks.get(), Level::WIDTH * Level::HEIGHT * Level::DEPTH, sizeof(unsigned char), file);
-		fclose(file);
-
-#if defined(EMSCRIPTEN)
-		EM_ASM(
-			FS.syncfs(false, function(err) {
-				console.log(err);
-			});
-		);
-#endif
-	}
 }
 
 void UI::update()
@@ -544,15 +392,117 @@ void UI::think()
 			if (
 				touchPosition->hold &&
 				!touchPosition->isHolding &&
-				game->timer.milliTime() - touchPosition->startTime >= 350 &&
-				!(game->localPlayer.interactState & (unsigned int)LocalPlayer::Interact::Left)
-			)
+				game.timer.milliTime() - touchPosition->startTime >= 350 &&
+				!(game.localPlayer.interactState & (unsigned int)LocalPlayer::Interact::Left)
+				)
 			{
-				game->localPlayer.interactState |= (unsigned int)LocalPlayer::Interact::Left;
+				game.localPlayer.interactState |= (unsigned int)LocalPlayer::Interact::Left;
 
 				touchPosition->isHolding = true;
 			}
 		}
+	}
+}
+
+void UI::refresh()
+{
+	page = 0;
+
+	saves.clear();
+
+#if defined(EMSCRIPTEN)
+	for (const auto& entry : std::filesystem::directory_iterator("saves/"))
+#elif defined(ANDROID)
+	for (const auto& entry : std::filesystem::directory_iterator(SDL_AndroidGetInternalStoragePath()))
+#else
+	for (const auto& entry : std::filesystem::directory_iterator("."))
+#endif
+	{
+		auto path = entry.path();
+		auto filename = path.filename();
+
+		if (filename.u8string().rfind("Save") == 0)
+		{
+			auto lastWriteTime = entry.last_write_time();
+			auto lastWriteSystemTime = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+				lastWriteTime - std::filesystem::file_time_type::clock::now() + std::chrono::system_clock::now()
+			);
+
+			std::time_t time = std::chrono::system_clock::to_time_t(lastWriteSystemTime);
+
+			std::stringstream name;
+			name << filename.u8string();
+			name << std::put_time(std::localtime(&time), " - %m/%d/%Y %H:%M:%S");
+
+			Save save;
+			save.name = name.str();
+			save.path = path.u8string();
+
+			saves.push_back(save);
+		}
+	}
+}
+
+void UI::load(size_t index)
+{
+	if (index >= saves.size())
+	{
+		return;
+	}
+
+	FILE* file;
+	file = fopen(saves[index].path.c_str(), "r");
+
+	if (file)
+	{
+		fread(game.level.blocks.get(), Level::WIDTH * Level::HEIGHT * Level::DEPTH, sizeof(unsigned char), file);
+		fclose(file);
+
+		game.level.calculateLightDepths(0, 0, Level::WIDTH, Level::DEPTH);
+		game.levelRenderer.loadChunks(0, 0, 0, Level::WIDTH, Level::HEIGHT, Level::DEPTH);
+
+		game.level.calculateSpawnPosition();
+		game.level.reset();
+
+		game.network.sendLevel(UCHAR_MAX, true);
+	}
+}
+
+void UI::save(size_t index)
+{
+	std::stringstream filename;
+
+#if defined(EMSCRIPTEN)
+	filename << "saves/Save " << index;
+#elif defined(ANDROID)
+	filename << SDL_AndroidGetInternalStoragePath() << "/Save " << index;
+#else
+	filename << "Save " << index;
+#endif
+
+	FILE* file;
+
+	if (saves.size() > index)
+	{
+		file = fopen(saves[index].path.c_str(), "w");
+	}
+	else
+	{
+		file = fopen(filename.str().c_str(), "w");
+	}
+
+	if (file)
+	{
+		fwrite(game.level.blocks.get(), Level::WIDTH * Level::HEIGHT * Level::DEPTH, sizeof(unsigned char), file);
+		fclose(file);
+
+#if defined(EMSCRIPTEN)
+		EM_ASM(
+			FS.syncfs(false, function(err) {
+			console.log(err);
+		});
+		);
+#endif
 	}
 }
 
@@ -566,17 +516,66 @@ void UI::log(const char* format, ...)
 	va_end(args);
 
 	Log log;
-	log.created = game->timer.milliTime();
+	log.created = game.timer.milliTime();
 	log.text = std::string(buffer, count);
 
 	logs.push_back(log);
 
 	update();
 }
+
+void UI::openMenu(UI::State newState, bool shouldUpdate)
+{
+	if (newState != State::None)
+	{
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+
+#if defined(EMSCRIPTEN)
+		emscripten_exit_pointerlock();
+#endif
+
+		mousePosition = {};
+		mouseState = MouseState::Up;
+		state = newState;
+
+		if (shouldUpdate)
+		{
+			update();
+		}
+	}
+}
+
+void UI::openStatusMenu(const char* title, const char* description, bool closeable)
+{
+	statusTitle = title;
+	statusDescription = description;
+	statusCloseable = closeable;
+
+	openMenu(State::StatusMenu);
+}
+
+void UI::openMainMenu()
+{
+	mainMenuLastCopy = 0;
+
+	openMenu(State::MainMenu);
+}
+
+void UI::closeMenu()
+{
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+
+	mousePosition = {};
+	mouseState = MouseState::Up;
+	state = State::None;
+
+	update();
+}
+
 bool UI::drawStatusMenu()
 {
-	int x = int(glm::ceil(game->scaledWidth / 16));
-	int y = int(glm::ceil(game->scaledHeight / 16));
+	int x = int(glm::ceil(game.scaledWidth / 16));
+	int y = int(glm::ceil(game.scaledHeight / 16));
 
 	for (int i = 0; i < x; i++)
 	{
@@ -589,14 +588,14 @@ bool UI::drawStatusMenu()
 	if (statusCloseable)
 	{
 #if defined(EMSCRIPTEN)
-		drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 25.0f, 0.6f);
-		drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 12.0f, 1.0f);
+		drawCenteredFont(statusTitle.c_str(), game.scaledWidth / 2, game.scaledHeight / 2 - 25.0f, 0.6f);
+		drawCenteredFont(statusDescription.c_str(), game.scaledWidth / 2, game.scaledHeight / 2 - 12.0f, 1.0f);
 
-		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 5.0f, 1.0f, game->network.isConnected() ? "Create a new room" : "Play offline"))
+		if (drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 + 5.0f, 1.0f, game.network.isConnected() ? "Create a new room" : "Play offline"))
 		{
-			if (game->network.isConnected())
+			if (game.network.isConnected())
 			{
-				game->network.create();
+				game.network.create();
 			}
 			else
 			{
@@ -606,18 +605,18 @@ bool UI::drawStatusMenu()
 			return true;
 		}
 #else
-		if (game->network.isConnected())
+		if (game.network.isConnected())
 		{
 			float offset = -2.0f;
 
-			drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 38.0f + 2.0f + offset, 0.6f);
-			drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 25.0f + 2.0f + offset, 1.0f);
+			drawCenteredFont(statusTitle.c_str(), game.scaledWidth / 2, game.scaledHeight / 2 - 38.0f + 2.0f + offset, 0.6f);
+			drawCenteredFont(statusDescription.c_str(), game.scaledWidth / 2, game.scaledHeight / 2 - 25.0f + 2.0f + offset, 1.0f);
 
-			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - 10.0f + 2.0f + offset, 1.0f, "Create a new room"))
+			if (drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 - 10.0f + 2.0f + offset, 1.0f, "Create a new room"))
 			{
-				if (game->network.isConnected())
+				if (game.network.isConnected())
 				{
-					game->network.create();
+					game.network.create();
 				}
 				else
 				{
@@ -627,7 +626,7 @@ bool UI::drawStatusMenu()
 				return true;
 			}
 
-			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 13.0f + 2.0f + offset, 1.0f, "Join room"))
+			if (drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 + 13.0f + 2.0f + offset, 1.0f, "Join room"))
 			{
 				char* clipboardText = SDL_GetClipboardText();
 				size_t clipboardTextLength = strlen(clipboardText);
@@ -642,7 +641,7 @@ bool UI::drawStatusMenu()
 					}
 				}
 
-				game->network.join(std::string(clipboardText + clipboardTextOffset));
+				game.network.join(std::string(clipboardText + clipboardTextOffset));
 
 				SDL_free(clipboardText);
 				return true;
@@ -650,10 +649,10 @@ bool UI::drawStatusMenu()
 		}
 		else
 		{
-			drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 25.0f, 0.6f);
-			drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 12.0f, 1.0f);
+			drawCenteredFont(statusTitle.c_str(), game.scaledWidth / 2, game.scaledHeight / 2 - 25.0f, 0.6f);
+			drawCenteredFont(statusDescription.c_str(), game.scaledWidth / 2, game.scaledHeight / 2 - 12.0f, 1.0f);
 
-			if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 + 5.0f, 1.0f, "Play offline"))
+			if (drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 + 5.0f, 1.0f, "Play offline"))
 			{
 				closeMenu();
 				return true;
@@ -663,8 +662,8 @@ bool UI::drawStatusMenu()
 	}
 	else
 	{
-		drawCenteredFont(statusTitle.c_str(), game->scaledWidth / 2, game->scaledHeight / 2 - 13.0f, 0.6f);
-		drawCenteredFont(statusDescription.c_str(), game->scaledWidth / 2, game->scaledHeight / 2, 1.0f);
+		drawCenteredFont(statusTitle.c_str(), game.scaledWidth / 2, game.scaledHeight / 2 - 13.0f, 0.6f);
+		drawCenteredFont(statusDescription.c_str(), game.scaledWidth / 2, game.scaledHeight / 2, 1.0f);
 	}
 
 	return false;
@@ -674,12 +673,12 @@ bool UI::drawLoadMenu()
 {
 	const float offset = 73.5f;
 
-	drawInterface(0.0f, 0.0f, game->scaledWidth, game->scaledHeight, 183, 0, 16, 16, 0.08f, 64.0f);
-	drawCenteredFont("Load Level", game->scaledWidth / 2, game->scaledHeight / 2 - offset, 1.0f, 65.0f);
+	drawInterface(0.0f, 0.0f, game.scaledWidth, game.scaledHeight, 183, 0, 16, 16, 0.08f, 64.0f);
+	drawCenteredFont("Load Level", game.scaledWidth / 2, game.scaledHeight / 2 - offset, 1.0f, 65.0f);
 
 	for (int i = 0; i < 4; i++)
 	{
-		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 * i, 65.0f, saves.size() >= i + 1 + 4 * page ? saves[i + 4 * page].name.c_str() : "-", saves.size() >= i + 1 + 4 * page))
+		if (drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 - offset + 16 + 24 * i, 65.0f, saves.size() >= i + 1 + 4 * page ? saves[i + 4 * page].name.c_str() : "-", saves.size() >= i + 1 + 4 * page))
 		{
 			load(i + 4 * page);
 
@@ -688,7 +687,7 @@ bool UI::drawLoadMenu()
 		}
 	}
 
-	if (drawButton(game->scaledWidth / 2 - 130.0f, game->scaledHeight / 2 - offset + 16 + 24 + 24 - 10.0f, 65.0f, "<", page > 0, 20.0f))
+	if (drawButton(game.scaledWidth / 2 - 130.0f, game.scaledHeight / 2 - offset + 16 + 24 + 24 - 10.0f, 65.0f, "<", page > 0, 20.0f))
 	{
 		page--;
 
@@ -696,7 +695,7 @@ bool UI::drawLoadMenu()
 		return true;
 	}
 
-	if (drawButton(game->scaledWidth / 2 + 110.0f, game->scaledHeight / 2 - offset + 16 + 24 + 24 - 10.0f, 65.0f, ">", page < (saves.size() / 4), 20.0f))
+	if (drawButton(game.scaledWidth / 2 + 110.0f, game.scaledHeight / 2 - offset + 16 + 24 + 24 - 10.0f, 65.0f, ">", page < (saves.size() / 4), 20.0f))
 	{
 		page++;
 
@@ -704,7 +703,7 @@ bool UI::drawLoadMenu()
 		return true;
 	}
 
-	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 + 24 + 24 + 36, 65.0f, "Back to Menu"))
+	if (drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 - offset + 16 + 24 + 24 + 24 + 36, 65.0f, "Back to Menu"))
 	{
 		openMainMenu();
 		return true;
@@ -717,12 +716,12 @@ bool UI::drawSaveMenu()
 {
 	const float offset = 73.5f;
 
-	drawInterface(0.0f, 0.0f, game->scaledWidth, game->scaledHeight, 183, 0, 16, 16, 0.08f, 64.0f);
-	drawCenteredFont("Save Level", game->scaledWidth / 2, game->scaledHeight / 2 - offset, 1.0f, 65.0f);
+	drawInterface(0.0f, 0.0f, game.scaledWidth, game.scaledHeight, 183, 0, 16, 16, 0.08f, 64.0f);
+	drawCenteredFont("Save Level", game.scaledWidth / 2, game.scaledHeight / 2 - offset, 1.0f, 65.0f);
 
 	for (int i = 0; i < 4; i++)
 	{
-		if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 * i, 65.0f, saves.size() >= i + 1 + 4 * page ? saves[i + 4 * page].name.c_str() : "-", saves.size() >= i + 4 * page))
+		if (drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 - offset + 16 + 24 * i, 65.0f, saves.size() >= i + 1 + 4 * page ? saves[i + 4 * page].name.c_str() : "-", saves.size() >= i + 4 * page))
 		{
 			save(i + 4 * page);
 
@@ -731,7 +730,7 @@ bool UI::drawSaveMenu()
 		}
 	}
 
-	if (drawButton(game->scaledWidth / 2 - 130.0f, game->scaledHeight / 2 - offset + 16 + 24 + 24 - 10.0f, 65.0f, "<", page > 0, 20.0f))
+	if (drawButton(game.scaledWidth / 2 - 130.0f, game.scaledHeight / 2 - offset + 16 + 24 + 24 - 10.0f, 65.0f, "<", page > 0, 20.0f))
 	{
 		page--;
 
@@ -739,7 +738,7 @@ bool UI::drawSaveMenu()
 		return true;
 	}
 
-	if (drawButton(game->scaledWidth / 2 + 110.0f, game->scaledHeight / 2 - offset + 16 + 24 + 24 - 10.0f, 65.0f, ">", page < (saves.size() / 4), 20.0f))
+	if (drawButton(game.scaledWidth / 2 + 110.0f, game.scaledHeight / 2 - offset + 16 + 24 + 24 - 10.0f, 65.0f, ">", page < (saves.size() / 4), 20.0f))
 	{
 		page++;
 
@@ -748,7 +747,7 @@ bool UI::drawSaveMenu()
 	}
 
 
-	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16 + 24 + 24 + 24 + 36, 65.0f, "Back to Menu"))
+	if (drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 - offset + 16 + 24 + 24 + 24 + 36, 65.0f, "Back to Menu"))
 	{
 		openMainMenu();
 		return true;
@@ -762,16 +761,16 @@ bool UI::drawMainMenu()
 	const float offset = 73.5f;
 	const float optionsOffset = 80.0f;
 
-	drawInterface(0.0f, 0.0f, game->scaledWidth, game->scaledHeight, 183, 0, 16, 16, 0.08f, 64.0f);
-	drawCenteredFont("Main Menu", game->scaledWidth / 2, game->scaledHeight / 2 - offset, 1.0f, 65.0f);
+	drawInterface(0.0f, 0.0f, game.scaledWidth, game.scaledHeight, 183, 0, 16, 16, 0.08f, 64.0f);
+	drawCenteredFont("Main Menu", game.scaledWidth / 2, game.scaledHeight / 2 - offset, 1.0f, 65.0f);
 
-	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 16, 65.0f, "Back to Game"))
+	if (drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 - offset + 16, 65.0f, "Back to Game"))
 	{
 		closeMenu();
 		return true;
 	}
 
-	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + 40, 65.0f, "Load Level", game->network.isHost() || !game->network.isConnected(), 98.0f))
+	if (drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 - offset + 40, 65.0f, "Load Level", game.network.isHost() || !game.network.isConnected(), 98.0f))
 	{
 		refresh();
 		openMenu(State::LoadMenu);
@@ -779,7 +778,7 @@ bool UI::drawMainMenu()
 		return true;
 	}
 
-	if (drawButton(game->scaledWidth / 2, game->scaledHeight / 2 - offset + 40, 65.0f, "Save Level", 1, 100.0f))
+	if (drawButton(game.scaledWidth / 2, game.scaledHeight / 2 - offset + 40, 65.0f, "Save Level", 1, 100.0f))
 	{
 		refresh();
 		openMenu(State::SaveMenu);
@@ -787,19 +786,19 @@ bool UI::drawMainMenu()
 		return true;
 	}
 
-	drawInterface(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + optionsOffset - 10.0f, 200.0f, 1.5f, 183, 0, 16, 16, 0.0f, 64.0f);
+	drawInterface(game.scaledWidth / 2 - 100, game.scaledHeight / 2 - offset + optionsOffset - 10.0f, 200.0f, 1.5f, 183, 0, 16, 16, 0.0f, 64.0f);
 
-	drawCenteredFont("Invite your friends by sharing the link", game->scaledWidth / 2, game->scaledHeight / 2 - offset + optionsOffset, 1.0f, 65.0f);
-	drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + optionsOffset + 16, 65.0f, game->network.url.c_str(), 0);
+	drawCenteredFont("Invite your friends by sharing the link", game.scaledWidth / 2, game.scaledHeight / 2 - offset + optionsOffset, 1.0f, 65.0f);
+	drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 - offset + optionsOffset + 16, 65.0f, game.network.url.c_str(), 0);
 
-	if (drawButton(game->scaledWidth / 2 - 100, game->scaledHeight / 2 - offset + optionsOffset + 24 + 16, 65.0f, game->timer.milliTime() - mainMenuLastCopy < 1000 ? "Copied!" : "Copy"))
+	if (drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 - offset + optionsOffset + 24 + 16, 65.0f, game.timer.milliTime() - mainMenuLastCopy < 1000 ? "Copied!" : "Copy"))
 	{
 #if defined(EMSCRIPTEN)
-		copy_to_clipboard(game->network.url.c_str());
+		copy_to_clipboard(game.network.url.c_str());
 #else
-		SDL_SetClipboardText(game->network.url.c_str());
+		SDL_SetClipboardText(game.network.url.c_str());
 #endif
-		mainMenuLastCopy = game->timer.milliTime();
+		mainMenuLastCopy = game.timer.milliTime();
 
 		mouseState = MouseState::Up;
 		update();
@@ -812,14 +811,14 @@ bool UI::drawMainMenu()
 
 bool UI::drawSelectBlockMenu()
 {
-	float left = game->scaledWidth / 2.0f - 196.0f / 2.0f;
-	float top = game->scaledHeight / 2.0f - 143.0f / 2.0f;
+	float left = game.scaledWidth / 2.0f - 196.0f / 2.0f;
+	float top = game.scaledHeight / 2.0f - 143.0f / 2.0f;
 
 	drawInterface(left - 4, top - 3, 0, 106, 204, 149.9f, 1.0f, 2.0f);
 
 	for (unsigned char blockType = 0, selectedBlockType = 0, index = 0; blockType < std::size(Block::Definitions); blockType++)
 	{
-		if (!game->level.isAirTile(blockType) && !game->level.isWaterTile(blockType) && !game->level.isLavaTile(blockType))
+		if (!game.level.isAirTile(blockType) && !game.level.isWaterTile(blockType) && !game.level.isLavaTile(blockType))
 		{
 			int col = index % 8;
 			int row = index / 8;
@@ -832,8 +831,8 @@ bool UI::drawSelectBlockMenu()
 
 			if (drawSelectBlockButton(blockType, selectedBlockType, x, y, width, height))
 			{
-				game->localPlayer.inventory[game->localPlayer.inventoryIndex] = blockType;
-				game->heldBlock.update();
+				game.localPlayer.inventory[game.localPlayer.inventoryIndex] = blockType;
+				game.heldBlock.update();
 
 				closeMenu();
 				return true;
@@ -1005,10 +1004,10 @@ bool UI::drawTouchControls(bool invisible)
 	float buttonOffsetY = 25.0f;
 	float buttonOffsetZ = 65.0f;
 
-	float buttonSize = std::max(game->scaledHeight, game->scaledWidth) * 0.06f;
-	float jumpButtonSize = std::max(game->scaledHeight, game->scaledWidth) * 0.0625f;
+	float buttonSize = std::max(game.scaledHeight, game.scaledWidth) * 0.06f;
+	float jumpButtonSize = std::max(game.scaledHeight, game.scaledWidth) * 0.0625f;
 
-	bool middleTouch = drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "", buttonSize, buttonSize, true, invisible);
+	bool middleTouch = drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + buttonSize, game.scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "", buttonSize, buttonSize, true, invisible);
 	if (middleTouch)
 	{
 		touchState |= (unsigned int)UI::TouchState::Middle;
@@ -1018,9 +1017,9 @@ bool UI::drawTouchControls(bool invisible)
 		touchState &= ~(unsigned int)UI::TouchState::Middle;
 	}
 
-	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + buttonSize, game->scaledHeight - buttonSize - buttonOffsetY, buttonOffsetZ, "\x1F", buttonSize, buttonSize, true, invisible))
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + buttonSize, game.scaledHeight - buttonSize - buttonOffsetY, buttonOffsetZ, "\x1F", buttonSize, buttonSize, true, invisible))
 	{
-		game->localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Backward;
+		game.localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Backward;
 
 		touchState |= (unsigned int)UI::TouchState::Down;
 	}
@@ -1028,15 +1027,15 @@ bool UI::drawTouchControls(bool invisible)
 	{
 		if (!middleTouch)
 		{
-			game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Backward;
+			game.localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Backward;
 		}
 
 		touchState &= ~(unsigned int)UI::TouchState::Down;
 	}
 
-	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX, game->scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x11", buttonSize, buttonSize, true, invisible))
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX, game.scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x11", buttonSize, buttonSize, true, invisible))
 	{
-		game->localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Left;
+		game.localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Left;
 
 		touchState |= (unsigned int)UI::TouchState::Left;
 	}
@@ -1044,15 +1043,15 @@ bool UI::drawTouchControls(bool invisible)
 	{
 		if (!middleTouch)
 		{
-			game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Left;
+			game.localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Left;
 		}
 
 		touchState &= ~(unsigned int)UI::TouchState::Left;
 	}
 
-	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + 2 * buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x10", buttonSize, buttonSize, true, invisible))
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + 2 * buttonSize, game.scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x10", buttonSize, buttonSize, true, invisible))
 	{
-		game->localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Right;
+		game.localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Right;
 
 		touchState |= (unsigned int)UI::TouchState::Right;
 	}
@@ -1060,15 +1059,15 @@ bool UI::drawTouchControls(bool invisible)
 	{
 		if (!middleTouch)
 		{
-			game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Right;
+			game.localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Right;
 		}
 
 		touchState &= ~(unsigned int)UI::TouchState::Right;
 	}
 
-	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + buttonSize, game->scaledHeight - 3 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x1E", buttonSize, buttonSize, true, invisible))
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + buttonSize, game.scaledHeight - 3 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x1E", buttonSize, buttonSize, true, invisible))
 	{
-		game->localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Forward;
+		game.localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Forward;
 
 		touchState |= (unsigned int)UI::TouchState::Up;
 	}
@@ -1076,35 +1075,35 @@ bool UI::drawTouchControls(bool invisible)
 	{
 		if (!middleTouch)
 		{
-			game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Forward;
+			game.localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Forward;
 		}
 
 		touchState &= ~(unsigned int)UI::TouchState::Up;
 	}
 
-	if (drawTouchButton((unsigned int)UI::Cancellable::Hold, game->scaledWidth - buttonOffsetX - 1.5f * buttonSize, game->scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, game->localPlayer.noPhysics ? "\x7" : "\x4", jumpButtonSize, jumpButtonSize, true, invisible))
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold, game.scaledWidth - buttonOffsetX - 1.5f * buttonSize, game.scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, game.localPlayer.noPhysics ? "\x7" : "\x4", jumpButtonSize, jumpButtonSize, true, invisible))
 	{
-		if (middleTouch && game->localPlayer.moveState == (unsigned int)LocalPlayer::Move::None)
+		if (middleTouch && game.localPlayer.moveState == (unsigned int)LocalPlayer::Move::None)
 		{
-			game->localPlayer.noPhysics = !game->localPlayer.noPhysics;
+			game.localPlayer.noPhysics = !game.localPlayer.noPhysics;
 		}
 
-		game->localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Jump;
+		game.localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Jump;
 
 		touchState |= (unsigned int)UI::TouchState::Jump;
 	}
 	else
 	{
-		game->localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Jump;
+		game.localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Jump;
 
 		touchState &= ~(unsigned int)UI::TouchState::Jump;
 	}
 
 	float otherButtonOffsetX = 1.5f;
 	float otherButtonOffsetY = 3.0f;
-	float otherButtonSize = std::max(game->scaledHeight, game->scaledWidth) * 0.03f;
+	float otherButtonSize = std::max(game.scaledHeight, game.scaledWidth) * 0.03f;
 
-	if (drawTouchButton((unsigned int)UI::Cancellable::Hold, game->scaledWidth / 2 + otherButtonOffsetX, otherButtonOffsetY, buttonOffsetZ, "\xF0", otherButtonSize, otherButtonSize, invisible, invisible))
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold, game.scaledWidth / 2 + otherButtonOffsetX, otherButtonOffsetY, buttonOffsetZ, "\xF0", otherButtonSize, otherButtonSize, invisible, invisible))
 	{
 		if (!invisible)
 		{
@@ -1122,16 +1121,16 @@ bool UI::drawTouchControls(bool invisible)
 		touchState &= ~(unsigned int)UI::TouchState::Menu;
 	}
 
-	if (drawTouchButton((unsigned int)UI::Cancellable::Hold, game->scaledWidth / 2 - otherButtonSize - otherButtonOffsetX + 1.0f, otherButtonOffsetY, buttonOffsetZ, game->fullscreen ? "\x17" : "\x16", otherButtonSize, otherButtonSize, invisible, invisible))
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold, game.scaledWidth / 2 - otherButtonSize - otherButtonOffsetX + 1.0f, otherButtonOffsetY, buttonOffsetZ, game.fullscreen ? "\x17" : "\x16", otherButtonSize, otherButtonSize, invisible, invisible))
 	{
 		if (!invisible)
 		{
 #if defined(EMSCRIPTEN)
 			toggle_fullscreen();
 #else
-			game->fullscreen = !game->fullscreen;
+			game.fullscreen = !game.fullscreen;
 
-			SDL_SetWindowFullscreen(game->window, game->fullscreen);
+			SDL_SetWindowFullscreen(game.window, game.fullscreen);
 #endif
 		}
 		else
@@ -1147,7 +1146,7 @@ bool UI::drawTouchControls(bool invisible)
 	for (int i = 0; i < LocalPlayer::INVENTORY_SIZE + 1; i++)
 	{
 		bool touched = (state == State::None || state == State::SelectBlockMenu) && 
-			drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, game->scaledWidth / 2 - 90 + float(i) * 20 - 21 / 2, game->scaledHeight - 22 - 3.0f, buttonOffsetZ, "", 20, 22, false, true);
+			drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, game.scaledWidth / 2 - 90 + float(i) * 20 - 21 / 2, game.scaledHeight - 22 - 3.0f, buttonOffsetZ, "", 20, 22, false, true);
 
 		if (i == LocalPlayer::INVENTORY_SIZE)
 		{
@@ -1169,8 +1168,8 @@ bool UI::drawTouchControls(bool invisible)
 		{
 			if (touched)
 			{
-				game->localPlayer.inventoryIndex = i;
-				game->heldBlock.update();
+				game.localPlayer.inventoryIndex = i;
+				game.heldBlock.update();
 
 				mouseState = MouseState::Up;
 				update();
@@ -1196,9 +1195,9 @@ void UI::drawFPS()
 	static std::string fps;
 	fps.clear();
 
-	fps += std::to_string(game->lastFrameRate);
+	fps += std::to_string(game.lastFrameRate);
 	fps += " fps, ";
-	fps += std::to_string(game->lastChunkUpdates);
+	fps += std::to_string(game.lastChunkUpdates);
 	fps += " chunk updates";
 	
 	drawShadowedFont(fps.c_str(), 3.0f, 3.0f, 1.0f);
@@ -1206,7 +1205,7 @@ void UI::drawFPS()
 
 void UI::drawCrosshair()
 {
-	drawInterface(game->scaledWidth / 2 - 7, game->scaledHeight / 2 - 7, 211, 0, 16, 16);
+	drawInterface(game.scaledWidth / 2 - 7, game.scaledHeight / 2 - 7, 211, 0, 16, 16);
 }
 
 void UI::drawLogs()
@@ -1215,21 +1214,21 @@ void UI::drawLogs()
 	{
 		auto index = logs.end() - log - 1;
 
-		if (game->timer.milliTime() - log->created > 5000)
+		if (game.timer.milliTime() - log->created > 5000)
 		{
 			log = logs.erase(log);
 		}
 		else
 		{
-			float maxWidth = game->scaledWidth / 2 + 18.0f;
+			float maxWidth = game.scaledWidth / 2 + 18.0f;
 			float width = 0.0f;
 
-			float interfaceY = game->scaledHeight - 35.0f - index * 10.0f;
-			float fontY = game->scaledHeight - 33.8f - index * 10.0f;
+			float interfaceY = game.scaledHeight - 35.0f - index * 10.0f;
+			float fontY = game.scaledHeight - 33.8f - index * 10.0f;
 
 			if (isTouch)
 			{
-				maxWidth = game->scaledWidth * 0.45f;
+				maxWidth = game.scaledWidth * 0.45f;
 
 				auto offset = 14.0f;
 
@@ -1257,21 +1256,21 @@ void UI::drawLogs()
 
 void UI::drawHotbar() 
 {
-	drawInterface(game->scaledWidth / 2 - 91 - (isTouch * 21 / 2), game->scaledHeight - 22, 0, 0, 182 + float(isTouch * 21), 22);
+	drawInterface(game.scaledWidth / 2 - 91 - (isTouch * 21 / 2), game.scaledHeight - 22, 0, 0, 182 + float(isTouch * 21), 22);
 
 	if (isTouch)
 	{
-		drawInterface(game->scaledWidth / 2 - 91 + 179 - 21 / 2, game->scaledHeight - 22, 48, 23, 23, 22);
+		drawInterface(game.scaledWidth / 2 - 91 + 179 - 21 / 2, game.scaledHeight - 22, 48, 23, 23, 22);
 	}
 
-	drawInterface(game->scaledWidth / 2 - 92 + float(game->localPlayer.inventoryIndex) * 20 - (isTouch * 21 / 2), game->scaledHeight - 23, 0, 22, 24, 24);
+	drawInterface(game.scaledWidth / 2 - 92 + float(game.localPlayer.inventoryIndex) * 20 - (isTouch * 21 / 2), game.scaledHeight - 23, 0, 22, 24, 24);
 
 	for (int i = 0; i < LocalPlayer::INVENTORY_SIZE; i++)
 	{
-		auto blockType = game->localPlayer.inventory[i];
+		auto blockType = game.localPlayer.inventory[i];
 
-		float x = game->scaledWidth / 2.0f - 86.8f + i * 20.0f - (isTouch * 21 / 2);
-		float y = game->scaledHeight - 6.8f;
+		float x = game.scaledWidth / 2.0f - 86.8f + i * 20.0f - (isTouch * 21 / 2);
+		float y = game.scaledHeight - 6.8f;
 
 		drawBlock(blockType, x, y, 9.8f);
 	}
@@ -1396,6 +1395,30 @@ void UI::drawInterface(float x0, float y0, float x1, float y1, float u, float v)
 	drawInterface(x0, y0, x1, y1, u, v, 1.0f);
 }
 
+void UI::drawFont(const char* text, float x, float y, float shade, float z)
+{
+	float width = 0.0f;
+
+	const auto length = std::strlen(text);
+	for (size_t index = 0; index < length; index++)
+	{
+		float u = float(text[index] % 16 << 3);
+		float v = float(text[index] / 16 << 3);
+
+		float height = 7.98f;
+
+		fontVertices.push(VertexList::Vertex(x + width, y, z, u / 128.0f, v / 128.0f, shade));
+		fontVertices.push(VertexList::Vertex(x + width, y + height, z, u / 128.0f, (v + height) / 128.0f, shade));
+		fontVertices.push(VertexList::Vertex(x + width + height, y + height, z, (u + height) / 128.0f, (v + height) / 128.0f, shade));
+
+		fontVertices.push(VertexList::Vertex(x + width, y, z, u / 128.0f, v / 128.0f, shade));
+		fontVertices.push(VertexList::Vertex(x + width + height, y + height, z, (u + height) / 128.0f, (v + height) / 128.0f, shade));
+		fontVertices.push(VertexList::Vertex(x + width + height, y, z, (u + height) / 128.0f, v / 128.0f, shade));
+
+		width += FONT_WIDTHS[int(text[index])];
+	}
+}
+
 void UI::drawShadowedFont(const char* text, float x, float y, float shade, float z)
 {
 	drawFont(text, x + 1.0f, y + 1.0f, 0.3f * shade, z);
@@ -1423,28 +1446,4 @@ void UI::drawCenteredFont(const char* text, float x, float y, float shade, float
 void UI::drawCenteredFont(const char* text, float x, float y, float shade)
 {
 	drawCenteredFont(text, x, y, shade, 1.0f);
-}
-
-void UI::drawFont(const char* text, float x, float y, float shade, float z)
-{
-	float width = 0.0f;
-
-	const auto length = std::strlen(text);
-	for (size_t index = 0; index < length; index++)
-	{
-		float u = float(text[index] % 16 << 3);
-		float v = float(text[index] / 16 << 3);
-
-		float height = 7.98f;
-
-		fontVertices.push(VertexList::Vertex(x + width, y, z, u / 128.0f, v / 128.0f, shade));
-		fontVertices.push(VertexList::Vertex(x + width, y + height, z, u / 128.0f, (v + height) / 128.0f, shade));
-		fontVertices.push(VertexList::Vertex(x + width + height, y + height, z, (u + height) / 128.0f, (v + height) / 128.0f, shade));
-
-		fontVertices.push(VertexList::Vertex(x + width, y, z, u / 128.0f, v / 128.0f, shade));
-		fontVertices.push(VertexList::Vertex(x + width + height, y + height, z, (u + height) / 128.0f, (v + height) / 128.0f, shade));
-		fontVertices.push(VertexList::Vertex(x + width + height, y, z, (u + height) / 128.0f, v / 128.0f, shade));
-
-		width += FONT_WIDTHS[int(text[index])];
-	}
 }

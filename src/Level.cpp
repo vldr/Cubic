@@ -6,27 +6,26 @@
 #include <glm/glm.hpp>
 #include <random>
 
-void Level::init(Game* game)
+void Level::init()
 {
-	this->game = game;
-	this->waterLevel = Level::HEIGHT / 2;
-	this->groundLevel = this->waterLevel - 2;
-	this->blocks = std::make_unique<unsigned char[]>(Level::WIDTH * Level::HEIGHT * Level::DEPTH);
+	waterLevel = Level::HEIGHT / 2;
+	groundLevel = waterLevel - 2;
+	blocks = std::make_unique<unsigned char[]>(Level::WIDTH * Level::HEIGHT * Level::DEPTH);
 
-	this->spawn.x = Level::WIDTH - 1.0f;
-	this->spawn.x = Level::HEIGHT - 1.0f;
-	this->spawn.x = Level::DEPTH - 1.0f;
+	spawn.x = Level::WIDTH - 1.0f;
+	spawn.x = Level::HEIGHT - 1.0f;
+	spawn.x = Level::DEPTH - 1.0f;
 
-	this->lightDepths = std::make_unique<int[]>(Level::WIDTH * Level::DEPTH);
+	lightDepths = std::make_unique<int[]>(Level::WIDTH * Level::DEPTH);
 	for (int i = 0; i < Level::WIDTH * Level::DEPTH; i++)
 	{
-		this->lightDepths[i] = Level::HEIGHT - 1;
+		lightDepths[i] = Level::HEIGHT - 1;
 	}
 }
 
 void Level::tick()
 {
-	if (game->timer.ticks % 7 == 0)
+	if (game.timer.ticks % 7 == 0)
 	{
 		auto liquidUpdatesSize = liquidUpdates.size();
 
@@ -375,12 +374,12 @@ void Level::calculateSpawnPosition()
 		}
 	}
 
-	game->level.spawn.x = maxPosition.x + 0.5f;
-	game->level.spawn.y = maxPosition.y + 2.0f;
-	game->level.spawn.z = maxPosition.z + 0.5f;
+	game.level.spawn.x = maxPosition.x + 0.5f;
+	game.level.spawn.y = maxPosition.y + 2.0f;
+	game.level.spawn.z = maxPosition.z + 0.5f;
 
-	game->localPlayer.setPosition(game->level.spawn.x, game->level.spawn.y, game->level.spawn.z);
-	game->level.spawn = game->localPlayer.position;
+	game.localPlayer.setPosition(game.level.spawn.x, game.level.spawn.y, game.level.spawn.z);
+	game.level.spawn = game.localPlayer.position;
 }
 
 void Level::calculateLightDepths(int x, int z, int offsetX, int offsetZ)
@@ -407,7 +406,7 @@ void Level::calculateLightDepths(int x, int z, int offsetX, int offsetZ)
 				int min = blocker < k ? blocker : k;
 				int max = blocker > k ? blocker : k;
 
-				game->levelRenderer.loadChunks(i - 1, min - 1, j - 1, i + 1, max + 1, j + 1);
+				game.levelRenderer.loadChunks(i - 1, min - 1, j - 1, i + 1, max + 1, j + 1);
 			}
 		}
 	}
@@ -433,7 +432,7 @@ unsigned char Level::getRenderTile(int x, int y, int z)
 
 void Level::updateTile(int x, int y, int z, unsigned char tile)
 {
-	if (!game->network.isConnected() || game->network.isHost())
+	if (!game.network.isConnected() || game.network.isHost())
 	{
 		if (isInBounds(x, y, z))
 		{
@@ -570,7 +569,7 @@ bool Level::setTileWithNoNeighborChange(int x, int y, int z, unsigned char block
 	setTile(x, y, z, blockType, mode);
 	calculateLightDepths(x, z, 1, 1);
 
-	game->levelRenderer.loadChunks(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1);
+	game.levelRenderer.loadChunks(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1);
 
 	if (previousBlockType != (unsigned char)Block::Type::BLOCK_AIR) 
 	{ 
@@ -591,9 +590,9 @@ void Level::setTile(int x, int y, int z, unsigned char blockType, bool mode)
 	{
 		blocks[(z * Level::HEIGHT + y) * Level::WIDTH + x] = blockType;
 
-		if (game->network.isConnected() && game->network.isHost())
+		if (game.network.isConnected() && game.network.isHost())
 		{
-			game->network.sendSetBlock(x, y, z, blockType, mode);
+			game.network.sendSetBlock(x, y, z, blockType, mode);
 		}
 	}
 }

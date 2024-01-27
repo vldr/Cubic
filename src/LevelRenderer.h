@@ -7,13 +7,12 @@
 #include <GL/glew.h>
 
 class Level;
-class Game;
 class Random;
 
 class LevelRenderer
 {
 public:
-	void init(Game* game);
+	void init();
 	void render();
 	void renderPost();
 	void tick();
@@ -33,7 +32,6 @@ private:
 
 	Skybox skybox;
 
-	Game* game;
 	std::unique_ptr<Chunk[]> chunks;
 
 	float waterTextureRed[256] = {0};

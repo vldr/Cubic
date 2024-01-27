@@ -5,14 +5,13 @@
 
 #include <memory>
 
-class Game;
 class Level;
 class Random;
 
 class LevelGenerator
 {
 public:
-	void init(Game* game);
+	void init();
 	void update();
 
 private:
@@ -41,7 +40,6 @@ private:
 	void generateMushrooms();
 	void generateTrees();
 
-	Game* game;
 	State state;
 
 	std::unique_ptr<int[]> heights;

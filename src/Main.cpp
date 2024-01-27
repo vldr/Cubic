@@ -130,7 +130,6 @@ int main(int argc, char** argv)
 		});
 	);
 #else
-
 	auto context = SDL_GL_CreateContext(window);
 	if (!context)
 	{

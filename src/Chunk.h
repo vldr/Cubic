@@ -6,12 +6,10 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-class Game;
-
 class Chunk
 {
 public:
-	void init(Game* game, int x, int y, int z);
+	void init(int x, int y, int z);
 	void render();
 	void renderWater();
 	void update();
@@ -58,8 +56,6 @@ private:
 	template<FaceType faceType>
 	inline void generateMesh(Face* faces);
 	inline void generateFaces();
-
-	Game* game;
 
 	VertexList vertices;
 	VertexList waterVertices;

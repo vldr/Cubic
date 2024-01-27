@@ -6,7 +6,7 @@ class VertexList;
 class Particle : public Entity
 {
 public:
-	void init(Game* game, float x, float y, float z, float xd, float yd, float zd, unsigned char blockType);
+	void init(float x, float y, float z, float xd, float yd, float zd, unsigned char blockType);
 	void tick();
 	void update(VertexList& vertexList);
 

@@ -10,14 +10,14 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <sstream>
 
-void LocalPlayer::init(Game* game)
+void LocalPlayer::init()
 {
-    Entity::init(game);
+    Entity::init();
 
-    this->footSize = 0.5f;
-    this->heightOffset = 1.62f;
-    this->lastClick = 0;
-    this->selectedIndex = 0;
+    footSize = 0.5f;
+    heightOffset = 1.62f;
+    lastClick = 0;
+    selectedIndex = 0;
 }
 
 void LocalPlayer::update()
@@ -29,33 +29,33 @@ void LocalPlayer::update()
     lookAt.y = glm::sin(viewAngles.y);
     lookAt.z = glm::cos(viewAngles.x) * glm::cos(viewAngles.y);
 
-    viewPosition = oldPosition + ((position - oldPosition) * game->timer.delta);
+    viewPosition = oldPosition + ((position - oldPosition) * game.timer.delta);
 
-    game->viewMatrix = glm::lookAt(viewPosition, viewPosition + lookAt, UP);
+    game.viewMatrix = glm::lookAt(viewPosition, viewPosition + lookAt, UP);
 
-    if (game->level.isRenderWaterTile(viewPosition.x, viewPosition.y + CAMERA_OFFSET, viewPosition.z))
+    if (game.level.isRenderWaterTile(viewPosition.x, viewPosition.y + CAMERA_OFFSET, viewPosition.z))
     {
-        game->fogColor.r = 0.02f;
-        game->fogColor.g = 0.02f;
-        game->fogColor.b = 0.2f;
-        game->fogColor.a = 1.0f;
-        game->fogDistance = 20.f;
+        game.fogColor.r = 0.02f;
+        game.fogColor.g = 0.02f;
+        game.fogColor.b = 0.2f;
+        game.fogColor.a = 1.0f;
+        game.fogDistance = 20.f;
     }
-    else if (game->level.isLavaTile(viewPosition.x, viewPosition.y + CAMERA_OFFSET, viewPosition.z))
+    else if (game.level.isLavaTile(viewPosition.x, viewPosition.y + CAMERA_OFFSET, viewPosition.z))
     {
-        game->fogColor.r = 0.6f;
-        game->fogColor.g = 0.0f;
-        game->fogColor.b = 0.1f;
-        game->fogColor.a = 1.0f;
-        game->fogDistance = 1.f;
+        game.fogColor.r = 0.6f;
+        game.fogColor.g = 0.0f;
+        game.fogColor.b = 0.1f;
+        game.fogColor.a = 1.0f;
+        game.fogDistance = 1.f;
     }
     else
     {
-        game->fogColor.r = 0.87450f;
-        game->fogColor.g = 0.93725f;
-        game->fogColor.b = 1.0f;
-        game->fogColor.a = 1.0f; 
-        game->fogDistance = 1000.0f;
+        game.fogColor.r = 0.87450f;
+        game.fogColor.g = 0.93725f;
+        game.fogColor.b = 1.0f;
+        game.fogColor.a = 1.0f; 
+        game.fogDistance = 1000.0f;
     }
 
     interact();
@@ -63,20 +63,20 @@ void LocalPlayer::update()
 
 void LocalPlayer::interact()
 {
-    selected = game->level.clip(viewPosition, viewPosition + lookAt * REACH);
+    selected = game.level.clip(viewPosition, viewPosition + lookAt * REACH);
 
     if (!selected.isValid && onGround)
     {
         const auto ground = glm::ivec3(viewPosition.x, viewPosition.y - 2, viewPosition.z);
-        const auto groundBlockType = game->level.getTile(ground.x, ground.y, ground.z);
+        const auto groundBlockType = game.level.getTile(ground.x, ground.y, ground.z);
 
         if (
-            !game->level.isAirTile(groundBlockType) &&
-            !game->level.isWaterTile(groundBlockType) &&
-            !game->level.isLavaTile(groundBlockType)
+            !game.level.isAirTile(groundBlockType) &&
+            !game.level.isWaterTile(groundBlockType) &&
+            !game.level.isLavaTile(groundBlockType)
             )
         {
-            selected = game->level.clip(viewPosition, viewPosition + lookAt * REACH, &ground);
+            selected = game.level.clip(viewPosition, viewPosition + lookAt * REACH, &ground);
         }
     }
 
@@ -84,7 +84,7 @@ void LocalPlayer::interact()
     bool interactMiddle = false;
     bool interactRight = false;
 
-    if (game->ui.state == UI::State::None)
+    if (game.ui.state == UI::State::None)
     {
         if (interactState & (unsigned int)Interact::Left) { interactLeft = true; }
         if (interactState & (unsigned int)Interact::Middle) { interactMiddle = true; }
@@ -96,16 +96,16 @@ void LocalPlayer::interact()
         }
     }
 
-    if (game->ui.isTouch)
+    if (game.ui.isTouch)
     {
-        if (interactLeft && game->timer.ticks - lastClick < game->timer.ticksPerSecond / BUILD_SPEED * 1.5)
+        if (interactLeft && game.timer.ticks - lastClick < game.timer.ticksPerSecond / BUILD_SPEED * 1.5)
         {
             return;
         }
     }
     else
     {
-        if (game->timer.ticks - lastClick < game->timer.ticksPerSecond / BUILD_SPEED)
+        if (game.timer.ticks - lastClick < game.timer.ticksPerSecond / BUILD_SPEED)
         {
             return;
         }
@@ -113,9 +113,9 @@ void LocalPlayer::interact()
 
     if (interactLeft)
     {
-        game->heldBlock.swing();
+        game.heldBlock.swing();
 
-        lastClick = game->timer.ticks;
+        lastClick = game.timer.ticks;
     }
 
     if (selected.isValid)
@@ -126,19 +126,19 @@ void LocalPlayer::interact()
 
         if (interactLeft)
         {
-            auto blockType = game->level.getTile(vx, vy, vz);
+            auto blockType = game.level.getTile(vx, vy, vz);
 
             if (
                 selected.destructible &&
-                !game->level.isAirTile(blockType)
+                !game.level.isAirTile(blockType)
                 )
             {
-                game->level.setTileWithNeighborChange(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR, true);
-                game->particleManager.spawn((float)vx, (float)vy, (float)vz, blockType);
+                game.level.setTileWithNeighborChange(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR, true);
+                game.particleManager.spawn((float)vx, (float)vy, (float)vz, blockType);
 
-                if (game->network.isConnected() && !game->network.isHost())
+                if (game.network.isConnected() && !game.network.isHost())
                 {
-                    game->network.sendSetBlock(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR);
+                    game.network.sendSetBlock(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR);
                 }
             }
         }
@@ -151,7 +151,7 @@ void LocalPlayer::interact()
             if (selected.face == 4) { vx--; }
             if (selected.face == 5) { vx++; }
 
-            auto blockType = game->level.getTile(vx, vy, vz);
+            auto blockType = game.level.getTile(vx, vy, vz);
 
             auto heldBlockType = inventory[inventoryIndex];
             auto heldBlockDefinition = Block::Definitions[heldBlockType];
@@ -159,45 +159,45 @@ void LocalPlayer::interact()
 
             if (
                 blockType == (unsigned char)Block::Type::BLOCK_AIR ||
-                game->level.isWaterTile(blockType) ||
-                game->level.isLavaTile(blockType)
-                )
+                game.level.isWaterTile(blockType) ||
+                game.level.isLavaTile(blockType)
+            )
             {
                 if (!aabb.intersects(heldBlockAABB))
                 {
-                    game->level.setTileWithNeighborChange(vx, vy, vz, heldBlockType);
-                    game->heldBlock.reset();
+                    game.level.setTileWithNeighborChange(vx, vy, vz, heldBlockType);
+                    game.heldBlock.reset();
 
-                    if (game->network.isConnected() && !game->network.isHost())
+                    if (game.network.isConnected() && !game.network.isHost())
                     {
-                        game->network.sendSetBlock(vx, vy, vz, heldBlockType);
+                        game.network.sendSetBlock(vx, vy, vz, heldBlockType);
                     }
 
                     selectedIndex = 0;
                 }
             }
 
-            lastClick = game->timer.ticks;
+            lastClick = game.timer.ticks;
         }
         else if (interactMiddle)
         {
             auto heldBlockType = inventory[inventoryIndex];
-            auto blockType = game->level.getTile(vx, vy, vz);
+            auto blockType = game.level.getTile(vx, vy, vz);
 
             if (
                 blockType != heldBlockType &&
                 blockType != (unsigned char)Block::Type::BLOCK_AIR &&
-                !game->level.isWaterTile(blockType) &&
-                !game->level.isLavaTile(blockType)
+                !game.level.isWaterTile(blockType) &&
+                !game.level.isLavaTile(blockType)
                 )
             {
                 inventory[inventoryIndex] = blockType;
 
-                game->heldBlock.update();
-                game->ui.update();
+                game.heldBlock.update();
+                game.ui.update();
             }
 
-            lastClick = game->timer.ticks;
+            lastClick = game.timer.ticks;
         }
     }
    
@@ -215,7 +215,7 @@ void LocalPlayer::tick()
     bool jumping = false;
     bool sprinting = false;
 
-    if (game->ui.state == UI::State::None)
+    if (game.ui.state == UI::State::None)
     {
         if (moveState & (unsigned int)Move::Backward) { moveZ = -0.98f; }
         if (moveState & (unsigned int)Move::Forward) { moveZ = 0.98f; }
@@ -308,20 +308,20 @@ void LocalPlayer::input(const SDL_Event& event)
 {
     if (event.type == SDL_KEYDOWN)
     {
-        if (game->ui.state == UI::State::None)
+        if (game.ui.state == UI::State::None)
         {
             if (event.key.keysym.sym == SDLK_r)
             {
                 setPosition(
-                    game->level.spawn.x,
-                    game->level.spawn.y,
-                    game->level.spawn.z
+                    game.level.spawn.x,
+                    game.level.spawn.y,
+                    game.level.spawn.z
                 );
             }
 
             if (event.key.keysym.sym == SDLK_RETURN)
             {
-                game->level.spawn = position;
+                game.level.spawn = position;
             }
 
             if (event.key.keysym.sym == SDLK_v)
@@ -338,8 +338,8 @@ void LocalPlayer::input(const SDL_Event& event)
             {
                 inventoryIndex = newInventoryIndex;
 
-                game->heldBlock.update();
-                game->ui.update();
+                game.heldBlock.update();
+                game.ui.update();
             }
         }
 
@@ -524,7 +524,7 @@ void LocalPlayer::input(const SDL_Event& event)
 
 void LocalPlayer::turn(float rx, float ry)
 {
-    if (game->ui.state != UI::State::None)
+    if (game.ui.state != UI::State::None)
     {
         return;
     }
@@ -534,7 +534,7 @@ void LocalPlayer::turn(float rx, float ry)
 
 void LocalPlayer::previousInventorySlot()
 {
-    if (game->ui.state != UI::State::None)
+    if (game.ui.state != UI::State::None)
     {
         return;
     }
@@ -545,21 +545,21 @@ void LocalPlayer::previousInventorySlot()
         inventoryIndex = LocalPlayer::INVENTORY_SIZE - 1;
     }
 
-    game->heldBlock.update();
-    game->ui.update();
+    game.heldBlock.update();
+    game.ui.update();
 }
 
 void LocalPlayer::nextInventorySlot()
 {
-    if (game->ui.state != UI::State::None)
+    if (game.ui.state != UI::State::None)
     {
         return;
     }
 
     inventoryIndex = (inventoryIndex + 1) % LocalPlayer::INVENTORY_SIZE;
 
-    game->heldBlock.update();
-    game->ui.update();
+    game.heldBlock.update();
+    game.ui.update();
 }
 
 void LocalPlayer::setPosition(float x, float y, float z)

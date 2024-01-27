@@ -44,6 +44,7 @@ GLuint ShaderManager::load(const char* vertexSource, const char* fragmentSource)
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
+    glUseProgram(shaderProgram);
 
     return shaderProgram;
 }

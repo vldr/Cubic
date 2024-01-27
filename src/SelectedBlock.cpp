@@ -2,10 +2,9 @@
 #include "Game.h"
 #include "LocalPlayer.h"
 
-void SelectedBlock::init(Game* game)
+void SelectedBlock::init()
 {
-    this->game = game;
-    this->texture = game->textureManager.generateSolidColor(0.0f, 0.0f, 0.0f, 1.0f);
+    texture = game.textureManager.generateSolidColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
@@ -14,28 +13,28 @@ void SelectedBlock::init(Game* game)
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glBufferData(GL_ARRAY_BUFFER, BUFFER_SIZE * sizeof(glm::vec3), NULL, GL_DYNAMIC_DRAW);
 
-    glEnableVertexAttribArray(game->positionAttribute);
+    glEnableVertexAttribArray(game.positionAttribute);
 
-    glVertexAttribPointer(game->positionAttribute, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glVertexAttrib2f(game->uvAttribute, 0.0f, 1.0f);
-    glVertexAttrib1f(game->shadeAttribute, 0.0f);
+    glVertexAttribPointer(game.positionAttribute, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttrib2f(game.uvAttribute, 0.0f, 1.0f);
+    glVertexAttrib1f(game.shadeAttribute, 0.0f);
 }
 
 void SelectedBlock::renderPost()
 {
-    if (game->localPlayer.selected.isValid)
+    if (game.localPlayer.selected.isValid)
     {
-        auto blockType = game->level.getTile(game->localPlayer.selected.x, game->localPlayer.selected.y, game->localPlayer.selected.z);
+        auto blockType = game.level.getTile(game.localPlayer.selected.x, game.localPlayer.selected.y, game.localPlayer.selected.z);
 
         if (blockType != (unsigned char)Block::Type::BLOCK_AIR)
         {
             glBindTexture(GL_TEXTURE_2D, texture);
             glBindVertexArray(vao);
 
-            if (game->localPlayer.selectedIndex != game->localPlayer.selected.index)
+            if (game.localPlayer.selectedIndex != game.localPlayer.selected.index)
             {
                 AABB aabb = Block::Definitions[blockType].boundingBox;
-                aabb = aabb.move((float)game->localPlayer.selected.x, (float)game->localPlayer.selected.y, (float)game->localPlayer.selected.z);
+                aabb = aabb.move((float)game.localPlayer.selected.x, (float)game.localPlayer.selected.y, (float)game.localPlayer.selected.z);
                 aabb = aabb.grow(0.002f, 0.002f, 0.002f);
 
                 float vertices[BUFFER_SIZE * 3] =
@@ -69,7 +68,7 @@ void SelectedBlock::renderPost()
                 glBindBuffer(GL_ARRAY_BUFFER, buffer);
                 glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 
-                game->localPlayer.selectedIndex = game->localPlayer.selected.index;
+                game.localPlayer.selectedIndex = game.localPlayer.selected.index;
             }
 
             glDrawArrays(GL_LINES, 0, (GLsizei)BUFFER_SIZE);

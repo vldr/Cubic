@@ -1,12 +1,10 @@
 #pragma once
 #include <GL/glew.h>
 
-class Game;
-
 class SelectedBlock
 {
 public:
-	void init(Game* game);
+	void init();
 	void renderPost();
 
 private:
@@ -15,7 +13,5 @@ private:
 	GLuint vao;
 	GLuint buffer;
 	GLuint texture;
-
-	Game* game;
 };
 

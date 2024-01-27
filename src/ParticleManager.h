@@ -8,7 +8,7 @@
 class ParticleManager
 {
 public:
-	void init(Game* game);
+	void init();
 	void tick();
 	void render();
 	void spawn(float x, float y, float z, unsigned char blockType);
@@ -23,8 +23,6 @@ public:
 	};
 
 private:
-	Game* game;
-
 	std::vector<ParticleGroup> particleGroups;
 };
 

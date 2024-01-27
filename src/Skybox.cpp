@@ -6,10 +6,8 @@
 
 #include <vector>
 
-void Skybox::init(Game* game)
+void Skybox::init()
 {
-    this->game = game;
-
 	initBedrock();
 	initWater();
     initClouds();
@@ -18,10 +16,10 @@ void Skybox::init(Game* game)
 
 void Skybox::initBedrock()
 {
-    bedrockTexture = game->textureManager.load(bedrockResourceTexture, sizeof(bedrockResourceTexture));
-    bedrockVertices.init(game);
+    bedrockTexture = game.textureManager.load(bedrockResourceTexture, sizeof(bedrockResourceTexture));
+    bedrockVertices.init();
 
-    const float ground = (float)game->level.groundLevel;
+    const float ground = (float)game.level.groundLevel;
     int a = glm::min(128, glm::min(Level::WIDTH, Level::DEPTH));
     int b = 1024 / a;
 
@@ -85,10 +83,10 @@ void Skybox::initBedrock()
 
 void Skybox::initWater()
 {
-    waterTexture = game->textureManager.load(waterResourceTexture, sizeof(waterResourceTexture));
-    waterVertices.init(game);
+    waterTexture = game.textureManager.load(waterResourceTexture, sizeof(waterResourceTexture));
+    waterVertices.init();
 
-    const float water = (float)game->level.waterLevel;
+    const float water = (float)game.level.waterLevel;
     int a = glm::min(128, glm::min(Level::WIDTH, Level::DEPTH));
     int b = 1024 / a;
 
@@ -124,8 +122,8 @@ void Skybox::initWater()
 
 void Skybox::initClouds()
 {
-    cloudsTexture = game->textureManager.load(cloudsResourceTexture, sizeof(cloudsResourceTexture));
-    cloudsVertices.init(game);
+    cloudsTexture = game.textureManager.load(cloudsResourceTexture, sizeof(cloudsResourceTexture));
+    cloudsVertices.init();
 
     float y = Level::HEIGHT + 2.0f;
     float t = 0.0f;
@@ -157,8 +155,8 @@ void Skybox::initClouds()
 
 void Skybox::initSky()
 {
-    skyTexture = game->textureManager.generateSolidColor(0.6f, 0.8f, 1.0f);
-    skyVertices.init(game);
+    skyTexture = game.textureManager.generateSolidColor(0.6f, 0.8f, 1.0f);
+    skyVertices.init();
 
     float y = Level::HEIGHT + 10.0f;
 
@@ -200,11 +198,11 @@ void Skybox::renderWater()
 void Skybox::renderClouds()
 {
     glBindTexture(GL_TEXTURE_2D, cloudsTexture);
-    glUniform2f(game->fragmentOffsetUniform, (0.03f * game->timer.ticks) / 2048.f, 0.0f);
+    glUniform2f(game.fragmentOffsetUniform, (0.03f * game.timer.ticks) / 2048.f, 0.0f);
 
     cloudsVertices.render();
 
-    glUniform2f(game->fragmentOffsetUniform, 0.0f, 0.0f);
+    glUniform2f(game.fragmentOffsetUniform, 0.0f, 0.0f);
 }
 
 void Skybox::renderSky()

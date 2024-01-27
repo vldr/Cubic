@@ -20,7 +20,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-class Game {
+extern class Game {
 public:
 	void init(SDL_Window* window);
 	void input(const SDL_Event& event);
@@ -92,4 +92,4 @@ public:
 	const float NEAR_PLANE = 0.01f;
 	const float FAR_PLANE = 1000.0f;
 	const float TICK_RATE = 20.0f;
-}; 
+} game;

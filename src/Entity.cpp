@@ -2,27 +2,26 @@
 #include "Game.h"
 #include "Level.h"
 
-void Entity::init(Game* game)
+void Entity::init()
 {
-	this->game = game;
-	this->onGround = false;
-	this->horizontalCollision = false;
-	this->collision = false;
-	this->slide = true;
-	this->heightOffset = 0.0f;
-	this->aabbWidth = 0.6f;
-	this->aabbHeight = 1.8f;
-	this->oldWalkDistance = 0.0f;
-	this->walkDistance = 0.0f;
-	this->fallDistance = 0.0f;
-	this->slideOffset = 0.0f;
-	this->footSize = 0.0f;
-	this->noPhysics = false;
-	this->velocity = glm::vec3();
-	this->position = glm::vec3();
-	this->oldPosition = glm::vec3();
-	this->rotation = glm::vec2();
-	this->oldRotation = glm::vec2();
+	onGround = false;
+	horizontalCollision = false;
+	collision = false;
+	slide = true;
+	heightOffset = 0.0f;
+	aabbWidth = 0.6f;
+	aabbHeight = 1.8f;
+	oldWalkDistance = 0.0f;
+	walkDistance = 0.0f;
+	fallDistance = 0.0f;
+	slideOffset = 0.0f;
+	footSize = 0.0f;
+	noPhysics = false;
+	velocity = glm::vec3();
+	position = glm::vec3();
+	oldPosition = glm::vec3();
+	rotation = glm::vec2();
+	oldRotation = glm::vec2();
 }
 
 void Entity::setSize(float w, float h) 
@@ -83,21 +82,21 @@ void Entity::turn(float rx, float ry)
 bool Entity::isFree(float ax, float ay, float az) 
 {
 	AABB aabb = this->aabb.move(ax, ay, az);
-	bool free = game->level.getTileAABBCount(aabb) > 0 ? false : !game->level.containsAnyLiquid(aabb);
+	bool free = game.level.getTileAABBCount(aabb) > 0 ? false : !game.level.containsAnyLiquid(aabb);
 
 	return free;
 }
 
 bool Entity::isInWater() 
 {
-	return game->level.containsLiquid(aabb.grow(0.0f, -0.4f, 0.0f), Block::Type::BLOCK_WATER) ||
-		game->level.containsLiquid(aabb.grow(0.0f, -0.4f, 0.0f), Block::Type::BLOCK_STILL_WATER);
+	return game.level.containsLiquid(aabb.grow(0.0f, -0.4f, 0.0f), Block::Type::BLOCK_WATER) ||
+		game.level.containsLiquid(aabb.grow(0.0f, -0.4f, 0.0f), Block::Type::BLOCK_STILL_WATER);
 }
 
 bool Entity::isInLava() 
 {
-	return game->level.containsLiquid(aabb.grow(0.0f, -0.4f, 0.0f), Block::Type::BLOCK_LAVA) ||
-		game->level.containsLiquid(aabb.grow(0.0f, -0.4f, 0.0f), Block::Type::BLOCK_STILL_LAVA);
+	return game.level.containsLiquid(aabb.grow(0.0f, -0.4f, 0.0f), Block::Type::BLOCK_LAVA) ||
+		game.level.containsLiquid(aabb.grow(0.0f, -0.4f, 0.0f), Block::Type::BLOCK_STILL_LAVA);
 }
 
 void Entity::moveRelative(float x, float z, float speed) 
@@ -138,7 +137,7 @@ void Entity::move(float ax, float ay, float az)
 		float oy = ay;
 		float oz = az;
 
-		auto cubes = game->level.getTileAABB(aabb.expand(ax, ay, az));
+		auto cubes = game.level.getTileAABB(aabb.expand(ax, ay, az));
 
 		///////////////////////////////////////////////////////
 
@@ -204,7 +203,7 @@ void Entity::move(float ax, float ay, float az)
 			AABB tempAABB = aabb;
 			aabb = oldAABB;
 
-			cubes = game->level.getTileAABB(aabb.expand(ox, ay, oz));
+			cubes = game.level.getTileAABB(aabb.expand(ox, ay, oz));
 
 			for (size_t i = 0; i < cubes.size(); i++)
 			{

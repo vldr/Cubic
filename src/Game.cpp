@@ -86,51 +86,48 @@ static const GLchar* vertexSource = R""""(#version 100
     }
 )"""";
 
-void Game::init(SDL_Window* sdlWindow)
+void Game::init(SDL_Window* window_)
 {
-    this->window = sdlWindow;
-    this->shader = shaderManager.load(vertexSource, fragmentSource);
-
-    glUseProgram(shader);
-
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glDepthFunc(GL_LEQUAL);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    this->positionAttribute = glGetAttribLocation(shader, "position");
-    this->uvAttribute = glGetAttribLocation(shader, "uv");
-    this->shadeAttribute = glGetAttribLocation(shader, "shade");
+    shader = shaderManager.load(vertexSource, fragmentSource);
+    positionAttribute = glGetAttribLocation(shader, "position");
+    uvAttribute = glGetAttribLocation(shader, "uv");
+    shadeAttribute = glGetAttribLocation(shader, "shade");
 
-    this->fragmentOffsetUniform = glGetUniformLocation(shader, "FragmentOffset");
-    this->playerPositionUniform = glGetUniformLocation(shader, "PlayerPosition");
-    this->fogEnableUniform = glGetUniformLocation(shader, "FogEnable");
-    this->fogDistanceUniform = glGetUniformLocation(shader, "FogDistance");
-    this->fogColorUniform = glGetUniformLocation(shader, "FogColor");
-    this->projectionMatrixUniform = glGetUniformLocation(shader, "Projection");
-    this->viewMatrixUniform = glGetUniformLocation(shader, "View");
-    this->modelMatrixUniform = glGetUniformLocation(shader, "Model");
+    fragmentOffsetUniform = glGetUniformLocation(shader, "FragmentOffset");
+    playerPositionUniform = glGetUniformLocation(shader, "PlayerPosition");
+    fogEnableUniform = glGetUniformLocation(shader, "FogEnable");
+    fogDistanceUniform = glGetUniformLocation(shader, "FogDistance");
+    fogColorUniform = glGetUniformLocation(shader, "FogColor");
+    projectionMatrixUniform = glGetUniformLocation(shader, "Projection");
+    viewMatrixUniform = glGetUniformLocation(shader, "View");
+    modelMatrixUniform = glGetUniformLocation(shader, "Model");
 
-    this->random.init(std::time(nullptr));
-    this->timer.init(TICK_RATE);
-    this->localPlayer.init(this);
-    this->frustum.init(this);
-    this->network.init(this);
-    this->ui.init(this);
-    this->heldBlock.init(this);
-    this->selectedBlock.init(this);
-    this->particleManager.init(this);
-    this->levelGenerator.init(this);
-    this->levelRenderer.init(this);
-    this->lastTick = timer.milliTime();
-    this->frameRate = 0;
-    this->atlasTexture = textureManager.load(terrainResourceTexture, sizeof(terrainResourceTexture));
+    window = window_;
+    random.init(std::time(nullptr));
+    timer.init(TICK_RATE);
+    localPlayer.init();
+    frustum.init();
+    network.init();
+    ui.init();
+    heldBlock.init();
+    selectedBlock.init();
+    particleManager.init();
+    levelGenerator.init();
+    levelRenderer.init();
+    lastTick = timer.milliTime();
+    frameRate = 0;
+    atlasTexture = textureManager.load(terrainResourceTexture, sizeof(terrainResourceTexture));
 
 #if defined(ANDROID)
-    this->fullscreen = true;
+    fullscreen = true;
 #else
-    this->fullscreen = false;
+    fullscreen = false;
 #endif
 
     resize();

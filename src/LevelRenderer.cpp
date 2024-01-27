@@ -11,11 +11,9 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-void LevelRenderer::init(Game* game)
+void LevelRenderer::init()
 {
-    this->game = game;
-
-    skybox.init(game);
+    skybox.init();
 
     xChunks = Level::WIDTH / Chunk::SIZE;
     yChunks = Level::HEIGHT / Chunk::SIZE;
@@ -29,7 +27,7 @@ void LevelRenderer::init(Game* game)
             for (int z = 0; z < zChunks; z++)
             {
                 auto chunk = getChunk(x, y, z);
-                chunk->init(game, Chunk::SIZE * x, Chunk::SIZE * y, Chunk::SIZE * z);
+                chunk->init(Chunk::SIZE * x, Chunk::SIZE * y, Chunk::SIZE * z);
             }
         }
     }
@@ -48,13 +46,13 @@ void LevelRenderer::render()
         chunksQueue.pop();
     }
 
-    game->chunkUpdates += chunksCount;
+    game.chunkUpdates += chunksCount;
 
-    glBindTexture(GL_TEXTURE_2D, game->atlasTexture);
+    glBindTexture(GL_TEXTURE_2D, game.atlasTexture);
     for (int i = 0; i < xChunks * yChunks * zChunks; i++)
     {
         Chunk* chunk = &chunks[i];
-        chunk->isVisible = game->frustum.contains(chunk);
+        chunk->isVisible = game.frustum.contains(chunk);
 
         if (chunk->isVisible)
         {
@@ -69,7 +67,7 @@ void LevelRenderer::render()
 
 void LevelRenderer::renderPost()
 {
-    glBindTexture(GL_TEXTURE_2D, game->atlasTexture);
+    glBindTexture(GL_TEXTURE_2D, game.atlasTexture);
     glColorMask(false, false, false, false);
     for (int i = 0; i < xChunks * yChunks * zChunks; i++)
     {
@@ -83,7 +81,7 @@ void LevelRenderer::renderPost()
 
     skybox.renderWater();
 
-    glBindTexture(GL_TEXTURE_2D, game->atlasTexture);
+    glBindTexture(GL_TEXTURE_2D, game.atlasTexture);
     glColorMask(true, true, true, true);
     for (int i = 0; i < xChunks * yChunks * zChunks; i++)
     {
@@ -100,7 +98,7 @@ void LevelRenderer::renderPost()
 
 void LevelRenderer::tick()
 {
-    glBindTexture(GL_TEXTURE_2D, game->atlasTexture);
+    glBindTexture(GL_TEXTURE_2D, game.atlasTexture);
 
     updateWaterTexture();
     updateLavaTexture();
@@ -133,7 +131,7 @@ void LevelRenderer::updateWaterTexture()
             waterTextureGreen[x + (y << 4)] += waterTextureAlpha[x + (y << 4)] * 0.05f;
             if (waterTextureGreen[x + (y << 4)] < 0.0) { waterTextureGreen[x + (y << 4)] = 0.0; }
             waterTextureAlpha[x + (y << 4)] -= 0.1f;
-            if (game->random.uniform() < 0.05) { waterTextureAlpha[x + (y << 4)] = 0.5; }
+            if (game.random.uniform() < 0.05) { waterTextureAlpha[x + (y << 4)] = 0.5; }
         }
     }
 
@@ -181,7 +179,7 @@ void LevelRenderer::updateLavaTexture()
             lavaTextureBlue[x + (y << 4)] += lavaTextureAlpha[x + (y << 4)] * 0.01f;
             if (lavaTextureBlue[x + (y << 4)] < 0.0) { lavaTextureBlue[x + (y << 4)] = 0.0; }
             lavaTextureAlpha[x + (y << 4)] -= 0.06f;
-            if (game->random.uniform() < 0.005) { lavaTextureAlpha[x + (y << 4)] = 1.5; }
+            if (game.random.uniform() < 0.005) { lavaTextureAlpha[x + (y << 4)] = 1.5; }
         }
     }
 
