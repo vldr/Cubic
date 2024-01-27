@@ -2,14 +2,14 @@
 
 #include <chrono>
 
-void Timer::init(float ticksPerSecond)
+void Timer::init(float ticksPerSecond_)
 {
-	this->ticks = 0;
-	this->elapsedDelta = 0.0;
-	this->adjustment = 1.0;
-	this->ticksPerSecond = ticksPerSecond;
-	this->lastSystemClock = milliTime();
-	this->lastHRClock = nanoTime() / 1000000;
+	ticks = 0;
+	elapsedDelta = 0.0;
+	adjustment = 1.0;
+	ticksPerSecond = ticksPerSecond_;
+	lastSystemClock = milliTime();
+	lastHRClock = nanoTime() / 1000000;
 }
 
 void Timer::update()

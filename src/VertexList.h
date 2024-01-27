@@ -3,8 +3,6 @@
 #include <cstdlib>
 #include <GL/glew.h>
 
-class Game;
-
 class VertexList
 {
 public:

@@ -529,7 +529,7 @@ void LocalPlayer::input(const SDL_Event& event)
 
 void LocalPlayer::turn(float rx, float ry)
 {
-    if (game.ui.state != UI::State::None)
+    if (game.ui.state != UI::State::None || rx == INFINITY || ry == INFINITY)
     {
         return;
     }

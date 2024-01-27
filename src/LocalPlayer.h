@@ -8,9 +8,6 @@
 #include <glm/glm.hpp>
 #include <glm/common.hpp>
 
-class Game;
-struct AABBPosition;
-
 class LocalPlayer : public Entity
 {
 public:

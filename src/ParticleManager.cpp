@@ -3,7 +3,9 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-void ParticleManager::init() {}
+void ParticleManager::init() 
+{
+}
 
 void ParticleManager::tick()
 {

@@ -1,11 +1,11 @@
 #include "Random.h"
 #include <glm/glm.hpp>
 
-void Random::init(uint64_t seed)
+void Random::init(uint64_t seed_)
 {
-	this->seed = seed;
-	this->state = seed;
-	this->lastNormal = INFINITY;
+	seed = seed_;
+	state = seed_;
+	lastNormal = INFINITY;
 }
 
 uint64_t Random::integer() 

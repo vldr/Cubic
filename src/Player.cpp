@@ -18,12 +18,11 @@ void Player::init()
 {
 	Entity::init();
 
-	this->footSize = 0.5f;
-	this->heightOffset = 1.62f;
-	this->noPhysics = true;
-
-	this->updates = 0;
-	this->flushUpdates = false;
+	footSize = 0.5f;
+	heightOffset = 1.62f;
+	noPhysics = true;
+	updates = 0;
+	flushUpdates = false;
 
 	static bool initialized = false;
 	if (!initialized)
