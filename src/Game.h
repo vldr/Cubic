@@ -24,7 +24,7 @@ extern class Game {
 public:
 	void init(SDL_Window* window);
 	void input(const SDL_Event& event);
-	void run();
+	void render();
 	void resize();
 
 	SDL_Window* window;

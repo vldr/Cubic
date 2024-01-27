@@ -40,7 +40,7 @@ void loop()
 		game.input(event);
 	}
 
-	game.run();
+	game.render();
 
 	SDL_GL_SwapWindow(game.window);
 }

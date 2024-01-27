@@ -133,7 +133,7 @@ void Game::init(SDL_Window* window_)
     resize();
 }
 
-void Game::run()
+void Game::render()
 {
     timer.update();
 
