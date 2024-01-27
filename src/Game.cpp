@@ -219,62 +219,82 @@ void Game::input(const SDL_Event& event)
             ui.log("Error: %s", SDL_GetError());
         }
     }
-    else if (event.type == SDL_CONTROLLERDEVICEREMOVED )
+    else if (event.type == SDL_CONTROLLERDEVICEREMOVED)
     {
-        SDL_GameControllerClose(controller);
-        controller = nullptr;
+        if (controller)
+        {
+            SDL_GameControllerClose(controller);
+
+            controller = nullptr;
+        }
     }
-    else if (event.type == SDL_KEYUP)
-    {
 #if !defined(EMSCRIPTEN) && !defined(ANDROID)
-        if (event.key.keysym.sym == SDLK_F1)
-        {
-            static bool state = false;
+    else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F1)
+    {
+        static bool state = false;
 
-            glPolygonMode(GL_FRONT_AND_BACK, state ? GL_FILL : GL_LINE);
+        glPolygonMode(GL_FRONT_AND_BACK, state ? GL_FILL : GL_LINE);
 
-            state = !state;
-        }
+        state = !state;
+    }
 #endif
+    else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F2)
+    {
+        ui.log("Players: %d", network.count());
+    }
+    else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F3)
+    {
+        auto crc32 = [](unsigned char* data, size_t length) {
+            unsigned int crc;
+            crc = 0xFFFFFFFFu;
 
-        if (event.key.keysym.sym == SDLK_F2)
-        {
-            ui.log("Players: %d", network.count());
-        }
+            for (size_t i = 0; i < length; i++)
+            {
+                crc ^= (data[i] << 24u);
 
-        if (event.key.keysym.sym == SDLK_F3)
-        {
-            auto crc32 = [](unsigned char* data, size_t length) {
-                unsigned int crc;
-                crc = 0xFFFFFFFFu;
-
-                for (size_t i = 0; i < length; i++)
+                for (int j = 0; j < 8; j++)
                 {
-                    crc ^= (data[i] << 24u);
-
-                    for (int j = 0; j < 8; j++)
-                    {
-                        unsigned int msb = crc >> 31u;
-                        crc <<= 1u;
-                        crc ^= (0u - msb) & 0x04C11DB7u;
-                    }
+                    unsigned int msb = crc >> 31u;
+                    crc <<= 1u;
+                    crc ^= (0u - msb) & 0x04C11DB7u;
                 }
+            }
 
-                return crc;
-            };
+            return crc;
+        };
 
-            auto hash = crc32(level.blocks.get(), Level::WIDTH * Level::HEIGHT * Level::DEPTH);
-            ui.log("CRC32 checksum: %X", hash);
-        }
-
-        if (event.key.keysym.sym == SDLK_F4)
+        auto hash = crc32(level.blocks.get(), Level::WIDTH * Level::HEIGHT * Level::DEPTH);
+        ui.log("CRC32 checksum: %X", hash);
+    }
+    else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F4)
+    {
+        ui.log("Build date: %s %s", __DATE__, __TIME__);
+    }
+    else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F5)
+    {
+        ui.isTouch = !ui.isTouch;
+        resize();
+    }
+    else if (
+        event.type == SDL_KEYDOWN || 
+        event.type == SDL_CONTROLLERBUTTONDOWN ||
+        event.type == SDL_CONTROLLERAXISMOTION
+    )
+    {
+        if (ui.isTouch)
         {
-            ui.log("Build date: %s %s", __DATE__, __TIME__);
+            ui.isTouch = false;
+            resize();
         }
-
-        if (event.key.keysym.sym == SDLK_F5)
+    }
+    else if (
+        event.type == SDL_FINGERDOWN || 
+        event.type == SDL_FINGERMOTION 
+    )
+    {
+        if (!ui.isTouch)
         {
-            ui.isTouch = !ui.isTouch;
+            ui.isTouch = true;
             resize();
         }
     }

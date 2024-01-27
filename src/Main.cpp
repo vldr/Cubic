@@ -138,6 +138,8 @@ int main(int argc, char** argv)
 	}
 
 	glewInit();
+	
+	SDL_GL_SetSwapInterval(1);
 #endif
 
 	game.init(window);

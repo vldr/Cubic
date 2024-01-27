@@ -71,10 +71,10 @@ void LocalPlayer::interact()
         const auto groundBlockType = game.level.getTile(ground.x, ground.y, ground.z);
 
         if (
-            !game.level.isAirTile(groundBlockType) &&
-            !game.level.isWaterTile(groundBlockType) &&
-            !game.level.isLavaTile(groundBlockType)
-            )
+            !game->level.isAirTile(groundBlockType) &&
+            !game->level.isWaterTile(groundBlockType) &&
+            !game->level.isLavaTile(groundBlockType)
+        )
         {
             selected = game.level.clip(viewPosition, viewPosition + lookAt * REACH, &ground);
         }
@@ -90,9 +90,14 @@ void LocalPlayer::interact()
         if (interactState & (unsigned int)Interact::Middle) { interactMiddle = true; }
         if (interactState & (unsigned int)Interact::Right) { interactRight = true; }
 
-        if (glm::abs(controllerState.x) > CONTROLLER_DEAD_ZONE || glm::abs(controllerState.y) > CONTROLLER_DEAD_ZONE)
+        if ( 
+            glm::abs(controllerState.x) > CONTROLLER_DEAD_ZONE || 
+            glm::abs(controllerState.y) > CONTROLLER_DEAD_ZONE
+        ) 
         {
-            turn(controllerState.x * CONTROLLER_SPEED, controllerState.y * CONTROLLER_SPEED);
+            float adjustedControllerSpeed = CONTROLLER_SPEED * (144.0f / game->lastFrameRate);
+
+            turn(controllerState.x * adjustedControllerSpeed, controllerState.y * adjustedControllerSpeed);
         }
     }
 
@@ -130,8 +135,8 @@ void LocalPlayer::interact()
 
             if (
                 selected.destructible &&
-                !game.level.isAirTile(blockType)
-                )
+                !game->level.isAirTile(blockType)
+            )
             {
                 game.level.setTileWithNeighborChange(vx, vy, vz, (unsigned char)Block::Type::BLOCK_AIR, true);
                 game.particleManager.spawn((float)vx, (float)vy, (float)vz, blockType);
@@ -159,8 +164,8 @@ void LocalPlayer::interact()
 
             if (
                 blockType == (unsigned char)Block::Type::BLOCK_AIR ||
-                game.level.isWaterTile(blockType) ||
-                game.level.isLavaTile(blockType)
+                game->level.isWaterTile(blockType) ||
+                game->level.isLavaTile(blockType)
             )
             {
                 if (!aabb.intersects(heldBlockAABB))
