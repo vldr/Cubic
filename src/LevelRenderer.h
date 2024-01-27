@@ -22,8 +22,8 @@ public:
 
 	Chunk* getChunk(int x, int y, int z);
 
-	unsigned char waterTextureData[1024] = {0};
-	unsigned char lavaTextureData[1024] = {0};
+	unsigned char waterTextureData[1024] = {};
+	unsigned char lavaTextureData[1024] = {};
 
 	std::priority_queue<Chunk*, std::vector<Chunk*>, Chunk::Comparator> chunksQueue;
 private:
@@ -34,15 +34,15 @@ private:
 
 	std::unique_ptr<Chunk[]> chunks;
 
-	float waterTextureRed[256] = {0};
-	float waterTextureGreen[256] = {0};
-	float waterTextureBlue[256] = {0};
-	float waterTextureAlpha[256] = {0};
+	float waterTextureRed[256] = {};
+	float waterTextureGreen[256] = {};
+	float waterTextureBlue[256] = {};
+	float waterTextureAlpha[256] = {};
 
-	float lavaTextureRed[256] = {0};
-	float lavaTextureGreen[256] = {0};
-	float lavaTextureBlue[256] = {0};
-	float lavaTextureAlpha[256] = {0};
+	float lavaTextureRed[256] = {};
+	float lavaTextureGreen[256] = {};
+	float lavaTextureBlue[256] = {};
+	float lavaTextureAlpha[256] = {};
 
 	int xChunks;
 	int yChunks;

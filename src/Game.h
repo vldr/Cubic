@@ -13,12 +13,10 @@
 #include "UI.h"
 #include "Frustum.h"
 #include "Network.h"
-#include "VertexList.h"
 
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-#include <vector>
 
 extern class Game {
 public:

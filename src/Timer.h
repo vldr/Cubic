@@ -15,6 +15,7 @@ public:
 
 	float delta;
 	float ticksPerSecond;
+
 private:
 	float lastHR;
 	float elapsedDelta;

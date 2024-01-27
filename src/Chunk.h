@@ -4,7 +4,6 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-#include <vector>
 
 class Chunk
 {
@@ -25,6 +24,7 @@ public:
 	{
 		bool operator()(const Chunk* a, const Chunk* b) const;
 	};
+
 private:
 	enum class FaceType { Front, Back, Left, Right, Top, Bottom };
 
