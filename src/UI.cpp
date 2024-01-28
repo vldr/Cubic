@@ -1,4 +1,5 @@
 #include "UI.h"
+#include "LocalPlayer.h"
 #include "Game.h"
 #include "Block.h"
 #include "Resources.h"
@@ -394,7 +395,7 @@ void UI::think()
 				!touchPosition->isHolding &&
 				game.timer.milliTime() - touchPosition->startTime >= 350 &&
 				!(game.localPlayer.interactState & (unsigned int)LocalPlayer::Interact::Left)
-				)
+			)
 			{
 				game.localPlayer.interactState |= (unsigned int)LocalPlayer::Interact::Left;
 
@@ -499,8 +500,8 @@ void UI::save(size_t index)
 #if defined(EMSCRIPTEN)
 		EM_ASM(
 			FS.syncfs(false, function(err) {
-			console.log(err);
-		});
+				console.log(err);
+			});
 		);
 #endif
 	}

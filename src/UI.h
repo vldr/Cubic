@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <string>
+#include <vector>
 
 class UI
 {
@@ -19,6 +20,22 @@ public:
 		LoadMenu,
 	};
 
+	void init();
+	bool input(const SDL_Event& event);
+	void update();
+	void render();
+
+	void log(const char* format, ...);
+
+	void openMenu(UI::State state, bool shouldUpdate = true);
+	void openStatusMenu(const char* title, const char* description, bool closeable = false);
+	void openMainMenu();
+	void closeMenu();
+
+	UI::State state;
+	bool isTouch;
+
+private:
 	enum class MouseState
 	{
 		Up,
@@ -45,27 +62,6 @@ public:
 		Swipe = 1 << 1,
 	};
 
-	void init();
-	bool input(const SDL_Event& event);
-	void update();
-	void render();
-
-	void log(const char* format, ...);
-
-	void openMenu(UI::State state, bool shouldUpdate = true);
-	void openStatusMenu(const char* title, const char* description, bool closeable = false);
-	void openMainMenu();
-	void closeMenu();
-
-	UI::State state;
-
-	glm::vec2 mousePosition;
-	UI::MouseState mouseState;
-
-	bool isTouch;
-	unsigned int touchState;
-
-private:
 	struct Log
 	{
 		uint64_t created;
@@ -147,6 +143,10 @@ private:
 		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
 		6, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
 	};
+
+	glm::vec2 mousePosition;
+	UI::MouseState mouseState;
+	unsigned int touchState;
 
 	std::vector<glm::vec2> buttonPositions;
 	std::vector<TouchPosition> touchPositions;

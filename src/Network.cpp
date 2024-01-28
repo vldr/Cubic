@@ -630,7 +630,7 @@ void Network::onBinaryMessage(const unsigned char* data, size_t size)
                 !game.level.isWaterTile(previousBlockType) &&
                 !game.level.isLavaTile(previousBlockType) &&
                 game.level.isAirTile(packet->blockType)
-                )
+            )
             {
                 game.particleManager.spawn(
                     (float)packet->position.x,
@@ -664,10 +664,9 @@ void Network::onBinaryMessage(const unsigned char* data, size_t size)
                     packet->position.y,
                     packet->position.z,
                     packet->blockType
-                )
-                &&
+                ) &&
                 packet->mode
-                )
+            )
             {
                 game.particleManager.spawn(
                     (float)packet->position.x,

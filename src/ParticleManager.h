@@ -19,7 +19,11 @@ public:
 	struct ParticleGroup
 	{
 		VertexList vertexList;
-		Particle particles[ParticleManager::PARTICLES_PER_AXIS * ParticleManager::PARTICLES_PER_AXIS * ParticleManager::PARTICLES_PER_AXIS];
+		Particle particles[
+			ParticleManager::PARTICLES_PER_AXIS * 
+			ParticleManager::PARTICLES_PER_AXIS * 
+			ParticleManager::PARTICLES_PER_AXIS
+		];
 	};
 
 private:

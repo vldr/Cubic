@@ -7,7 +7,6 @@
 #include "Random.h"
 #include "Timer.h"
 #include "Resources.h"
-#include "VertexList.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp> 
@@ -226,6 +225,13 @@ void Game::input(const SDL_Event& event)
             SDL_GameControllerClose(controller);
 
             controller = nullptr;
+        }
+    }
+    else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_AC_BACK)
+    {
+        if (ui.state == UI::State::None)
+        {
+            ui.openMainMenu();
         }
     }
 #if !defined(EMSCRIPTEN) && !defined(ANDROID)

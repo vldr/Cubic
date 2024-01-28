@@ -4,8 +4,6 @@
 #include "TextureManager.h"
 #include "Resources.h"
 
-#include <vector>
-
 void Skybox::init()
 {
 	initBedrock();

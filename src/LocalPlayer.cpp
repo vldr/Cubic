@@ -8,7 +8,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <sstream>
 
 void LocalPlayer::init()
 {
@@ -386,7 +385,7 @@ void LocalPlayer::input(const SDL_Event& event)
         if (event.key.keysym.sym == SDLK_LSHIFT)
             moveState &= ~(unsigned int)Move::Sprint;
     }
-    else if (event.type == SDL_MOUSEBUTTONDOWN)
+    else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.which != SDL_TOUCH_MOUSEID)
     {
         if (event.button.button == SDL_BUTTON_LEFT)
             interactState |= (unsigned int)Interact::Left;
@@ -397,7 +396,7 @@ void LocalPlayer::input(const SDL_Event& event)
         if (event.button.button == SDL_BUTTON_RIGHT)
             interactState |= (unsigned int)Interact::Right;
     }
-    else if (event.type == SDL_MOUSEBUTTONUP)
+    else if (event.type == SDL_MOUSEBUTTONUP && event.button.which != SDL_TOUCH_MOUSEID)
     {
         if (event.button.button == SDL_BUTTON_LEFT)
             interactState &= ~(unsigned int)Interact::Left;

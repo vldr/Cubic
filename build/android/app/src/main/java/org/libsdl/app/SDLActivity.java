@@ -665,7 +665,6 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         // Ignore certain special keys so they're handled by Android
         if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
             keyCode == KeyEvent.KEYCODE_VOLUME_UP ||
-            keyCode == KeyEvent.KEYCODE_BACK ||
             keyCode == KeyEvent.KEYCODE_CAMERA ||
             keyCode == KeyEvent.KEYCODE_ZOOM_IN || /* API 11 */
             keyCode == KeyEvent.KEYCODE_ZOOM_OUT /* API 11 */
