@@ -94,7 +94,7 @@ void LocalPlayer::interact()
             glm::abs(controllerState.y) > CONTROLLER_DEAD_ZONE
         ) 
         {
-            float adjustedControllerSpeed = CONTROLLER_SPEED * (144.0f / game.lastFrameRate);
+            float adjustedControllerSpeed = 144.0f / fmax(game.lastFrameRate, 1) * CONTROLLER_SPEED;
 
             turn(controllerState.x * adjustedControllerSpeed, controllerState.y * adjustedControllerSpeed);
         }
@@ -528,7 +528,7 @@ void LocalPlayer::input(const SDL_Event& event)
 
 void LocalPlayer::turn(float rx, float ry)
 {
-    if (game.ui.state != UI::State::None || rx == INFINITY || ry == INFINITY)
+    if (game.ui.state != UI::State::None)
     {
         return;
     }

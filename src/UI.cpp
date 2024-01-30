@@ -248,7 +248,10 @@ bool UI::input(const SDL_Event& event)
 								(event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_UP && buttonPosition.y < selectedButtonPosition->y)
 							)
 							{
-								if (!closestButtonPosition || glm::distance(buttonPosition, *selectedButtonPosition) < glm::distance(*closestButtonPosition, *selectedButtonPosition))
+								if (
+									!closestButtonPosition || 
+									glm::distance(buttonPosition, *selectedButtonPosition) < glm::distance(*closestButtonPosition, *selectedButtonPosition)
+								)
 								{
 									closestButtonPosition = &buttonPosition;
 								}
@@ -384,6 +387,72 @@ void UI::render()
 	interfaceVertices.render();
 }
 
+void UI::openMenu(UI::State newState, bool shouldUpdate)
+{
+	if (newState != State::None)
+	{
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+
+#if defined(EMSCRIPTEN)
+		emscripten_exit_pointerlock();
+#endif
+
+		mousePosition = {};
+		mouseState = MouseState::Up;
+		state = newState;
+
+		if (shouldUpdate)
+		{
+			update();
+		}
+	}
+}
+
+void UI::openStatusMenu(const char* title, const char* description, bool closeable)
+{
+	statusTitle = title;
+	statusDescription = description;
+	statusCloseable = closeable;
+
+	openMenu(State::StatusMenu);
+}
+
+void UI::openMainMenu()
+{
+	mainMenuLastCopy = 0;
+
+	openMenu(State::MainMenu);
+}
+
+void UI::closeMenu()
+{
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+
+	mousePosition = {};
+	mouseState = MouseState::Up;
+	state = State::None;
+
+	update();
+}
+
+void UI::log(const char* format, ...)
+{
+	char buffer[4096];
+
+	va_list args;
+	va_start(args, format);
+	int count = vsnprintf(buffer, sizeof(buffer), format, args);
+	va_end(args);
+
+	Log log;
+	log.created = game.timer.milliTime();
+	log.text = std::string(buffer, count);
+
+	logs.push_back(log);
+
+	update();
+}
+
 void UI::think()
 {
 	if (isTouch && state == State::None)
@@ -507,70 +576,282 @@ void UI::save(size_t index)
 	}
 }
 
-void UI::log(const char* format, ...)
+void UI::drawHUD()
 {
-	char buffer[4096];
-
-	va_list args;
-	va_start(args, format);
-	int count = vsnprintf(buffer, sizeof(buffer), format, args);
-	va_end(args);
-
-	Log log;
-	log.created = game.timer.milliTime();
-	log.text = std::string(buffer, count);
-
-	logs.push_back(log);
-
-	update();
+	drawFPS();
+	drawCrosshair();
+	drawLogs();
+	drawHotbar();
 }
 
-void UI::openMenu(UI::State newState, bool shouldUpdate)
+void UI::drawFPS()
 {
-	if (newState != State::None)
+	static std::string fps;
+	fps.clear();
+
+	fps += std::to_string(game.lastFrameRate);
+	fps += " fps, ";
+	fps += std::to_string(game.lastChunkUpdates);
+	fps += " chunk updates";
+	
+	drawShadowedFont(fps.c_str(), 3.0f, 3.0f, 1.0f);
+}
+
+void UI::drawCrosshair()
+{
+	drawInterface(game.scaledWidth / 2 - 7, game.scaledHeight / 2 - 7, 211, 0, 16, 16);
+}
+
+void UI::drawLogs()
+{
+	for (auto log = logs.begin(); log != logs.end();)
 	{
-		SDL_SetRelativeMouseMode(SDL_FALSE);
+		auto index = logs.end() - log - 1;
 
-#if defined(EMSCRIPTEN)
-		emscripten_exit_pointerlock();
-#endif
-
-		mousePosition = {};
-		mouseState = MouseState::Up;
-		state = newState;
-
-		if (shouldUpdate)
+		if (game.timer.milliTime() - log->created > 5000)
 		{
-			update();
+			log = logs.erase(log);
+		}
+		else
+		{
+			float maxWidth = game.scaledWidth / 2 + 18.0f;
+			float width = 0.0f;
+
+			float interfaceY = game.scaledHeight - 35.0f - index * 10.0f;
+			float fontY = game.scaledHeight - 33.8f - index * 10.0f;
+
+			if (isTouch)
+			{
+				maxWidth = game.scaledWidth * 0.45f;
+
+				auto offset = 14.0f;
+
+				interfaceY = offset + index * 10.0f;
+				fontY = offset + 1.2f + index * 10.0f;
+			}
+
+			for (size_t i = 0; i < log->text.length(); i++)
+			{
+				width += FONT_WIDTHS[int(log->text[i])];
+			}
+
+			if (width > maxWidth)
+			{
+				maxWidth = width + 4.0f;
+			}
+
+			drawInterface(0.0f, interfaceY, maxWidth, 10.0f, 183, 0, 16, 16, 0.12f);
+			drawFont(log->text.c_str(), 1.8f, fontY, 1.0f, 1.1f);
+
+			log++;
 		}
 	}
 }
 
-void UI::openStatusMenu(const char* title, const char* description, bool closeable)
+void UI::drawHotbar() 
 {
-	statusTitle = title;
-	statusDescription = description;
-	statusCloseable = closeable;
+	drawInterface(game.scaledWidth / 2 - 91 - (isTouch * 21 / 2), game.scaledHeight - 22, 0, 0, 182 + float(isTouch * 21), 22);
 
-	openMenu(State::StatusMenu);
+	if (isTouch)
+	{
+		drawInterface(game.scaledWidth / 2 - 91 + 179 - 21 / 2, game.scaledHeight - 22, 48, 23, 23, 22);
+	}
+
+	drawInterface(game.scaledWidth / 2 - 92 + float(game.localPlayer.inventoryIndex) * 20 - (isTouch * 21 / 2), game.scaledHeight - 23, 0, 22, 24, 24);
+
+	for (int i = 0; i < LocalPlayer::INVENTORY_SIZE; i++)
+	{
+		auto blockType = game.localPlayer.inventory[i];
+
+		float x = game.scaledWidth / 2.0f - 86.8f + i * 20.0f - (isTouch * 21 / 2);
+		float y = game.scaledHeight - 6.8f;
+
+		drawBlock(blockType, x, y, 9.8f);
+	}
 }
 
-void UI::openMainMenu()
+bool UI::drawTouchControls(bool invisible)
 {
-	mainMenuLastCopy = 0;
+	float buttonOffsetX = 30.0f;
+	float buttonOffsetY = 25.0f;
+	float buttonOffsetZ = 65.0f;
 
-	openMenu(State::MainMenu);
-}
+	float buttonSize = std::max(game.scaledHeight, game.scaledWidth) * 0.06f;
+	float jumpButtonSize = std::max(game.scaledHeight, game.scaledWidth) * 0.0625f;
 
-void UI::closeMenu()
-{
-	SDL_SetRelativeMouseMode(SDL_TRUE);
+	bool middleTouch = drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + buttonSize, game.scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "", buttonSize, buttonSize, true, invisible);
+	if (middleTouch)
+	{
+		touchState |= (unsigned int)UI::TouchState::Middle;
+	}
+	else
+	{
+		touchState &= ~(unsigned int)UI::TouchState::Middle;
+	}
 
-	mousePosition = {};
-	mouseState = MouseState::Up;
-	state = State::None;
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + buttonSize, game.scaledHeight - buttonSize - buttonOffsetY, buttonOffsetZ, "\x1F", buttonSize, buttonSize, true, invisible))
+	{
+		game.localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Backward;
 
-	update();
+		touchState |= (unsigned int)UI::TouchState::Down;
+	}
+	else 
+	{
+		if (!middleTouch)
+		{
+			game.localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Backward;
+		}
+
+		touchState &= ~(unsigned int)UI::TouchState::Down;
+	}
+
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX, game.scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x11", buttonSize, buttonSize, true, invisible))
+	{
+		game.localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Left;
+
+		touchState |= (unsigned int)UI::TouchState::Left;
+	}
+	else 
+	{
+		if (!middleTouch)
+		{
+			game.localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Left;
+		}
+
+		touchState &= ~(unsigned int)UI::TouchState::Left;
+	}
+
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + 2 * buttonSize, game.scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x10", buttonSize, buttonSize, true, invisible))
+	{
+		game.localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Right;
+
+		touchState |= (unsigned int)UI::TouchState::Right;
+	}
+	else 
+	{
+		if (!middleTouch)
+		{
+			game.localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Right;
+		}
+
+		touchState &= ~(unsigned int)UI::TouchState::Right;
+	}
+
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + buttonSize, game.scaledHeight - 3 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x1E", buttonSize, buttonSize, true, invisible))
+	{
+		game.localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Forward;
+
+		touchState |= (unsigned int)UI::TouchState::Up;
+	}
+	else 
+	{
+		if (!middleTouch)
+		{
+			game.localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Forward;
+		}
+
+		touchState &= ~(unsigned int)UI::TouchState::Up;
+	}
+
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold, game.scaledWidth - buttonOffsetX - 1.5f * buttonSize, game.scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, game.localPlayer.noPhysics ? "\x7" : "\x4", jumpButtonSize, jumpButtonSize, true, invisible))
+	{
+		if (middleTouch && game.localPlayer.moveState == (unsigned int)LocalPlayer::Move::None)
+		{
+			game.localPlayer.noPhysics = !game.localPlayer.noPhysics;
+		}
+
+		game.localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Jump;
+
+		touchState |= (unsigned int)UI::TouchState::Jump;
+	}
+	else
+	{
+		game.localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Jump;
+
+		touchState &= ~(unsigned int)UI::TouchState::Jump;
+	}
+
+	float otherButtonOffsetX = 1.5f;
+	float otherButtonOffsetY = 3.0f;
+	float otherButtonSize = std::max(game.scaledHeight, game.scaledWidth) * 0.03f;
+
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold, game.scaledWidth / 2 + otherButtonOffsetX, otherButtonOffsetY, buttonOffsetZ, "\xF0", otherButtonSize, otherButtonSize, invisible, invisible))
+	{
+		if (!invisible)
+		{
+			openMainMenu();
+
+			return true;
+		}
+		else
+		{
+			touchState |= (unsigned int)UI::TouchState::Menu;
+		}
+	}
+	else if (invisible)
+	{
+		touchState &= ~(unsigned int)UI::TouchState::Menu;
+	}
+
+	if (drawTouchButton((unsigned int)UI::Cancellable::Hold, game.scaledWidth / 2 - otherButtonSize - otherButtonOffsetX + 1.0f, otherButtonOffsetY, buttonOffsetZ, game.fullscreen ? "\x17" : "\x16", otherButtonSize, otherButtonSize, invisible, invisible))
+	{
+		if (!invisible)
+		{
+#if defined(EMSCRIPTEN)
+			toggle_fullscreen();
+#else
+			game.fullscreen = !game.fullscreen;
+
+			SDL_SetWindowFullscreen(game.window, game.fullscreen);
+#endif
+		}
+		else
+		{
+			touchState |= (unsigned int)UI::TouchState::Fullscreen;
+		}
+	}
+	else if (invisible)
+	{
+		touchState &= ~(unsigned int)UI::TouchState::Fullscreen;
+	}
+
+	for (int i = 0; i < LocalPlayer::INVENTORY_SIZE + 1; i++)
+	{
+		bool touched = (state == State::None || state == State::SelectBlockMenu) && 
+			drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, game.scaledWidth / 2 - 90 + float(i) * 20 - 21 / 2, game.scaledHeight - 22 - 3.0f, buttonOffsetZ, "", 20, 22, false, true);
+
+		if (i == LocalPlayer::INVENTORY_SIZE)
+		{
+			if (touched)
+			{
+				if (state == State::SelectBlockMenu)
+				{
+					closeMenu();
+				}
+				else
+				{
+					openMenu(State::SelectBlockMenu);
+				}
+
+				return true;
+			}
+		}
+		else
+		{
+			if (touched)
+			{
+				game.localPlayer.inventoryIndex = i;
+				game.heldBlock.update();
+
+				mouseState = MouseState::Up;
+				update();
+
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 bool UI::drawStatusMenu()
@@ -998,284 +1279,6 @@ bool UI::drawButton(float x, float y, float z, const char* text, int state, floa
 
 	return state && hover && clicked;
 }
-
-bool UI::drawTouchControls(bool invisible)
-{
-	float buttonOffsetX = 30.0f;
-	float buttonOffsetY = 25.0f;
-	float buttonOffsetZ = 65.0f;
-
-	float buttonSize = std::max(game.scaledHeight, game.scaledWidth) * 0.06f;
-	float jumpButtonSize = std::max(game.scaledHeight, game.scaledWidth) * 0.0625f;
-
-	bool middleTouch = drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + buttonSize, game.scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "", buttonSize, buttonSize, true, invisible);
-	if (middleTouch)
-	{
-		touchState |= (unsigned int)UI::TouchState::Middle;
-	}
-	else
-	{
-		touchState &= ~(unsigned int)UI::TouchState::Middle;
-	}
-
-	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + buttonSize, game.scaledHeight - buttonSize - buttonOffsetY, buttonOffsetZ, "\x1F", buttonSize, buttonSize, true, invisible))
-	{
-		game.localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Backward;
-
-		touchState |= (unsigned int)UI::TouchState::Down;
-	}
-	else 
-	{
-		if (!middleTouch)
-		{
-			game.localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Backward;
-		}
-
-		touchState &= ~(unsigned int)UI::TouchState::Down;
-	}
-
-	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX, game.scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x11", buttonSize, buttonSize, true, invisible))
-	{
-		game.localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Left;
-
-		touchState |= (unsigned int)UI::TouchState::Left;
-	}
-	else 
-	{
-		if (!middleTouch)
-		{
-			game.localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Left;
-		}
-
-		touchState &= ~(unsigned int)UI::TouchState::Left;
-	}
-
-	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + 2 * buttonSize, game.scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x10", buttonSize, buttonSize, true, invisible))
-	{
-		game.localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Right;
-
-		touchState |= (unsigned int)UI::TouchState::Right;
-	}
-	else 
-	{
-		if (!middleTouch)
-		{
-			game.localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Right;
-		}
-
-		touchState &= ~(unsigned int)UI::TouchState::Right;
-	}
-
-	if (drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, buttonOffsetX + buttonSize, game.scaledHeight - 3 * buttonSize - buttonOffsetY, buttonOffsetZ, "\x1E", buttonSize, buttonSize, true, invisible))
-	{
-		game.localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Forward;
-
-		touchState |= (unsigned int)UI::TouchState::Up;
-	}
-	else 
-	{
-		if (!middleTouch)
-		{
-			game.localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Forward;
-		}
-
-		touchState &= ~(unsigned int)UI::TouchState::Up;
-	}
-
-	if (drawTouchButton((unsigned int)UI::Cancellable::Hold, game.scaledWidth - buttonOffsetX - 1.5f * buttonSize, game.scaledHeight - 2 * buttonSize - buttonOffsetY, buttonOffsetZ, game.localPlayer.noPhysics ? "\x7" : "\x4", jumpButtonSize, jumpButtonSize, true, invisible))
-	{
-		if (middleTouch && game.localPlayer.moveState == (unsigned int)LocalPlayer::Move::None)
-		{
-			game.localPlayer.noPhysics = !game.localPlayer.noPhysics;
-		}
-
-		game.localPlayer.moveState |= (unsigned int)LocalPlayer::Move::Jump;
-
-		touchState |= (unsigned int)UI::TouchState::Jump;
-	}
-	else
-	{
-		game.localPlayer.moveState &= ~(unsigned int)LocalPlayer::Move::Jump;
-
-		touchState &= ~(unsigned int)UI::TouchState::Jump;
-	}
-
-	float otherButtonOffsetX = 1.5f;
-	float otherButtonOffsetY = 3.0f;
-	float otherButtonSize = std::max(game.scaledHeight, game.scaledWidth) * 0.03f;
-
-	if (drawTouchButton((unsigned int)UI::Cancellable::Hold, game.scaledWidth / 2 + otherButtonOffsetX, otherButtonOffsetY, buttonOffsetZ, "\xF0", otherButtonSize, otherButtonSize, invisible, invisible))
-	{
-		if (!invisible)
-		{
-			openMainMenu();
-
-			return true;
-		}
-		else
-		{
-			touchState |= (unsigned int)UI::TouchState::Menu;
-		}
-	}
-	else if (invisible)
-	{
-		touchState &= ~(unsigned int)UI::TouchState::Menu;
-	}
-
-	if (drawTouchButton((unsigned int)UI::Cancellable::Hold, game.scaledWidth / 2 - otherButtonSize - otherButtonOffsetX + 1.0f, otherButtonOffsetY, buttonOffsetZ, game.fullscreen ? "\x17" : "\x16", otherButtonSize, otherButtonSize, invisible, invisible))
-	{
-		if (!invisible)
-		{
-#if defined(EMSCRIPTEN)
-			toggle_fullscreen();
-#else
-			game.fullscreen = !game.fullscreen;
-
-			SDL_SetWindowFullscreen(game.window, game.fullscreen);
-#endif
-		}
-		else
-		{
-			touchState |= (unsigned int)UI::TouchState::Fullscreen;
-		}
-	}
-	else if (invisible)
-	{
-		touchState &= ~(unsigned int)UI::TouchState::Fullscreen;
-	}
-
-	for (int i = 0; i < LocalPlayer::INVENTORY_SIZE + 1; i++)
-	{
-		bool touched = (state == State::None || state == State::SelectBlockMenu) && 
-			drawTouchButton((unsigned int)UI::Cancellable::Hold | (unsigned int)UI::Cancellable::Swipe, game.scaledWidth / 2 - 90 + float(i) * 20 - 21 / 2, game.scaledHeight - 22 - 3.0f, buttonOffsetZ, "", 20, 22, false, true);
-
-		if (i == LocalPlayer::INVENTORY_SIZE)
-		{
-			if (touched)
-			{
-				if (state == State::SelectBlockMenu)
-				{
-					closeMenu();
-				}
-				else
-				{
-					openMenu(State::SelectBlockMenu);
-				}
-
-				return true;
-			}
-		}
-		else
-		{
-			if (touched)
-			{
-				game.localPlayer.inventoryIndex = i;
-				game.heldBlock.update();
-
-				mouseState = MouseState::Up;
-				update();
-
-				return true;
-			}
-		}
-	}
-
-	return false;
-}
-
-void UI::drawHUD()
-{
-	drawFPS();
-	drawCrosshair();
-	drawLogs();
-	drawHotbar();
-}
-
-void UI::drawFPS()
-{
-	static std::string fps;
-	fps.clear();
-
-	fps += std::to_string(game.lastFrameRate);
-	fps += " fps, ";
-	fps += std::to_string(game.lastChunkUpdates);
-	fps += " chunk updates";
-	
-	drawShadowedFont(fps.c_str(), 3.0f, 3.0f, 1.0f);
-}
-
-void UI::drawCrosshair()
-{
-	drawInterface(game.scaledWidth / 2 - 7, game.scaledHeight / 2 - 7, 211, 0, 16, 16);
-}
-
-void UI::drawLogs()
-{
-	for (auto log = logs.begin(); log != logs.end();)
-	{
-		auto index = logs.end() - log - 1;
-
-		if (game.timer.milliTime() - log->created > 5000)
-		{
-			log = logs.erase(log);
-		}
-		else
-		{
-			float maxWidth = game.scaledWidth / 2 + 18.0f;
-			float width = 0.0f;
-
-			float interfaceY = game.scaledHeight - 35.0f - index * 10.0f;
-			float fontY = game.scaledHeight - 33.8f - index * 10.0f;
-
-			if (isTouch)
-			{
-				maxWidth = game.scaledWidth * 0.45f;
-
-				auto offset = 14.0f;
-
-				interfaceY = offset + index * 10.0f;
-				fontY = offset + 1.2f + index * 10.0f;
-			}
-
-			for (size_t i = 0; i < log->text.length(); i++)
-			{
-				width += FONT_WIDTHS[int(log->text[i])];
-			}
-
-			if (width > maxWidth)
-			{
-				maxWidth = width + 4.0f;
-			}
-
-			drawInterface(0.0f, interfaceY, maxWidth, 10.0f, 183, 0, 16, 16, 0.12f);
-			drawFont(log->text.c_str(), 1.8f, fontY, 1.0f, 1.1f);
-
-			log++;
-		}
-	}
-}
-
-void UI::drawHotbar() 
-{
-	drawInterface(game.scaledWidth / 2 - 91 - (isTouch * 21 / 2), game.scaledHeight - 22, 0, 0, 182 + float(isTouch * 21), 22);
-
-	if (isTouch)
-	{
-		drawInterface(game.scaledWidth / 2 - 91 + 179 - 21 / 2, game.scaledHeight - 22, 48, 23, 23, 22);
-	}
-
-	drawInterface(game.scaledWidth / 2 - 92 + float(game.localPlayer.inventoryIndex) * 20 - (isTouch * 21 / 2), game.scaledHeight - 23, 0, 22, 24, 24);
-
-	for (int i = 0; i < LocalPlayer::INVENTORY_SIZE; i++)
-	{
-		auto blockType = game.localPlayer.inventory[i];
-
-		float x = game.scaledWidth / 2.0f - 86.8f + i * 20.0f - (isTouch * 21 / 2);
-		float y = game.scaledHeight - 6.8f;
-
-		drawBlock(blockType, x, y, 9.8f);
-	}
-} 
 
 void UI::drawBlock(unsigned char blockType, float x, float y, float scale)
 {

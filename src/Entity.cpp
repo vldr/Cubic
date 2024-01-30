@@ -71,9 +71,8 @@ void Entity::turn(float rx, float ry)
 	float ory = rotation.y;
 	float orx = rotation.x;
 
-	rotation.y -= ry;
-	rotation.x += rx;
-	rotation.y = rotation.y < -90.0f ? -89.9f : (rotation.y > 90.0f ? 89.9f : rotation.y);
+	rotation.x = glm::mod(rotation.x + rx, 360.0f);
+	rotation.y = glm::clamp(rotation.y - ry, -89.9f, 89.9f);
 
 	oldRotation.y += rotation.y - ory; 
 	oldRotation.x += rotation.x - orx;

@@ -25,12 +25,12 @@ public:
 	void update();
 	void render();
 
-	void log(const char* format, ...);
-
 	void openMenu(UI::State state, bool shouldUpdate = true);
 	void openStatusMenu(const char* title, const char* description, bool closeable = false);
 	void openMainMenu();
 	void closeMenu();
+
+	void log(const char* format, ...);
 
 	UI::State state;
 	bool isTouch;
@@ -97,20 +97,19 @@ private:
 	void drawCrosshair();
 	void drawLogs();
 	void drawHotbar();
-	void drawBlock(unsigned char blockType, float x, float y, float scale);
-
 	bool drawTouchControls(bool invisible = false);
+	
 	bool drawStatusMenu();
-
 	bool drawLoadMenu();
 	bool drawSaveMenu();
 	bool drawMainMenu();
-
 	bool drawSelectBlockMenu();
-	bool drawSelectBlockButton(unsigned char blockType, unsigned char& selectedBlockType, float x, float y, float width, float height);
 
+	bool drawSelectBlockButton(unsigned char blockType, unsigned char& selectedBlockType, float x, float y, float width, float height);
 	bool drawTouchButton(unsigned int flag, float x, float y, float z, const char* text, float width = 200.0f, float height = 20.0f, bool multiTouch = true, bool invisible = false);
 	bool drawButton(float x, float y, float z, const char* text, int state = 1, float width = 200.0f, float height = 20.0f);
+
+	void drawBlock(unsigned char blockType, float x, float y, float scale);
 
 	void drawInterface(float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1, float shade, float z);
 	void drawInterface(float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1, float shade);
