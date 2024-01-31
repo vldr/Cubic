@@ -350,7 +350,7 @@ void Level::reset()
 
 void Level::calculateSpawnPosition()
 {
-	glm::vec3 maxPosition = glm::vec3(-INFINITY, -INFINITY, -INFINITY);
+	glm::vec3 maxPosition = glm::vec3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
 	for (int x = 0; x < Level::WIDTH; x++)
 	{
@@ -688,16 +688,6 @@ AABBPosition Level::clip(glm::vec3 start, glm::vec3 end, const glm::ivec3* expec
 	AABBPosition aabbPosition;
 	aabbPosition.isValid = false;
 
-	if (start.x == NAN || start.y == NAN || start.z == NAN)
-	{
-		return aabbPosition;
-	}
-
-	if (end.x == NAN || end.y == NAN || end.z == NAN)
-	{
-		return aabbPosition;
-	}
-
 	const int ITERATIONS = 20;
 
 	int startBlockX = (int)start.x, startBlockY = (int)start.y, startBlockZ = (int)start.z;
@@ -706,11 +696,6 @@ AABBPosition Level::clip(glm::vec3 start, glm::vec3 end, const glm::ivec3* expec
 	int i = ITERATIONS;
 	do 
 	{
-		if (start.x == NAN || start.y == NAN || start.z == NAN)
-		{
-			break;
-		}
-
 		if (startBlockX == endBlockX && startBlockY == endBlockY && startBlockZ == endBlockZ)
 		{
 			break;

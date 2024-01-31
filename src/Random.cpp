@@ -1,11 +1,11 @@
 #include "Random.h"
+
 #include <glm/glm.hpp>
 
 void Random::init(uint64_t seed_)
 {
 	seed = seed_;
 	state = seed_;
-	lastNormal = INFINITY;
 }
 
 uint64_t Random::integer() 
@@ -29,20 +29,4 @@ double Random::uniform()
 double Random::uniformRange(double min, double max) 
 {
 	return min + uniform() * (max - min);
-}
-
-double Random::normal(double stddev) 
-{
-	if (lastNormal != INFINITY) {
-		double r = lastNormal;
-		lastNormal = INFINITY;
-		return r * stddev;
-	}
-
-	const auto PI = 3.14159265358979;
-	double r = glm::sqrt(-2.0 * glm::log(1.0 - uniform()));
-	double phi = 2.0 * PI * (1.0 - uniform());
-
-	lastNormal = r * glm::cos(phi);
-	return r * glm::sin(phi) * stddev;
 }

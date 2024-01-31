@@ -1,6 +1,6 @@
 OUTPUT = output/cubic
 CXX = clang++
-CXXFLAGS = -std=c++17 -Iincludes -O3
+CXXFLAGS = -std=c++17 -Iincludes -ffast-math -O3
 LINKFLAGS = -lpthread -lSDL2main -lSDL2 -lGL -lGLEW
 
 SRCS = $(wildcard ../../src/*.cpp)

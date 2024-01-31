@@ -8,7 +8,6 @@ public:
 	int64_t integerRange(int64_t min, int64_t max);
 	double uniform();
 	double uniformRange(double min, double max);
-	double normal(double stddev);
 	
 private:
 	uint64_t seed;

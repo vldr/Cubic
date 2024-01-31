@@ -2,13 +2,11 @@
 #include "Game.h"
 #include "Level.h"
 #include "Block.h"
-#include "Noise.h"
 #include "CombinedNoise.h"
 #include "OctaveNoise.h"
 #include "Random.h"
 
 #include <ctime>
-#include <algorithm>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 

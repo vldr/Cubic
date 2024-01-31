@@ -1,4 +1,5 @@
 #include "ShaderManager.h"
+
 #include <cstdio>
 
 GLuint ShaderManager::load(const char* vertexSource, const char* fragmentSource)

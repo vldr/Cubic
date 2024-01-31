@@ -3,13 +3,18 @@
 #include "FastLZ.h"
 
 #include <cstdlib>
-#include <json.hpp>
 
 static Network* network;
 
 #if defined(EMSCRIPTEN)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Weverything"
+
 #include <emscripten/emscripten.h>
 #include <emscripten/websocket.h>
+#include <json.hpp>
+
+#pragma clang diagnostic pop
 
 static EMSCRIPTEN_WEBSOCKET_T socket;
 
@@ -70,6 +75,7 @@ EM_BOOL emscripten_on_open(int event_type, const EmscriptenWebSocketOpenEvent* w
 
 #include <websocketpp/config/asio_no_tls_client.hpp>
 #include <websocketpp/client.hpp>
+#include <json.hpp>
 
 #if defined(_WIN32)
 #pragma warning(pop)

@@ -1,14 +1,11 @@
 #include "LevelRenderer.h"
-#include "TextureManager.h"
 #include "Game.h"
 #include "Level.h"
 #include "Chunk.h"
-#include "LocalPlayer.h"
 #include "Skybox.h"
 #include "Random.h"
 
 #include <glm/glm.hpp>
-#include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 void LevelRenderer::init()

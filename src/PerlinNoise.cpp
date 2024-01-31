@@ -1,5 +1,6 @@
 #include "PerlinNoise.h"
 #include "Random.h"
+
 #include <glm/glm.hpp>
 
 PerlinNoise::PerlinNoise(Random& random) 

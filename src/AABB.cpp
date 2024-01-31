@@ -1,7 +1,7 @@
 #include "AABB.h"
 #include "AABBPosition.h"
 
-static const auto INFINITE_VECTOR = glm::vec3(INFINITY, INFINITY, INFINITY);
+static const auto MAX_VECTOR = glm::vec3(FLT_MAX, FLT_MAX, FLT_MAX);
 static const auto EPSILON = 1.0E-7f;
 
 AABB AABB::expand(float x, float y, float z) const
@@ -159,7 +159,7 @@ glm::vec3 AABB::intersection(const glm::vec3& start, const glm::vec3& end, float
 
 	if (glm::abs(da) < EPSILON || s < 0.0f || s > 1.0f)
 	{
-		return INFINITE_VECTOR;
+		return MAX_VECTOR;
 	}
 	else
 	{
@@ -176,21 +176,21 @@ AABBPosition AABB::clip(const glm::vec3& start, const glm::vec3& end) const
 	auto minZ = intersection<AABB::Axis::Z>(start, end, z0);
 	auto maxZ = intersection<AABB::Axis::Z>(start, end, z1);
 
-	if (!intersectsX(minX)) { minX = INFINITE_VECTOR; }
-	if (!intersectsX(maxX)) { maxX = INFINITE_VECTOR; }
-	if (!intersectsY(minY)) { minY = INFINITE_VECTOR; }
-	if (!intersectsY(maxY)) { maxY = INFINITE_VECTOR; }
-	if (!intersectsZ(minZ)) { minZ = INFINITE_VECTOR; }
-	if (!intersectsZ(maxZ)) { maxZ = INFINITE_VECTOR; }
+	if (!intersectsX(minX)) { minX = MAX_VECTOR; }
+	if (!intersectsX(maxX)) { maxX = MAX_VECTOR; }
+	if (!intersectsY(minY)) { minY = MAX_VECTOR; }
+	if (!intersectsY(maxY)) { maxY = MAX_VECTOR; }
+	if (!intersectsZ(minZ)) { minZ = MAX_VECTOR; }
+	if (!intersectsZ(maxZ)) { maxZ = MAX_VECTOR; }
 
-	auto intersection = INFINITE_VECTOR;
-	if (minX != INFINITE_VECTOR) { intersection = minX; }
-	if (maxX != INFINITE_VECTOR && (intersection == INFINITE_VECTOR || glm::distance(start, maxX) < glm::distance(start, intersection))) { intersection = maxX; }
-	if (minY != INFINITE_VECTOR && (intersection == INFINITE_VECTOR || glm::distance(start, minY) < glm::distance(start, intersection))) { intersection = minY; }
-	if (maxY != INFINITE_VECTOR && (intersection == INFINITE_VECTOR || glm::distance(start, maxY) < glm::distance(start, intersection))) { intersection = maxY; }
-	if (minZ != INFINITE_VECTOR && (intersection == INFINITE_VECTOR || glm::distance(start, minZ) < glm::distance(start, intersection))) { intersection = minZ; }
-	if (maxZ != INFINITE_VECTOR && (intersection == INFINITE_VECTOR || glm::distance(start, maxZ) < glm::distance(start, intersection))) { intersection = maxZ; }
-	if (intersection == INFINITE_VECTOR)
+	auto intersection = MAX_VECTOR;
+	if (minX != MAX_VECTOR) { intersection = minX; }
+	if (maxX != MAX_VECTOR && (intersection == MAX_VECTOR || glm::distance(start, maxX) < glm::distance(start, intersection))) { intersection = maxX; }
+	if (minY != MAX_VECTOR && (intersection == MAX_VECTOR || glm::distance(start, minY) < glm::distance(start, intersection))) { intersection = minY; }
+	if (maxY != MAX_VECTOR && (intersection == MAX_VECTOR || glm::distance(start, maxY) < glm::distance(start, intersection))) { intersection = maxY; }
+	if (minZ != MAX_VECTOR && (intersection == MAX_VECTOR || glm::distance(start, minZ) < glm::distance(start, intersection))) { intersection = minZ; }
+	if (maxZ != MAX_VECTOR && (intersection == MAX_VECTOR || glm::distance(start, maxZ) < glm::distance(start, intersection))) { intersection = maxZ; }
+	if (intersection == MAX_VECTOR)
 	{ 
 		AABBPosition aabbPosition;
 		aabbPosition.isValid = false;
