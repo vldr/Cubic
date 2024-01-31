@@ -94,7 +94,7 @@ void LocalPlayer::interact()
             glm::abs(controllerState.y) > CONTROLLER_DEAD_ZONE
         ) 
         {
-            float adjustedControllerSpeed = 144.0f / fmax(game.lastFrameRate, 1) * CONTROLLER_SPEED;
+            float adjustedControllerSpeed = 144.0f / std::max(game.lastFrameRate, uint64_t(1)) * CONTROLLER_SPEED;
 
             turn(controllerState.x * adjustedControllerSpeed, controllerState.y * adjustedControllerSpeed);
         }
@@ -193,7 +193,7 @@ void LocalPlayer::interact()
                 blockType != (unsigned char)Block::Type::BLOCK_AIR &&
                 !game.level.isWaterTile(blockType) &&
                 !game.level.isLavaTile(blockType)
-                )
+            )
             {
                 inventory[inventoryIndex] = blockType;
 

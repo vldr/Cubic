@@ -16,9 +16,14 @@
 #if defined(EMSCRIPTEN)
 #include <emscripten/html5.h>
 
-EM_JS(bool, is_fullscreen, (), {
+EM_JS(bool, isFullscreen, (), {
   return window.fullScreen ||
    (window.innerWidth == screen.width && window.innerHeight == screen.height);
+});
+
+EM_JS(void, glPolygonMode, (unsigned int face, unsigned int mode), {
+  const extension = GLctx.getExtension("WEBGL_polygon_mode");
+  if (extension) extension["polygonModeWEBGL"](face, mode);
 });
 #endif
 
@@ -234,16 +239,16 @@ void Game::input(const SDL_Event& event)
             ui.openMainMenu();
         }
     }
-#if !defined(EMSCRIPTEN) && !defined(ANDROID)
     else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F1)
     {
         static bool state = false;
 
+#if !defined(ANDROID)
         glPolygonMode(GL_FRONT_AND_BACK, state ? GL_FILL : GL_LINE);
+#endif
 
         state = !state;
     }
-#endif
     else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F2)
     {
         ui.log("Players: %d", network.count());
@@ -320,7 +325,7 @@ void Game::resize()
     SDL_GetWindowSize(window, &windowWidth, &windowHeight);
 
 #if defined(EMSCRIPTEN)
-    fullscreen = is_fullscreen();
+    fullscreen = isFullscreen();
     width = std::lround(windowWidth * emscripten_get_device_pixel_ratio());
     height = std::lround(windowHeight * emscripten_get_device_pixel_ratio());
 #else

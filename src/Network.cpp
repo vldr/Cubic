@@ -13,8 +13,8 @@ static Network* network;
 
 static EMSCRIPTEN_WEBSOCKET_T socket;
 
-EM_JS(void, set_hash, (const char* hash), { location.hash = UTF8ToString(hash); });
-EM_JS(char*, get_hash, (), {
+EM_JS(void, setHash, (const char* hash), { location.hash = UTF8ToString(hash); });
+EM_JS(char*, getHash, (), {
     return stringToNewUTF8(
         location.hash.replace("#","")
     );
@@ -415,7 +415,7 @@ void Network::onOpen()
     connected = true;
 
 #if defined(EMSCRIPTEN)
-    const char* hash = get_hash();
+    const char* hash = getHash();
 
     if (*hash)
     {
@@ -437,7 +437,7 @@ void Network::onClose()
     connected = false;
 
 #if defined(EMSCRIPTEN)
-    set_hash("");
+    setHash("");
 #endif
 
     url = "...";
@@ -462,7 +462,7 @@ void Network::onMessage(const std::string& text)
         players.push_back(nullptr);
 
 #if defined(EMSCRIPTEN)
-        set_hash(id.c_str());
+        setHash(id.c_str());
 #endif
 
         url = BASE_URL + id;

@@ -16,11 +16,11 @@
 #if defined(EMSCRIPTEN)
 #include <emscripten/html5.h>
 
-EM_JS(void, copy_to_clipboard, (const char* text), {
-	navigator.clipboard.writeText(UTF8ToString(text));
+EM_JS(void, copyToClipboard, (const char* text), {
+	if (navigator.clipboard) navigator.clipboard.writeText(UTF8ToString(text));
 });
 
-EM_JS(void, toggle_fullscreen, (), {
+EM_JS(void, toggleFullscreen, (), {
 	if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement) {
          if (document.documentElement.requestFullscreen) {
 			document.documentElement.requestFullscreen();
@@ -40,7 +40,7 @@ EM_JS(void, toggle_fullscreen, (), {
 	}
 });
 
-EM_JS(bool, is_touch, (), {
+EM_JS(bool, isTouchScreen, (), {
   return (('ontouchstart' in window) ||
 	 (navigator.maxTouchPoints > 0) ||
 	 (navigator.msMaxTouchPoints > 0));
@@ -50,7 +50,7 @@ EM_JS(bool, is_touch, (), {
 void UI::init()
 {
 #if defined(EMSCRIPTEN)
-	isTouch = is_touch();
+	isTouch = isTouchScreen();
 #elif defined(ANDROID)
 	isTouch = true;
 #else
@@ -798,7 +798,7 @@ bool UI::drawTouchControls(bool invisible)
 		if (!invisible)
 		{
 #if defined(EMSCRIPTEN)
-			toggle_fullscreen();
+			toggleFullscreen();
 #else
 			game.fullscreen = !game.fullscreen;
 
@@ -1076,7 +1076,7 @@ bool UI::drawMainMenu()
 	if (drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 - offset + optionsOffset + 24 + 16, 65.0f, game.timer.milliTime() - mainMenuLastCopy < 1000 ? "Copied!" : "Copy"))
 	{
 #if defined(EMSCRIPTEN)
-		copy_to_clipboard(game.network.url.c_str());
+		copyToClipboard(game.network.url.c_str());
 #else
 		SDL_SetClipboardText(game.network.url.c_str());
 #endif
