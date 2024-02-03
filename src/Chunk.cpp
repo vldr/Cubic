@@ -41,32 +41,41 @@ inline Chunk::Face& Chunk::getFace(Chunk::Face* faces, int x, int y, int z)
 template <Chunk::FaceType faceType>
 inline bool Chunk::shouldRenderFace(const int x, const int y, const int z)
 {
-    Block::Definition blockDefinition = Block::Definitions[game.level.getRenderTile(x, y, z)];
+    unsigned char blockType = game.level.getRenderTile(x, y, z);
+    unsigned char blockAdjacentType;
+
+    Block::Definition blockDefinition = Block::Definitions[blockType];
     Block::Definition blockDefinitionAdjacent;
 
     if constexpr (faceType == FaceType::Right)
     {
-        blockDefinitionAdjacent = Block::Definitions[game.level.getRenderTile(x + 1, y, z)];
+        blockAdjacentType = game.level.getRenderTile(x + 1, y, z);
+        blockDefinitionAdjacent = Block::Definitions[blockAdjacentType];
     }
     else if constexpr (faceType == FaceType::Left)
     {
-        blockDefinitionAdjacent = Block::Definitions[game.level.getRenderTile(x - 1, y, z)];
+        blockAdjacentType = game.level.getRenderTile(x - 1, y, z);
+        blockDefinitionAdjacent = Block::Definitions[blockAdjacentType];
     }
     else if constexpr (faceType == FaceType::Top)
     {
-        blockDefinitionAdjacent = Block::Definitions[game.level.getRenderTile(x, y + 1, z)];
+        blockAdjacentType = game.level.getRenderTile(x, y + 1, z);
+        blockDefinitionAdjacent = Block::Definitions[blockAdjacentType];
     }
     else if constexpr (faceType == FaceType::Bottom)
     {
-        blockDefinitionAdjacent = Block::Definitions[game.level.getRenderTile(x, y - 1, z)];
+        blockAdjacentType = game.level.getRenderTile(x, y - 1, z);
+        blockDefinitionAdjacent = Block::Definitions[blockAdjacentType];
     }
     else if constexpr (faceType == FaceType::Front)
     {
-        blockDefinitionAdjacent = Block::Definitions[game.level.getRenderTile(x, y, z + 1)];
+        blockAdjacentType = game.level.getRenderTile(x, y, z + 1);
+        blockDefinitionAdjacent = Block::Definitions[blockAdjacentType];
     }
     else if constexpr (faceType == FaceType::Back)
     {
-        blockDefinitionAdjacent = Block::Definitions[game.level.getRenderTile(x, y, z - 1)];
+        blockAdjacentType = game.level.getRenderTile(x, y, z - 1);
+        blockDefinitionAdjacent = Block::Definitions[blockAdjacentType];
     }
 
     if (blockDefinition.draw == Block::DrawType::DRAW_OPAQUE)
@@ -148,7 +157,10 @@ inline bool Chunk::shouldRenderFace(const int x, const int y, const int z)
         blockDefinition.draw == Block::DrawType::DRAW_TRANSPARENT
     )
     {
-        if (blockDefinitionAdjacent.draw == blockDefinition.draw)
+        if (
+            blockDefinitionAdjacent.draw == blockDefinition.draw && 
+            blockAdjacentType == blockType
+        )
         {
             return false;
         }
@@ -183,8 +195,8 @@ inline bool Chunk::shouldRenderFace(const int x, const int y, const int z)
                         const auto bottomBlockDefinition = Block::Definitions[bottomBlockType];
 
                         if (
+                            bottomBlockType != topBlockType &&
                             bottomBlockDefinition.draw != Block::DrawType::DRAW_OPAQUE &&
-                            topBlockDefinition.draw != Block::DrawType::DRAW_TRANSLUCENT &&
                             topBlockDefinition.draw != Block::DrawType::DRAW_OPAQUE &&
                             topBlockDefinition.draw != Block::DrawType::DRAW_OPAQUE_SMALL
                         )
@@ -659,7 +671,7 @@ inline void Chunk::generateFaces()
 
                         if (
                             blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID &&
-                            game.level.getRenderTile(x, y, z) == game.level.getRenderTile(x, y - 1, z + 1)
+                            blockType == game.level.getRenderTile(x, y - 1, z + 1)
                         )
                         {
                             blockShift = -0.1f;
@@ -684,7 +696,7 @@ inline void Chunk::generateFaces()
 
                         if (
                             blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID &&
-                            game.level.getRenderTile(x, y, z) == game.level.getRenderTile(x, y - 1, z - 1)
+                            blockType == game.level.getRenderTile(x, y - 1, z - 1)
                         )
                         {
                             blockShift = -0.1f;
@@ -709,7 +721,7 @@ inline void Chunk::generateFaces()
 
                         if (
                             blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID &&
-                            game.level.getRenderTile(x, y, z) == game.level.getRenderTile(x + 1, y - 1, z)
+                            blockType == game.level.getRenderTile(x + 1, y - 1, z)
                         )
                         {
                             blockShift = -0.1f;
@@ -734,7 +746,7 @@ inline void Chunk::generateFaces()
 
                         if (
                             blockDefinition.collide == Block::CollideType::COLLIDE_LIQUID &&
-                            game.level.getRenderTile(x, y, z) == game.level.getRenderTile(x - 1, y - 1, z)
+                            blockType == game.level.getRenderTile(x - 1, y - 1, z)
                         )
                         {
                             blockShift = -0.1f;

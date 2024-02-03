@@ -26,43 +26,19 @@ void Level::tick()
 {
 	if (game.timer.ticks % 7 == 0)
 	{
-		auto liquidUpdatesSize = liquidUpdates.size();
+		size_t size = updates.size();
 
-		for (size_t i = 0; i < liquidUpdatesSize; i++)
+		for (size_t i = 0; i < size; i++)
 		{
-			auto tile = liquidUpdates.front();
-
-			if (canFlood(tile.x - 1, tile.y, tile.z))
-			{
-				setTileWithNeighborChange(tile.x - 1, tile.y, tile.z, tile.blockType);
-			}
-
-			if (canFlood(tile.x + 1, tile.y, tile.z))
-			{
-				setTileWithNeighborChange(tile.x + 1, tile.y, tile.z, tile.blockType);
-			}
-
-			if (canFlood(tile.x, tile.y - 1, tile.z))
-			{
-				setTileWithNeighborChange(tile.x, tile.y - 1, tile.z, tile.blockType);
-			}
-
-			if (canFlood(tile.x, tile.y, tile.z - 1))
-			{
-				setTileWithNeighborChange(tile.x, tile.y, tile.z - 1, tile.blockType);
-			}
-
-			if (canFlood(tile.x, tile.y, tile.z + 1))
-			{
-				setTileWithNeighborChange(tile.x, tile.y, tile.z + 1, tile.blockType);
-			}
-
-			liquidUpdates.pop();
+			auto& update = updates.front();
+			
+			updateTile(update.x, update.y, update.z);
+			updates.pop();
 		}
 	}
 }
 
-bool Level::canFlood(int x, int y, int z)
+bool Level::canFlood(int x, int y, int z, unsigned char blockType)
 {
 	for (int i = x - 2; i <= x + 2; i++)
 	{
@@ -70,7 +46,7 @@ bool Level::canFlood(int x, int y, int z)
 		{
 			for (int k = z - 2; k <= z + 2; k++)
 			{
-				if (getTile(i, j, k) == (unsigned char)Block::Type::BLOCK_SPONGE)
+				if (getTile(i, j, k) == (unsigned char)Block::Type::BLOCK_SPONGE && isWaterTile(blockType))
 				{
 					return false;
 				}
@@ -345,7 +321,7 @@ bool Level::containsLiquid(AABB box, Block::Type blockType)
 
 void Level::reset()
 {
-	liquidUpdates = {};
+	updates = {};
 }
 
 void Level::calculateSpawnPosition()
@@ -429,52 +405,109 @@ unsigned char Level::getRenderTile(int x, int y, int z)
 	return isInBounds(x, y, z) ? blocks[(z * Level::HEIGHT + y) * Level::WIDTH + x] : (unsigned char)Block::Type::BLOCK_AIR;
 }
 
-void Level::updateTile(int x, int y, int z, unsigned char tile)
+void Level::updateTile(int x, int y, int z, bool deferred)
 {
-	if (!game.network.isConnected() || game.network.isHost())
+	if (game.network.isConnected() && !game.network.isHost())
 	{
-		if (isInBounds(x, y, z))
+		return;
+	}
+
+	if (!isInBounds(x, y, z))
+	{
+		return;
+	}
+
+	auto blockType = getTile(x, y, z);
+
+	if (isMovingWaterTile(blockType) || isMovingLavaTile(blockType))
+	{
+		if (deferred)
 		{
-			auto blockType = getTile(x, y, z);
-
-			if (isMovingWaterTile(x, y, z) || isMovingLavaTile(x, y, z))
+			updates.push({ x, y, z, blockType });
+		}
+		else 
+		{
+			if (canFlood(x - 1, y, z, blockType))
 			{
-				if (
-					Block::Definitions[getTile(x - 1, y, z)].collide == Block::CollideType::COLLIDE_NONE ||
-					Block::Definitions[getTile(x + 1, y, z)].collide == Block::CollideType::COLLIDE_NONE ||
-					Block::Definitions[getTile(x, y - 1, z)].collide == Block::CollideType::COLLIDE_NONE ||
-					Block::Definitions[getTile(x, y, z - 1)].collide == Block::CollideType::COLLIDE_NONE ||
-					Block::Definitions[getTile(x, y, z + 1)].collide == Block::CollideType::COLLIDE_NONE
-					)
-				{
-					liquidUpdates.push({ x, y, z, blockType });
-				}
-
-				if (
-					(isMovingWaterTile(x, y, z) && isMovingLavaTile(tile)) ||
-					(isMovingLavaTile(x, y, z) && isMovingWaterTile(tile))
-				)
-				{
-					setTileWithNeighborChange(x, y, z, (unsigned char)Block::Type::BLOCK_OBSIDIAN);
-				}
+				setTileWithNoNeighborChange(x - 1, y, z, blockType);
+				updates.push({ x - 1, y, z, blockType });
 			}
-			else if (blockType == (unsigned char)Block::Type::BLOCK_SAND || blockType == (unsigned char)Block::Type::BLOCK_GRAVEL)
+			else if (
+				(isLavaTile(x - 1, y, z) && isWaterTile(blockType)) || 
+				(isWaterTile(x - 1, y, z) && isLavaTile(blockType))
+			)
 			{
-				int height = 1;
-				while (
-					Block::Definitions[getTile(x, y - height, z)].collide != Block::CollideType::COLLIDE_SOLID &&
-					isInBounds(x, y - height, z)
-					)
-				{
-					height++;
-				}
-
-				if (height > 1)
-				{
-					setTileWithNoNeighborChange(x, y - height + 1, z, blockType);
-					setTileWithNeighborChange(x, y, z, (unsigned char)Block::Type::BLOCK_AIR);
-				}
+				setTileWithNoNeighborChange(x - 1, y, z, (unsigned char)Block::Type::BLOCK_OBSIDIAN);
 			}
+
+			if (canFlood(x + 1, y, z, blockType))
+			{
+				setTileWithNoNeighborChange(x + 1, y, z, blockType);
+				updates.push({ x + 1, y, z, blockType });
+			}
+			else if (
+				(isLavaTile(x + 1, y, z) && isWaterTile(blockType)) || 
+				(isWaterTile(x + 1, y, z) && isLavaTile(blockType))
+			)
+			{
+				setTileWithNoNeighborChange(x + 1, y, z, (unsigned char)Block::Type::BLOCK_OBSIDIAN);
+			}
+
+			if (canFlood(x, y - 1, z, blockType))
+			{
+				setTileWithNoNeighborChange(x, y - 1, z, blockType);
+				updates.push({ x, y - 1, z, blockType });
+			}
+			else if (
+				(isLavaTile(x, y - 1, z) && isWaterTile(blockType)) || 
+				(isWaterTile(x, y - 1, z) && isLavaTile(blockType))
+			)
+			{
+				setTileWithNoNeighborChange(x, y - 1, z, (unsigned char)Block::Type::BLOCK_OBSIDIAN);
+			}
+
+			if (canFlood(x, y, z - 1, blockType))
+			{
+				setTileWithNoNeighborChange(x, y, z - 1, blockType);
+				updates.push({ x, y, z - 1, blockType });
+			}
+			else if (
+				(isLavaTile(x, y, z - 1) && isWaterTile(blockType)) ||
+				(isWaterTile(x, y, z - 1) && isLavaTile(blockType))
+			)
+			{
+				setTileWithNoNeighborChange(x, y, z - 1, (unsigned char)Block::Type::BLOCK_OBSIDIAN);
+			}
+
+			if (canFlood(x, y, z + 1, blockType))
+			{
+				setTileWithNoNeighborChange(x, y, z + 1, blockType);
+				updates.push({ x, y, z + 1, blockType });
+			}
+			else if (
+				(isLavaTile(x, y, z + 1) && isWaterTile(blockType)) || 
+				(isWaterTile(x, y, z + 1) && isLavaTile(blockType))
+			)
+			{
+				setTileWithNoNeighborChange(x, y, z + 1, (unsigned char)Block::Type::BLOCK_OBSIDIAN);
+			}
+		}
+	}
+	else if (blockType == (unsigned char)Block::Type::BLOCK_SAND || blockType == (unsigned char)Block::Type::BLOCK_GRAVEL)
+	{
+		int height = 1;
+		while (
+			Block::Definitions[getTile(x, y - height, z)].collide != Block::CollideType::COLLIDE_SOLID &&
+			isInBounds(x, y - height, z)
+		)
+		{
+			height++;
+		}
+
+		if (height > 1)
+		{
+			setTileWithNoNeighborChange(x, y - height + 1, z, blockType);
+			setTileWithNeighborChange(x, y, z, (unsigned char)Block::Type::BLOCK_AIR);
 		}
 	}
 }
@@ -483,13 +516,13 @@ bool Level::setTileWithNeighborChange(int x, int y, int z, unsigned char blockTy
 {
 	if (setTileWithNoNeighborChange(x, y, z, blockType, mode))
 	{
-		updateTile(x - 1, y, z, blockType);
-		updateTile(x + 1, y, z, blockType);
-		updateTile(x, y - 1, z, blockType);
-		updateTile(x, y + 1, z, blockType);
-		updateTile(x, y, z - 1, blockType);
-		updateTile(x, y, z + 1, blockType);
-		updateTile(x, y, z, blockType);
+		updateTile(x - 1, y, z, true);
+		updateTile(x + 1, y, z, true);
+		updateTile(x, y - 1, z, true);
+		updateTile(x, y + 1, z, true);
+		updateTile(x, y, z - 1, true);
+		updateTile(x, y, z + 1, true);
+		updateTile(x, y, z, true);
 
 		return true;
 	}
@@ -535,7 +568,7 @@ void Level::removedTile(int x, int y, int z, unsigned char blockType)
 			{
 				for (int k = z - 3; k <= z + 3; k++)
 				{
-					updateTile(i, j, k, getTile(i, j, k));
+					updateTile(i, j, k, true);
 				}
 			}
 		}

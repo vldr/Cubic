@@ -3,7 +3,6 @@
 #include "AABBPosition.h"
 
 #include <glm/glm.hpp>
-#include <vector>
 #include <queue>
 #include <memory>
 
@@ -29,11 +28,11 @@ public:
 	bool setTileWithNeighborChange(int x, int y, int z, unsigned char blockType, bool mode = false);
 	bool setTileWithNoNeighborChange(int x, int y, int z, unsigned char blockType, bool mode = false);
 
-	void addedTile(int x, int y, int z, unsigned char tile);
-	void removedTile(int x, int y, int z, unsigned char tile);
-	void updateTile(int x, int y, int z, unsigned char tile);
+	void addedTile(int x, int y, int z, unsigned char blockType);
+	void removedTile(int x, int y, int z, unsigned char blockType);
+	void updateTile(int x, int y, int z, bool deferred = false);
 
-	bool canFlood(int x, int y, int z);
+	bool canFlood(int x, int y, int z, unsigned char blockType);
 
 	bool isAirTile(int x, int y, int z);
 	bool isAirTile(unsigned char blockType);
@@ -72,6 +71,6 @@ public:
 	std::unique_ptr<unsigned char[]> blocks;
 
 private:
-	std::queue<Level::Tile> liquidUpdates;
+	std::queue<Level::Tile> updates;
 	std::unique_ptr<int[]> lightDepths;
 };
