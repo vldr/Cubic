@@ -1,10 +1,11 @@
 OUTPUT = output/cubic
 CXX = clang++
-CXXFLAGS = -arch x86_64 -arch arm64 -std=c++17 -Iincludes -ffast-math -O3
+CXXFLAGS = -arch x86_64 -arch arm64 -MMD -std=c++17 -Iincludes -ffast-math -O3
 LINKFLAGS = -Llibs -lpthread -lSDL2main -lSDL2 -framework OpenGL -lGLEW
 
 SRCS = $(wildcard ../../src/*.cpp)
 OBJS = $(patsubst ../../src/%, objs/%, $(patsubst %.cpp, %.o, $(SRCS)))
+DEPS = $(patsubst %.o, %.d, $(OBJS))
 
 ifeq ($(strip $(shell which $(CXX))),)
 $(error $(CXX) is not installed)
@@ -31,4 +32,6 @@ objs/%.o: ../../src/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS)
+	rm -f $(OBJS) $(DEPS)
+
+-include $(DEPS)

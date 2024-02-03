@@ -12,12 +12,12 @@ class UI
 public:
 	enum class State
 	{
-		None,
-		StatusMenu,
-		SelectBlockMenu,
-		MainMenu,
-		SaveMenu,
-		LoadMenu,
+		None = 0,
+		StatusMenu = 1 << 0,
+		SelectBlockMenu = 1 << 1,
+		MainMenu = 1 << 2,
+		SaveMenu = 1 << 3,
+		LoadMenu = 1 << 4,
 	};
 
 	void init();
@@ -38,8 +38,8 @@ public:
 private:
 	enum class MouseState
 	{
-		Up,
-		Down
+		Up = 0,
+		Down = 1 << 0,
 	};
 
 	enum class TouchState

@@ -14,12 +14,6 @@ public:
 	const static int HEIGHT = 64;
 	const static int DEPTH = 128;
 
-	struct Tile 
-	{
-		int x, y, z;
-		unsigned char blockType;
-	};
-
 	void init();
 	void tick();
 	void reset();
@@ -71,6 +65,10 @@ public:
 	std::unique_ptr<unsigned char[]> blocks;
 
 private:
-	std::queue<Level::Tile> updates;
+	struct Update { 
+		int x, y, z; 
+	};
+
+	std::queue<Update> updates;
 	std::unique_ptr<int[]> lightDepths;
 };

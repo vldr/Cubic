@@ -400,7 +400,11 @@ void UI::openMenu(UI::State newState, bool shouldUpdate)
 		emscripten_exit_pointerlock();
 #endif
 
-		mousePosition = {};
+		if (isTouch)
+		{
+			mousePosition = {};
+		}
+		
 		mouseState = MouseState::Up;
 		state = newState;
 
@@ -431,7 +435,6 @@ void UI::closeMenu()
 {
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 
-	mousePosition = {};
 	mouseState = MouseState::Up;
 	state = State::None;
 

@@ -54,7 +54,7 @@ bool Level::canFlood(int x, int y, int z, unsigned char blockType)
 		}
 	}
 
-	return (Block::Definitions[getTile(x, y, z)].collide == Block::CollideType::COLLIDE_NONE);
+	return Block::Definitions[getTile(x, y, z)].collide == Block::CollideType::COLLIDE_NONE;
 }
 
 bool Level::isTileLit(int x, int y, int z)
@@ -423,14 +423,15 @@ void Level::updateTile(int x, int y, int z, bool deferred)
 	{
 		if (deferred)
 		{
-			updates.push({ x, y, z, blockType });
+			updates.push({ x, y, z });
 		}
 		else 
 		{
 			if (canFlood(x - 1, y, z, blockType))
 			{
 				setTileWithNoNeighborChange(x - 1, y, z, blockType);
-				updates.push({ x - 1, y, z, blockType });
+
+				updates.push({ x - 1, y, z });
 			}
 			else if (
 				(isLavaTile(x - 1, y, z) && isWaterTile(blockType)) || 
@@ -443,7 +444,8 @@ void Level::updateTile(int x, int y, int z, bool deferred)
 			if (canFlood(x + 1, y, z, blockType))
 			{
 				setTileWithNoNeighborChange(x + 1, y, z, blockType);
-				updates.push({ x + 1, y, z, blockType });
+
+				updates.push({ x + 1, y, z });
 			}
 			else if (
 				(isLavaTile(x + 1, y, z) && isWaterTile(blockType)) || 
@@ -456,7 +458,8 @@ void Level::updateTile(int x, int y, int z, bool deferred)
 			if (canFlood(x, y - 1, z, blockType))
 			{
 				setTileWithNoNeighborChange(x, y - 1, z, blockType);
-				updates.push({ x, y - 1, z, blockType });
+
+				updates.push({ x, y - 1, z });
 			}
 			else if (
 				(isLavaTile(x, y - 1, z) && isWaterTile(blockType)) || 
@@ -469,7 +472,8 @@ void Level::updateTile(int x, int y, int z, bool deferred)
 			if (canFlood(x, y, z - 1, blockType))
 			{
 				setTileWithNoNeighborChange(x, y, z - 1, blockType);
-				updates.push({ x, y, z - 1, blockType });
+
+				updates.push({ x, y, z - 1 });
 			}
 			else if (
 				(isLavaTile(x, y, z - 1) && isWaterTile(blockType)) ||
@@ -482,7 +486,8 @@ void Level::updateTile(int x, int y, int z, bool deferred)
 			if (canFlood(x, y, z + 1, blockType))
 			{
 				setTileWithNoNeighborChange(x, y, z + 1, blockType);
-				updates.push({ x, y, z + 1, blockType });
+
+				updates.push({ x, y, z + 1 });
 			}
 			else if (
 				(isLavaTile(x, y, z + 1) && isWaterTile(blockType)) || 
