@@ -279,8 +279,11 @@ void Player::tick()
 
 void Player::rotate(float x, float y)
 {
-	rotation.x = x;
-	rotation.y = y;
+	rotation.x = -x;
+	rotation.y = y; 
+
+	rotationDelta.x = glm::mod(rotation.x - oldRotation.x + 180.0f, 360.0f) - 180.0f;
+	rotationDelta.y = rotation.y - oldRotation.y;
 }
 
 void Player::move(float x, float y, float z)
@@ -303,10 +306,10 @@ void Player::move(float x, float y, float z)
 
 void Player::render()
 {
-	const auto viewPosition = oldPosition + ((position - oldPosition) * game.timer.delta);
-	const auto viewRotation = oldRotation + ((rotation - oldRotation) * game.timer.delta);
-	const auto viewBobbing = oldBobbing + ((bobbing - oldBobbing) * game.timer.delta);
-	const auto viewWalkDistance = oldWalkDistance + ((walkDistance - oldWalkDistance) * game.timer.delta);
+	const float viewBobbing = oldBobbing + ((bobbing - oldBobbing) * game.timer.delta);
+	const float viewWalkDistance = oldWalkDistance + ((walkDistance - oldWalkDistance) * game.timer.delta);
+	const glm::vec3 viewPosition = oldPosition + ((position - oldPosition) * game.timer.delta);
+	const glm::vec2 viewRotation = oldRotation + (rotationDelta * game.timer.delta);
 
 	const float headHeight = 1.410000f;
 	const float armHeight = 1.410000f;
@@ -316,11 +319,11 @@ void Player::render()
 
 	auto matrix = game.IDENTITY_MATRIX;
 	matrix = glm::translate(matrix, viewPosition);
-	matrix = glm::rotate(matrix, viewRotation.x + glm::radians(180.0f), glm::vec3(0, 1, 0));
+	matrix = glm::rotate(matrix, glm::radians(viewRotation.x + 180.0f), glm::vec3(0, 1, 0));
 
 	auto subMatrix = matrix;
 	subMatrix = glm::translate(subMatrix, glm::vec3(0, headHeight, 0));
-	subMatrix = glm::rotate(subMatrix, viewRotation.y, glm::vec3(1.0f, 0.0f, 0.0f));
+	subMatrix = glm::rotate(subMatrix, glm::radians(viewRotation.y), glm::vec3(1.0f, 0.0f, 0.0f));
 	subMatrix = glm::translate(subMatrix, glm::vec3(0, -headHeight, 0));
 
 	glUniformMatrix4fv(game.modelMatrixUniform, 1, GL_FALSE, glm::value_ptr(subMatrix));

@@ -196,7 +196,7 @@ void Network::tick()
     }
 #endif
 
-    sendPosition(game.localPlayer.position, game.localPlayer.viewAngles);
+    sendPosition(game.localPlayer.position, game.localPlayer.rotation);
 
     for (auto positionPacket = positionPackets.begin(); positionPacket != positionPackets.end();)
     {
