@@ -19,11 +19,8 @@ static Network* network;
 static EMSCRIPTEN_WEBSOCKET_T socket;
 
 EM_JS(void, setHash, (const char* hash), { location.hash = UTF8ToString(hash); });
-EM_JS(char*, getHash, (), {
-    return stringToNewUTF8(
-        location.hash.replace("#","")
-    );
-});
+EM_JS(bool, hasHash, (), { return !!location.hash; });
+EM_JS(char*, getHash, (), { return stringToNewUTF8( location.hash.replace("#","") ); });
 
 EM_BOOL emscripten_on_message(int event_type, const EmscriptenWebSocketMessageEvent* websocket_event, void* user_data)
 {
@@ -124,15 +121,26 @@ void websocketpp_on_open(websocketpp_client* socket, websocketpp_connection_hand
 
 void Network::init()
 {
+    url = "...";
     connected = false;
     network = this;
 }
 
 void Network::connect()
 {
-    game.ui.openStatusMenu("Connecting", "Attempting to connect...");
+    const char* title = "Connecting";
+    const char* description = "Attempting to connect...";
 
 #if defined(EMSCRIPTEN)
+    if (hasHash())
+    {
+        game.ui.openStatusMenu(title, description);
+    }
+    else
+    {
+        game.ui.closeMenu();
+    }
+
     EmscriptenWebSocketCreateAttributes ws_attrs = {
         URI,
         NULL,
@@ -145,6 +153,8 @@ void Network::connect()
     emscripten_websocket_set_onclose_callback(socket, NULL, emscripten_on_close);
     emscripten_websocket_set_onopen_callback(socket, NULL, emscripten_on_open);
 #else
+    game.ui.openStatusMenu(title, description);
+
     try
     {
         socket_client = new websocketpp_client;
@@ -406,7 +416,17 @@ void Network::create()
 {
     if (isConnected())
     {
-        game.ui.openStatusMenu("Creating Room", "Attempting to create room...");
+        const char* title = "Creating Room";
+        const char* description = "Attempting to create room...";
+
+#if defined(EMSCRIPTEN)
+        if (hasHash())
+        {
+            game.ui.openStatusMenu(title, description);
+        }
+#else
+        game.ui.openStatusMenu(title, description);
+#endif
 
         nlohmann::json message;
         message["type"] = "create";
@@ -440,13 +460,12 @@ void Network::onOpen()
 
 void Network::onClose()
 {
-    connected = false;
-
 #if defined(EMSCRIPTEN)
     setHash("");
 #endif
 
     url = "...";
+    connected = false;
 
     players.clear();
     game.ui.openStatusMenu("Disconnected", "The connection was closed.", true);

@@ -65,7 +65,8 @@ public:
 	std::unique_ptr<unsigned char[]> blocks;
 
 private:
-	struct Update { 
+	struct Update
+	{ 
 		int x, y, z; 
 	};
 

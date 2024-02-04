@@ -15,18 +15,10 @@ public:
 	void update();
 
 private:
-	enum class State {
+	enum class State
+	{
 		Init,
-		HeightMap,
-		DirtStoneLava,
-		Water,
-		Caves,
-		Ore,
-		GrassSandGravel,
-		Flowers,
-		Mushrooms,
-		Trees,
-		Destroy,
+		Generate,
 		Finished,
 	};
 

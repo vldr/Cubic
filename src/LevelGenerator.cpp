@@ -377,7 +377,7 @@ void LevelGenerator::update()
 	switch (state)
 	{
 	case State::Init:
-		game.ui.openStatusMenu("Generating World", "Generating height map...");
+		game.ui.openStatusMenu("Generating World", "Generating a new world...");
 
 		heights = std::make_unique<int[]>(Level::WIDTH * Level::DEPTH);
 
@@ -388,74 +388,21 @@ void LevelGenerator::update()
 		noise2 = std::make_unique<CombinedNoise>(std::make_unique<OctaveNoise>(*random, 8), std::make_unique<OctaveNoise>(*random, 8));
 		noise3 = std::make_unique<OctaveNoise>(*random, 6);
 
-		state = State::HeightMap;
+		state = State::Generate;
 		break;
-	case State::HeightMap:
-		game.ui.openStatusMenu("Generating World", "Generating dirt, stone and lava...");
-
+	case State::Generate:
 		generateHeightMap();
-
-		state = State::DirtStoneLava;
-		break;
-	case State::DirtStoneLava:
-		game.ui.openStatusMenu("Generating World", "Generating water...");
-
 		generateDirtStoneLava();
-
-		state = State::Water;
-		break;
-	case State::Water:
-		game.ui.openStatusMenu("Generating World", "Generating caves...");
-
 		generateWater();
-
-		state = State::Caves;
-		break;
-	case State::Caves:
-		game.ui.openStatusMenu("Generating World", "Generating ores...");
-
 		generateCaves();
-
-		state = State::Ore;
-		break;
-	case State::Ore:
-		game.ui.openStatusMenu("Generating World", "Generating grass, sand and gravel...");
-
 		generateOre(Block::Type::BLOCK_COAL_ORE, 90);
 		generateOre(Block::Type::BLOCK_IRON_ORE, 70);
 		generateOre(Block::Type::BLOCK_GOLD_ORE, 50);
-
-		state = State::GrassSandGravel;
-		break;
-	case State::GrassSandGravel:
-		game.ui.openStatusMenu("Generating World", "Generating flowers...");
-
 		generateGrassSandGravel();
-
-		state = State::Flowers;
-		break;
-	case State::Flowers:
-		game.ui.openStatusMenu("Generating World", "Generating mushrooms...");
-
 		generateFlowers();
-
-		state = State::Mushrooms;
-		break;
-	case State::Mushrooms:
-		game.ui.openStatusMenu("Generating World", "Generating trees...");
-
 		generateMushrooms();
-
-		state = State::Trees;
-		break;
-	case State::Trees:
-		game.ui.openStatusMenu("Generating World", "Generating light depths...");
-
 		generateTrees();
 
-		state = State::Destroy;
-		break;
-	case State::Destroy:
 		game.level.calculateLightDepths(0, 0, Level::WIDTH, Level::DEPTH);
 		game.level.calculateSpawnPosition();
 		game.level.reset();
