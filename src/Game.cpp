@@ -30,13 +30,13 @@ EM_JS(void, glPolygonMode, (unsigned int face, unsigned int mode), {
 static const GLchar* fragmentSource = R""""(#version 100
     precision highp float;
 
-    uniform sampler2D TextureSample;
-    uniform vec2 FragmentOffset;
-    uniform vec3 PlayerPosition;
+    uniform sampler2D textureSample;
+    uniform vec2 fragmentOffset;
+    uniform vec3 playerPosition;
 
-    uniform float FogEnable;
-    uniform float FogDistance;
-    uniform vec4 FogColor;
+    uniform float fogEnable;
+    uniform float fogDistance;
+    uniform vec4 fogColor;
 
     varying vec3 fragmentPosition;
     varying vec2 fragmentTextureCoordinate;
@@ -52,7 +52,7 @@ static const GLchar* fragmentSource = R""""(#version 100
             float(size.x > 1.0 || size.y > 1.0)
         );
 
-        vec4 color = texture2D(TextureSample, textureCoordinate + FragmentOffset);
+        vec4 color = texture2D(textureSample, textureCoordinate + fragmentOffset);
         color.rgb *= fragmentShade;
 
         if (color.a == 0.0)
@@ -60,17 +60,16 @@ static const GLchar* fragmentSource = R""""(#version 100
             discard;
         }
 
-        float distance = length(fragmentPosition - PlayerPosition);
+        float distance = length(fragmentPosition - playerPosition);
+        float factor = (fogDistance - distance) / fogDistance;
+        factor = max(fogEnable, clamp(factor, 0.0, 1.0));
 
-        float factor = (FogDistance - distance) / FogDistance;
-        factor = max(FogEnable, clamp(factor, 0.0, 1.0));
-
-        gl_FragColor = mix(FogColor, color, factor);
+        gl_FragColor = mix(fogColor, color, factor);
     }
 )"""";
 
 static const GLchar* vertexSource = R""""(#version 100
-    uniform mat4 View, Projection, Model;
+    uniform mat4 view, projection, model;
 
     attribute vec3 position;
     attribute vec2 uv;
@@ -82,11 +81,11 @@ static const GLchar* vertexSource = R""""(#version 100
 
     void main()
     {
-        fragmentPosition = (Model * vec4(position, 1.0)).xyz;
+        fragmentPosition = (model * vec4(position, 1.0)).xyz;
         fragmentTextureCoordinate = uv;
         fragmentShade = shade;
 
-        gl_Position = Projection * View * Model * vec4(position, 1.0);
+        gl_Position = projection * view * model * vec4(position, 1.0);
     }
 )"""";
 
@@ -103,14 +102,14 @@ void Game::init(SDL_Window* window_)
     uvAttribute = glGetAttribLocation(shader, "uv");
     shadeAttribute = glGetAttribLocation(shader, "shade");
 
-    fragmentOffsetUniform = glGetUniformLocation(shader, "FragmentOffset");
-    playerPositionUniform = glGetUniformLocation(shader, "PlayerPosition");
-    fogEnableUniform = glGetUniformLocation(shader, "FogEnable");
-    fogDistanceUniform = glGetUniformLocation(shader, "FogDistance");
-    fogColorUniform = glGetUniformLocation(shader, "FogColor");
-    projectionMatrixUniform = glGetUniformLocation(shader, "Projection");
-    viewMatrixUniform = glGetUniformLocation(shader, "View");
-    modelMatrixUniform = glGetUniformLocation(shader, "Model");
+    fragmentOffsetUniform = glGetUniformLocation(shader, "fragmentOffset");
+    playerPositionUniform = glGetUniformLocation(shader, "playerPosition");
+    fogEnableUniform = glGetUniformLocation(shader, "fogEnable");
+    fogDistanceUniform = glGetUniformLocation(shader, "fogDistance");
+    fogColorUniform = glGetUniformLocation(shader, "fogColor");
+    projectionMatrixUniform = glGetUniformLocation(shader, "projection");
+    viewMatrixUniform = glGetUniformLocation(shader, "view");
+    modelMatrixUniform = glGetUniformLocation(shader, "model");
 
     window = window_;
     random.init(std::time(nullptr));
@@ -334,9 +333,15 @@ void Game::resize()
 
     glViewport(0, 0, width, height);
 
-    int scaleFactor = 1;
+#if defined(EMSCRIPTEN) 
+    int maxScaleFactor = (ui.isTouch || emscripten_get_device_pixel_ratio() >= 2.0) ? 6 : 3;
+#elif defined(ANDROID)
+    int maxScaleFactor = 6;
+#else
     int maxScaleFactor = ui.isTouch ? 6 : 3;
+#endif
 
+    int scaleFactor = 1;
     while (scaleFactor < maxScaleFactor && width / (scaleFactor + 1) >= 280 && height / (scaleFactor + 1) >= 200)
         scaleFactor++;
 

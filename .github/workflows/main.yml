@@ -8,7 +8,7 @@ permissions:
   contents: write
 
 env:
-  EM_VERSION: 3.1.53
+  EM_VERSION: 3.1.34
   EM_CACHE_FOLDER: "emsdk-cache"
 
 jobs:
