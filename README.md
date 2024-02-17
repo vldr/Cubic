@@ -21,6 +21,7 @@ Alternatively, you can play the game by downloading the precompiled binaries for
 - [Linux (Ubuntu/Debian)](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Linux.zip)
 
   Download and unzip all files, then in a terminal, run:
+  * `sudo apt update`
   * `sudo apt install libgl-dev libglew-dev libsdl2-dev`
   * `chmod +x cubic`
   * `./cubic`
