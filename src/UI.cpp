@@ -400,11 +400,7 @@ void UI::openMenu(UI::State newState, bool shouldUpdate)
 		emscripten_exit_pointerlock();
 #endif
 
-		if (isTouch)
-		{
-			mousePosition = {};
-		}
-		
+		mousePosition = {};
 		mouseState = MouseState::Up;
 		state = newState;
 
