@@ -197,8 +197,4 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <CopyFileToFolders Include="libs\glew32.dll" />
-    <CopyFileToFolders Include="libs\SDL2.dll" />
-  </ItemGroup>
 </Project>

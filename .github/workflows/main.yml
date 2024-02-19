@@ -65,7 +65,7 @@ jobs:
       - name: Bundle
         run: |
           cd build\windows\x64\Release
-          tar.exe -a -c -f cubic.zip Cubic.exe SDL2.dll glew32.dll
+          tar.exe -a -c -f cubic.zip Cubic.exe
 
       - name: Publish
         uses: svenstaro/upload-release-action@v2
