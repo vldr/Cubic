@@ -28,8 +28,8 @@ build: $(OBJS)
 	install_name_tool -change /usr/local/opt/sdl2/lib/libSDL2-2.0.0.dylib @executable_path/libSDL2.dylib $(OUTPUT)
 	rm -rf $(OUTPUT_BUNDLE)
 	mkdir -p "$(OUTPUT_BUNDLE)"/Contents/{MacOS,Resources}
-	cp -rf bundle/Info.plist "$(OUTPUT_BUNDLE)/Contents/"
-	cp -rf bundle/Icon.icns "$(OUTPUT_BUNDLE)/Contents/Resources/"
+	cp -rf resources/Info.plist "$(OUTPUT_BUNDLE)/Contents/"
+	cp -rf resources/Icon.icns "$(OUTPUT_BUNDLE)/Contents/Resources/"
 	cp -rf libs/libSDL2.dylib "$(OUTPUT_BUNDLE)/Contents/MacOS/"
 	cp -rf libs/libGLEW.dylib "$(OUTPUT_BUNDLE)/Contents/MacOS/"
 	mv $(OUTPUT) "$(OUTPUT_BUNDLE)/Contents/MacOS/"

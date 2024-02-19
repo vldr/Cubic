@@ -216,6 +216,9 @@
     <ClInclude Include="..\..\src\UI.h" />
     <ClInclude Include="..\..\src\VertexList.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Cubic.rc" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
