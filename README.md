@@ -28,8 +28,8 @@ Alternatively, you can play the game by downloading the precompiled binaries for
 - [MacOS](https://github.com/vldr/Cubic/releases/download/Build/Cubic_MacOS.zip)
 
   Download and unzip all files, then:
-  * Run the *cubic* executable from Finder.
-  * Go to **Apple menu > System Settings > Privacy & Security** and allow each file (you will have to relaunch the executable each time).
+  * Run *Cubic.app* from Finder.
+  * Go to **Apple menu > System Settings > Privacy & Security** and allow Cubic.app to run.
 - [Android](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Android.zip)
 
   Download and unzip all files, then install the *Cubic.apk* package:

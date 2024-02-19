@@ -124,7 +124,7 @@ jobs:
       - name: Bundle
         run: |
           cd build/macos/output
-          tar -a -c -f cubic.zip cubic libSDL2.dylib libGLEW.dylib
+          tar -a -c -f cubic.zip Cubic.app
 
       - name: Publish
         uses: svenstaro/upload-release-action@v2

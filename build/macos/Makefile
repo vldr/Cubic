@@ -1,4 +1,5 @@
 OUTPUT = output/cubic
+OUTPUT_BUNDLE = output/Cubic.app
 CXX = clang++
 CXXFLAGS = -arch x86_64 -arch arm64 -MMD -std=c++17 -Iincludes -ffast-math -O3
 LINKFLAGS = -Llibs -lpthread -lSDL2main -lSDL2 -framework OpenGL -lGLEW
@@ -10,23 +11,28 @@ DEPS = $(patsubst %.o, %.d, $(OBJS))
 ifeq ($(strip $(shell which $(CXX))),)
 $(error $(CXX) is not installed)
 endif
- 
-all: objs/ output/ build 
+
+all: objs/ output/ build
 
 objs/:
 	mkdir objs
- 
+
 output/:
 	mkdir output
 
 build: $(OBJS)
 	$(CXX) $(CXXFLAGS) $(LINKFLAGS) -o $(OUTPUT) $(OBJS)
-	install_name_tool -change /opt/homebrew/opt/glew/lib/libGLEW.2.2.dylib @executable_path/libGLEW.dylib output/cubic
-	install_name_tool -change /usr/local/opt/glew/lib/libGLEW.2.2.dylib @executable_path/libGLEW.dylib output/cubic
-	install_name_tool -change /opt/homebrew/opt/sdl2/lib/libSDL2-2.0.0.dylib @executable_path/libSDL2.dylib output/cubic
-	install_name_tool -change /usr/local/opt/sdl2/lib/libSDL2-2.0.0.dylib @executable_path/libSDL2.dylib output/cubic
-	cp -rf libs/libSDL2.dylib output/libSDL2.dylib
-	cp -rf libs/libGLEW.dylib output/libGLEW.dylib
+	install_name_tool -change /opt/homebrew/opt/glew/lib/libGLEW.2.2.dylib @executable_path/libGLEW.dylib $(OUTPUT)
+	install_name_tool -change /usr/local/opt/glew/lib/libGLEW.2.2.dylib @executable_path/libGLEW.dylib $(OUTPUT)
+	install_name_tool -change /opt/homebrew/opt/sdl2/lib/libSDL2-2.0.0.dylib @executable_path/libSDL2.dylib $(OUTPUT)
+	install_name_tool -change /usr/local/opt/sdl2/lib/libSDL2-2.0.0.dylib @executable_path/libSDL2.dylib $(OUTPUT)
+	rm -rf $(OUTPUT_BUNDLE)
+	mkdir -p "$(OUTPUT_BUNDLE)"/Contents/{MacOS,Resources}
+	cp -rf bundle/Info.plist "$(OUTPUT_BUNDLE)/Contents/"
+	cp -rf bundle/Icon.icns "$(OUTPUT_BUNDLE)/Contents/Resources/"
+	cp -rf libs/libSDL2.dylib "$(OUTPUT_BUNDLE)/Contents/MacOS/"
+	cp -rf libs/libGLEW.dylib "$(OUTPUT_BUNDLE)/Contents/MacOS/"
+	mv $(OUTPUT) "$(OUTPUT_BUNDLE)/Contents/MacOS/"
 
 objs/%.o: ../../src/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
