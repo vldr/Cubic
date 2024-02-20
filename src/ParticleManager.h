@@ -8,7 +8,6 @@
 class ParticleManager
 {
 public:
-	void init();
 	void tick();
 	void render();
 	void spawn(float x, float y, float z, unsigned char blockType);

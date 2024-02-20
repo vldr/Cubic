@@ -5,7 +5,6 @@ class Chunk;
 class Frustum 
 {
 public:
-	void init();
 	void update();
 	bool contains(Chunk* chunk);
 private:

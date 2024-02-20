@@ -5,10 +5,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-void Frustum::init()
-{
-}
-
 void Frustum::update()
 {
 	float* projection = glm::value_ptr(game.perspectiveProjectionMatrix);

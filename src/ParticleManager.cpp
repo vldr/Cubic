@@ -3,10 +3,6 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-void ParticleManager::init() 
-{
-}
-
 void ParticleManager::tick()
 {
 	for (auto particleGroup = particleGroups.begin(); particleGroup != particleGroups.end();)

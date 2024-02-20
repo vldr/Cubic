@@ -115,12 +115,10 @@ void Game::init(SDL_Window* window_)
     random.init(std::time(nullptr));
     timer.init(TICK_RATE);
     localPlayer.init();
-    frustum.init();
     network.init();
     ui.init();
     heldBlock.init();
     selectedBlock.init();
-    particleManager.init();
     levelGenerator.init();
     levelRenderer.init();
     lastTick = timer.milliTime();
