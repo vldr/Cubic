@@ -4,23 +4,19 @@
 class Timer
 {
 public:
-	uint64_t nanoTime();
-	uint64_t milliTime();
-	void init(float ticksPerSecond);
+	void init(float ticksPerSecond_);
 	void update();
 	void tick();
 
+	uint64_t milliTime();
+
 	int ticks;
-	int elapsedTicks;
-
-	float delta;
 	float ticksPerSecond;
+	float tickLength;
 
+	int deltaTicks;
+	float delta;
 private:
-	float lastHR;
-	float elapsedDelta;
 	uint64_t lastSystemClock;
-	uint64_t lastHRClock;
-	float adjustment;
 };
 

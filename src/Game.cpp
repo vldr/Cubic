@@ -138,7 +138,7 @@ void Game::render()
 {
     timer.update();
 
-    for (int i = 0; i < timer.elapsedTicks; i++)
+    for (int i = 0; i < timer.deltaTicks; i++)
     {
         localPlayer.tick();
         particleManager.tick();
