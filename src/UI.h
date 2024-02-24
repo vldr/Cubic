@@ -72,6 +72,7 @@ private:
 	{
 		std::string path;
 		std::string name;
+		int index;
 	};
 
 	struct TouchPosition 

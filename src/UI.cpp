@@ -483,28 +483,28 @@ void UI::refresh()
 	for (const auto& entry : std::filesystem::directory_iterator(game.path))
 	{
 		auto path = entry.path();
-		auto filename = path.filename();
+		auto filename = path.filename().u8string();
 
-		if (filename.u8string().rfind("Save") == 0)
+		if (auto index = filename.find("Save "); index != std::string::npos)
 		{
 			auto lastWriteTime = entry.last_write_time();
 			auto lastWriteSystemTime = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
 				lastWriteTime - std::filesystem::file_time_type::clock::now() + std::chrono::system_clock::now()
 			);
-
 			auto time = std::chrono::system_clock::to_time_t(lastWriteSystemTime);
 			
-			char filetime[128];
-			std::strftime(filetime, sizeof(filetime), " - %m/%d/%Y %H:%M:%S", std::localtime(&time));  
+			char timestamp[128];
+			std::strftime(timestamp, sizeof(timestamp), " - %m/%d/%Y %H:%M:%S", std::localtime(&time));
 
 			Save save;
-			save.name = filename.u8string() + filetime;
+			save.name = filename + timestamp;
 			save.path = path.u8string();
+			save.index = std::stoi(filename.erase(index, std::strlen("Save ")));
 			saves.push_back(save);
 		}
 	}
 
-	std::sort(saves.begin(), saves.end(), [](Save& save, Save& save2) { return save.name < save2.name; });
+	std::sort(saves.begin(), saves.end(), [](Save& save, Save& save2) { return save.index < save2.index; });
 }
 
 void UI::load(size_t index)
