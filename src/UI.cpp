@@ -514,9 +514,7 @@ void UI::load(size_t index)
 		return;
 	}
 
-	FILE* file;
-	file = fopen(saves[index].path.c_str(), "r");
-
+	FILE* file = fopen(saves[index].path.c_str(), "r");
 	if (file)
 	{
 		fread(game.level.blocks.get(), Level::WIDTH * Level::HEIGHT * Level::DEPTH, sizeof(unsigned char), file);
@@ -534,17 +532,17 @@ void UI::load(size_t index)
 
 void UI::save(size_t index)
 {
-	std::filesystem::path filename;
-	filename /= game.path;
-	filename /= std::string("Save ") + std::to_string(index);
-
 	FILE* file;
-	if (saves.size() > index)
+	if (index < saves.size())
 	{
 		file = fopen(saves[index].path.c_str(), "w");
 	}
 	else
 	{
+		std::filesystem::path filename;
+		filename /= game.path;
+		filename /= std::string("Save ") + std::to_string(index + 1);
+
 		file = fopen(filename.u8string().c_str(), "w");
 	}
 
