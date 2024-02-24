@@ -499,7 +499,7 @@ void UI::refresh()
 			Save save;
 			save.name = filename + timestamp;
 			save.path = path.u8string();
-			save.index = std::stoi(filename.erase(index, std::strlen("Save ")));
+			save.index = std::atoi(filename.erase(index, std::strlen("Save ")).c_str());
 			saves.push_back(save);
 		}
 	}
