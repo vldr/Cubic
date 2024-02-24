@@ -4,11 +4,9 @@
 #include "Block.h"
 #include "Resources.h"
 
-#include <ctime>
-#include <iomanip>
-#include <string>
-#include <sstream>
 #include <cstdio>
+#include <ctime>
+#include <string>
 #include <filesystem>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -479,16 +477,9 @@ void UI::think()
 void UI::refresh()
 {
 	page = 0;
-
 	saves.clear();
 
-#if defined(EMSCRIPTEN)
-	for (const auto& entry : std::filesystem::directory_iterator("saves/"))
-#elif defined(ANDROID)
-	for (const auto& entry : std::filesystem::directory_iterator(SDL_AndroidGetInternalStoragePath()))
-#else
-	for (const auto& entry : std::filesystem::directory_iterator("."))
-#endif
+	for (const auto& entry : std::filesystem::directory_iterator(game.path))
 	{
 		auto path = entry.path();
 		auto filename = path.filename();
@@ -500,16 +491,14 @@ void UI::refresh()
 				lastWriteTime - std::filesystem::file_time_type::clock::now() + std::chrono::system_clock::now()
 			);
 
-			std::time_t time = std::chrono::system_clock::to_time_t(lastWriteSystemTime);
-
-			std::stringstream name;
-			name << filename.u8string();
-			name << std::put_time(std::localtime(&time), " - %m/%d/%Y %H:%M:%S");
+			auto time = std::chrono::system_clock::to_time_t(lastWriteSystemTime);
+			
+			char filetime[128];
+			std::strftime(filetime, sizeof(filetime), " - %m/%d/%Y %H:%M:%S", std::localtime(&time));  
 
 			Save save;
-			save.name = name.str();
+			save.name = filename.u8string() + filetime;
 			save.path = path.u8string();
-
 			saves.push_back(save);
 		}
 	}
@@ -542,25 +531,18 @@ void UI::load(size_t index)
 
 void UI::save(size_t index)
 {
-	std::stringstream filename;
-
-#if defined(EMSCRIPTEN)
-	filename << "saves/Save " << index;
-#elif defined(ANDROID)
-	filename << SDL_AndroidGetInternalStoragePath() << "/Save " << index;
-#else
-	filename << "Save " << index;
-#endif
+	std::filesystem::path filename;
+	filename /= game.path;
+	filename /= std::string("Save ") + std::to_string(index);
 
 	FILE* file;
-
 	if (saves.size() > index)
 	{
 		file = fopen(saves[index].path.c_str(), "w");
 	}
 	else
 	{
-		file = fopen(filename.str().c_str(), "w");
+		file = fopen(filename.c_str(), "w");
 	}
 
 	if (file)

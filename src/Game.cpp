@@ -122,13 +122,17 @@ void Game::init(SDL_Window* window_)
     levelGenerator.init();
     levelRenderer.init();
     lastTick = timer.milliTime();
-    frameRate = 0;
     atlasTexture = textureManager.load(terrainResourceTexture, sizeof(terrainResourceTexture));
+    frameRate = 0;
+    fullscreen = false;
 
 #if defined(ANDROID)
     fullscreen = true;
+	path = SDL_AndroidGetInternalStoragePath();
+#elif defined(EMSCRIPTEN)
+    path = "saves";
 #else
-    fullscreen = false;
+    path = SDL_GetBasePath();  
 #endif
 
     resize();

@@ -64,6 +64,7 @@ public:
 	int height;
 	int width;
 	bool fullscreen;
+	const char* path;
 
 	int windowHeight;
 	int windowWidth;
