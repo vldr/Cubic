@@ -150,7 +150,7 @@ void Game::render()
         levelRenderer.tick();
         heldBlock.tick();
         network.tick();
-
+        ui.tick();
         timer.tick();
     }
 

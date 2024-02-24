@@ -18,5 +18,7 @@ public:
 	float delta;
 private:
 	uint64_t lastSystemClock;
+	
+	const int MAX_DELTA_TICKS = 100;
 };
 

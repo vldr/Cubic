@@ -24,6 +24,7 @@ public:
 	bool input(const SDL_Event& event);
 	void update();
 	void render();
+	void tick();
 
 	void openMenu(UI::State state, bool shouldUpdate = true);
 	void openStatusMenu(const char* title, const char* description, bool closeable = false);
@@ -88,7 +89,6 @@ private:
 		bool isHolding;
 	};
 
-	void think();
 	void refresh();
 	void load(size_t index);
 	void save(size_t index);
@@ -168,5 +168,9 @@ private:
 	GLuint interfaceTexture;
 
 	VertexList blockVertices;
+
+	const float TOUCH_SWIPE_OFFSET = 0.004f;
+	const int PLACE_TOUCH_DELAY = 200;
+	const int BREAK_TOUCH_DELAY = 300;
 };
 

@@ -17,6 +17,11 @@ void Timer::update()
 	deltaTicks = int(delta);
 	delta -= float(deltaTicks);
 	lastSystemClock = systemClock;
+
+	if (deltaTicks > MAX_DELTA_TICKS)
+	{
+		deltaTicks = MAX_DELTA_TICKS;
+	}
 }
 
 void Timer::tick()

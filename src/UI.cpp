@@ -84,7 +84,7 @@ bool UI::input(const SDL_Event& event)
 			{
 				if (touchPosition->id == event.tfinger.fingerId)
 				{
-					if (glm::abs(event.tfinger.dx) > 0.004f || glm::abs(event.tfinger.dy) > 0.004f)
+					if (glm::abs(event.tfinger.dx) > TOUCH_SWIPE_OFFSET || glm::abs(event.tfinger.dy) > TOUCH_SWIPE_OFFSET)
 					{
 						touchPosition->hold = false;
 					}
@@ -137,7 +137,7 @@ bool UI::input(const SDL_Event& event)
 					{
 						game.localPlayer.interactState &= ~(unsigned int)LocalPlayer::Interact::Left;
 					}
-					else if (touchPosition->hold && game.timer.milliTime() - touchPosition->startTime <= 200)
+					else if (touchPosition->hold && game.timer.milliTime() - touchPosition->startTime <= PLACE_TOUCH_DELAY)
 					{
 						game.localPlayer.interactState |= (unsigned int)LocalPlayer::Interact::Right;
 						game.localPlayer.interact();
@@ -223,7 +223,7 @@ bool UI::input(const SDL_Event& event)
 					event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN
 				) 
 				{
-					glm::vec2* selectedButtonPosition = nullptr;
+					glm::vec2* selectedButtonPosition{};
 
 					for (auto& buttonPosition : buttonPositions)
 					{
@@ -236,7 +236,7 @@ bool UI::input(const SDL_Event& event)
 
 					if (selectedButtonPosition)
 					{
-						glm::vec2* closestButtonPosition = nullptr;
+						glm::vec2* closestButtonPosition{};
 
 						for (auto& buttonPosition : buttonPositions)
 						{
@@ -294,7 +294,6 @@ bool UI::input(const SDL_Event& event)
 				mouseState = MouseState::Down;
 				
 				update();
-
 				return false;
 			}
 		}
@@ -303,8 +302,8 @@ bool UI::input(const SDL_Event& event)
 			if (state != State::None)
 			{
 				mouseState = MouseState::Up;
+				
 				update();
-
 				return false;
 			}
 		}
@@ -378,8 +377,6 @@ void UI::update()
 
 void UI::render()
 {
-	think();
-
 	blockVertices.render();
 
 	glBindTexture(GL_TEXTURE_2D, fontTexture);
@@ -387,6 +384,25 @@ void UI::render()
 
 	glBindTexture(GL_TEXTURE_2D, interfaceTexture);
 	interfaceVertices.render();
+}
+
+void UI::tick()
+{
+	if (!isTouch || state != State::None)
+	{
+		return;
+	}
+
+	for (auto& touchPosition : touchPositions)
+	{
+		if (touchPosition.hold && !touchPosition.isHolding && game.timer.milliTime() - touchPosition.startTime >= BREAK_TOUCH_DELAY)
+		{
+			game.localPlayer.interactState |= (unsigned int)LocalPlayer::Interact::Left;
+			
+			touchPosition.isHolding = true;
+			break;
+		}
+	}
 }
 
 void UI::openMenu(UI::State newState, bool shouldUpdate)
@@ -452,27 +468,6 @@ void UI::log(const char* format, ...)
 	logs.push_back(log);
 
 	update();
-}
-
-void UI::think()
-{
-	if (isTouch && state == State::None)
-	{
-		for (auto touchPosition = touchPositions.begin(); touchPosition != touchPositions.end(); touchPosition++)
-		{
-			if (
-				touchPosition->hold &&
-				!touchPosition->isHolding &&
-				game.timer.milliTime() - touchPosition->startTime >= 350 &&
-				!(game.localPlayer.interactState & (unsigned int)LocalPlayer::Interact::Left)
-			)
-			{
-				game.localPlayer.interactState |= (unsigned int)LocalPlayer::Interact::Left;
-
-				touchPosition->isHolding = true;
-			}
-		}
-	}
 }
 
 void UI::refresh()
