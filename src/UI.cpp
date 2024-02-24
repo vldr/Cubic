@@ -502,6 +502,8 @@ void UI::refresh()
 			saves.push_back(save);
 		}
 	}
+
+	std::sort(saves.begin(), saves.end(), [](Save& save, Save& save2) { return save.name < save2.name; });
 }
 
 void UI::load(size_t index)
@@ -542,7 +544,7 @@ void UI::save(size_t index)
 	}
 	else
 	{
-		file = fopen(filename.c_str(), "w");
+		file = fopen(filename.u8string().c_str(), "w");
 	}
 
 	if (file)
