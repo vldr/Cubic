@@ -196,7 +196,7 @@ void Skybox::renderWater()
 void Skybox::renderClouds()
 {
     glBindTexture(GL_TEXTURE_2D, cloudsTexture);
-    glUniform2f(game.fragmentOffsetUniform, (0.03f * game.timer.ticks) / 2048.f, 0.0f);
+    glUniform2f(game.fragmentOffsetUniform, (0.03f * (game.timer.ticks + game.timer.delta)) / 2048.f, 0.0f);
 
     cloudsVertices.render();
 

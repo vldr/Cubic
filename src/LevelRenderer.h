@@ -25,7 +25,7 @@ public:
 	unsigned char waterTextureData[1024] = {};
 	unsigned char lavaTextureData[1024] = {};
 
-	std::priority_queue<Chunk*, std::vector<Chunk*>, Chunk::Comparator> chunksQueue;
+	std::priority_queue<Chunk*, std::vector<Chunk*>, Chunk::Comparator> chunkQueue;
 private:
 	void updateWaterTexture();
 	void updateLavaTexture();
@@ -48,6 +48,6 @@ private:
 	int yChunks;
 	int zChunks;
 
-	const int maxChunkUpdates = 4;
+	const int MAX_CHUNK_UPDATES = 4;
 };
 

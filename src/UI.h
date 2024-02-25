@@ -170,7 +170,7 @@ private:
 	VertexList blockVertices;
 
 	const float TOUCH_SWIPE_OFFSET = 0.004f;
-	const int PLACE_TOUCH_DELAY = 200;
-	const int BREAK_TOUCH_DELAY = 300;
+	const int TOUCH_PLACE_DELAY = 200;
+	const int TOUCH_BREAK_DELAY = 300;
 };
 

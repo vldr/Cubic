@@ -32,20 +32,21 @@ void LevelRenderer::init()
 
 void LevelRenderer::render()
 {
-    int chunksCount = 0;
-    while (!chunksQueue.empty() && chunksCount < maxChunkUpdates)
+    int chunkUpdates = 0;
+    while (chunkUpdates < MAX_CHUNK_UPDATES && !chunkQueue.empty())
     {
-        Chunk* chunk = chunksQueue.top();
-        chunk->update();
+        Chunk* chunk = chunkQueue.top();
         chunk->isLoaded = true;
+        chunk->update();
 
-        chunksCount++;
-        chunksQueue.pop();
+        chunkUpdates++;
+        chunkQueue.pop();
     }
 
-    game.chunkUpdates += chunksCount;
+    game.chunkUpdates += chunkUpdates;
 
     glBindTexture(GL_TEXTURE_2D, game.atlasTexture);
+    
     for (int i = 0; i < xChunks * yChunks * zChunks; i++)
     {
         Chunk* chunk = &chunks[i];
@@ -66,6 +67,7 @@ void LevelRenderer::renderPost()
 {
     glBindTexture(GL_TEXTURE_2D, game.atlasTexture);
     glColorMask(false, false, false, false);
+
     for (int i = 0; i < xChunks * yChunks * zChunks; i++)
     {
         Chunk* chunk = &chunks[i];
@@ -80,6 +82,7 @@ void LevelRenderer::renderPost()
 
     glBindTexture(GL_TEXTURE_2D, game.atlasTexture);
     glColorMask(true, true, true, true);
+
     for (int i = 0; i < xChunks * yChunks * zChunks; i++)
     {
         Chunk* chunk = &chunks[i];
@@ -209,7 +212,7 @@ void LevelRenderer::initChunks()
         Chunk* chunk = &chunks[i];
 		chunk->isLoaded = false;
 
-		chunksQueue.push(chunk);
+		chunkQueue.push(chunk);
     }	
 }
 
@@ -265,7 +268,7 @@ void LevelRenderer::loadChunks(int x0, int y0, int z0, int x1, int y1, int z1)
                 {
                     chunk->isLoaded = false;
 
-                    chunksQueue.push(chunk);
+                    chunkQueue.push(chunk);
                 }
             }
         }

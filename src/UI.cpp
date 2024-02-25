@@ -137,7 +137,7 @@ bool UI::input(const SDL_Event& event)
 					{
 						game.localPlayer.interactState &= ~(unsigned int)LocalPlayer::Interact::Left;
 					}
-					else if (touchPosition->hold && game.timer.milliTime() - touchPosition->startTime <= PLACE_TOUCH_DELAY)
+					else if (touchPosition->hold && game.timer.milliTime() - touchPosition->startTime <= TOUCH_PLACE_DELAY)
 					{
 						game.localPlayer.interactState |= (unsigned int)LocalPlayer::Interact::Right;
 						game.localPlayer.interact();
@@ -395,7 +395,7 @@ void UI::tick()
 
 	for (auto& touchPosition : touchPositions)
 	{
-		if (touchPosition.hold && !touchPosition.isHolding && game.timer.milliTime() - touchPosition.startTime >= BREAK_TOUCH_DELAY)
+		if (touchPosition.hold && !touchPosition.isHolding && game.timer.milliTime() - touchPosition.startTime >= TOUCH_BREAK_DELAY)
 		{
 			game.localPlayer.interactState |= (unsigned int)LocalPlayer::Interact::Left;
 			
