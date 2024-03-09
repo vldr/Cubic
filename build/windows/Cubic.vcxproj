@@ -160,6 +160,7 @@
     <ClCompile Include="..\..\src\FastLZ.cpp" />
     <ClCompile Include="..\..\src\Frustum.cpp" />
     <ClCompile Include="..\..\src\HeldBlock.cpp" />
+    <ClCompile Include="..\..\src\JSON.cpp" />
     <ClCompile Include="..\..\src\Network.cpp" />
     <ClCompile Include="..\..\src\ParticleManager.cpp" />
     <ClCompile Include="..\..\src\LevelGenerator.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="..\..\src\FastLZ.h" />
     <ClInclude Include="..\..\src\Frustum.h" />
     <ClInclude Include="..\..\src\HeldBlock.h" />
+    <ClInclude Include="..\..\src\JSON.h" />
     <ClInclude Include="..\..\src\Network.h" />
     <ClInclude Include="..\..\src\ParticleManager.h" />
     <ClInclude Include="..\..\src\LevelGenerator.h" />

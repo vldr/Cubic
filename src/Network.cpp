@@ -1,20 +1,15 @@
 #include "Network.h"
 #include "Game.h"
 #include "FastLZ.h"
+#include "JSON.h"
 
 #include <cstdlib>
 
 static Network* network;
 
 #if defined(EMSCRIPTEN)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Weverything"
-
 #include <emscripten/emscripten.h>
 #include <emscripten/websocket.h>
-#include <json.hpp>
-
-#pragma clang diagnostic pop
 
 static EMSCRIPTEN_WEBSOCKET_T socket;
 
@@ -72,7 +67,6 @@ EM_BOOL emscripten_on_open(int event_type, const EmscriptenWebSocketOpenEvent* w
 
 #include <websocketpp/config/asio_no_tls_client.hpp>
 #include <websocketpp/client.hpp>
-#include <json.hpp>
 
 #if defined(_WIN32)
 #pragma warning(pop)
@@ -402,11 +396,8 @@ void Network::join(const std::string& id)
     {
         game.ui.openStatusMenu("Joining Room", "Attempting to join room...");
 
-        nlohmann::json message;
-        message["type"] = "join";
-        message["id"] = id;
-
-        send(message.dump());
+        std::string message("{\"type\":\"join\",\"id\":\"" + id + "\"}");
+        send(message);
 
         url = BASE_URL + id;
     }
@@ -428,11 +419,8 @@ void Network::create()
         game.ui.openStatusMenu(title, description);
 #endif
 
-        nlohmann::json message;
-        message["type"] = "create";
-        message["size"] = UCHAR_MAX - 1;
-
-        send(message.dump());
+        std::string message("{\"type\":\"create\",\"size\":254}");
+        send(message);
     }
 }
 
@@ -473,16 +461,21 @@ void Network::onClose()
 
 void Network::onMessage(const std::string& text)
 {
-    auto message = nlohmann::json::parse(text);
+    const auto MAX_FIELDS = 4;
+    json_t pool[MAX_FIELDS];
 
-    if (message["type"] == "error")
+    auto json = text;
+    auto message = json_create(json.data(), pool, MAX_FIELDS);
+    
+    std::string type = json_getValue(json_getProperty(message, "type"));
+    if (type == "error")
     {
-        std::string reason = message["message"];
+        std::string reason = json_getValue(json_getProperty(message, "message"));
         game.ui.openStatusMenu("Error", reason.c_str(), true);
     }
-    else if (message["type"] == "create")
+    else if (type == "create")
     {
-        std::string id = message["id"];
+        std::string id = json_getValue(json_getProperty(message, "id"));
 
         players.push_back(nullptr);
 
@@ -494,9 +487,9 @@ void Network::onMessage(const std::string& text)
 
         game.ui.closeMenu();
     }
-    else if (message["type"] == "join")
+    else if (type == "join")
     {
-        if (message["size"].is_null())
+        if (!json_getProperty(message, "size"))
         {
             auto player = std::make_unique<Player>();
             player->init();
@@ -515,7 +508,7 @@ void Network::onMessage(const std::string& text)
         }
         else
         {
-            unsigned int size = message["size"];
+            unsigned int size = (unsigned int)json_getInteger(json_getProperty(message, "size"));
 
             for (unsigned int i = 0; i < size; i++)
             {
@@ -528,9 +521,9 @@ void Network::onMessage(const std::string& text)
             players.push_back(nullptr);
         }
     }
-    else if (message["type"] == "leave")
+    else if (type == "leave")
     {
-        unsigned int index = message["index"];
+        unsigned int index = (unsigned int)json_getInteger(json_getProperty(message, "index"));
 
         for (auto positionPacket = positionPackets.begin(); positionPacket != positionPackets.end();)
         {
