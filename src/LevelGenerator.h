@@ -18,7 +18,16 @@ private:
 	enum class State
 	{
 		Init,
-		Generate,
+		HeightMap,
+		DirtStoneLava,
+		Water,
+		Caves,
+		Ore,
+		GrassSandGravel,
+		Flowers,
+		Mushrooms,
+		Trees,
+		Destroy,
 		Finished,
 	};
 
@@ -40,4 +49,3 @@ private:
 	std::shared_ptr<CombinedNoise> noise2;
 	std::shared_ptr<OctaveNoise> noise3;
 };
-
