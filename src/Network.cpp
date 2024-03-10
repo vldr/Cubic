@@ -396,7 +396,15 @@ void Network::join(const std::string& id)
     {
         game.ui.openStatusMenu("Joining Room", "Attempting to join room...");
 
-        std::string message("{\"type\":\"join\",\"id\":\"" + id + "\"}");
+        char message[512];
+        size_t length = sizeof(message) / sizeof(*message);
+
+        auto it = json_objOpen(message, nullptr, &length);
+        it = json_str(it, "type", "join", &length);
+        it = json_str(it, "id", id.c_str(), &length);
+        it = json_objClose(it, &length);
+        it = json_end(it, &length);
+
         send(message);
 
         url = BASE_URL + id;
@@ -419,7 +427,15 @@ void Network::create()
         game.ui.openStatusMenu(title, description);
 #endif
 
-        std::string message("{\"type\":\"create\",\"size\":254}");
+        char message[512];
+        size_t length = sizeof(message) / sizeof(*message);
+
+        auto it = json_objOpen(message, nullptr, &length);
+        it = json_str(it, "type", "create", &length);
+        it = json_int(it, "size", UCHAR_MAX - 1, &length);
+        it = json_objClose(it, &length);
+        it = json_end(it, &length);
+
         send(message);
     }
 }

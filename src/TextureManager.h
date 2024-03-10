@@ -1,7 +1,5 @@
 #pragma once
 #include <GL/glew.h>
-#include <unordered_map>
-#include <vector>
 
 class TextureManager
 {

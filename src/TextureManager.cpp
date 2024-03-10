@@ -1,6 +1,8 @@
 #include "TextureManager.h"
 #include "PNG.h"
 
+#include <vector>
+
 GLuint TextureManager::load(const unsigned char* data, size_t length)
 {
     upng_t* upng = upng_new_from_bytes(data, (unsigned long)length);
