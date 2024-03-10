@@ -21,7 +21,7 @@
   THE SOFTWARE.
 */
 
-#include "FastLZ.h"
+#include "LZ.h"
 
 #include <stdint.h>
 

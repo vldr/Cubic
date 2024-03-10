@@ -14,7 +14,14 @@ void Skybox::init()
 
 void Skybox::initBedrock()
 {
-    bedrockTexture = game.textureManager.load(bedrockResourceTexture, sizeof(bedrockResourceTexture));
+    const unsigned char blockType = (unsigned char)Block::Type::BLOCK_BEDROCK;
+    const unsigned char texture = Block::Definitions[blockType].sideTexture;
+    const int width = 16;
+    const int height = 16;
+    const int x = (texture % width) * width;
+    const int y = (texture / height) * height;
+
+    bedrockTexture = game.textureManager.load(terrainResourceTexture, sizeof(terrainResourceTexture), x, y, width, height);
     bedrockVertices.init();
 
     const float ground = (float)game.level.groundLevel;
@@ -81,7 +88,14 @@ void Skybox::initBedrock()
 
 void Skybox::initWater()
 {
-    waterTexture = game.textureManager.load(waterResourceTexture, sizeof(waterResourceTexture));
+    const unsigned char blockType = (unsigned char)Block::Type::BLOCK_WATER;
+    const unsigned char texture = Block::Definitions[blockType].sideTexture;
+    const int width = 16;
+    const int height = 16;
+    const int x = (texture % width) * width;
+    const int y = (texture / height) * height;
+
+    waterTexture = game.textureManager.load(terrainResourceTexture, sizeof(terrainResourceTexture), x, y, width, height);
     waterVertices.init();
 
     const float water = (float)game.level.waterLevel;
@@ -153,7 +167,7 @@ void Skybox::initClouds()
 
 void Skybox::initSky()
 {
-    skyTexture = game.textureManager.generateSolidColor(0.6f, 0.8f, 1.0f);
+    skyTexture = game.textureManager.loadColor(0.6f, 0.8f, 1.0f);
     skyVertices.init();
 
     float y = Level::HEIGHT + 10.0f;

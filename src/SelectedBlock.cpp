@@ -4,7 +4,7 @@
 
 void SelectedBlock::init()
 {
-    texture = game.textureManager.generateSolidColor(0.0f, 0.0f, 0.0f, 1.0f);
+    texture = game.textureManager.loadColor(0.0f, 0.0f, 0.0f);
 
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);

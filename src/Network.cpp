@@ -1,6 +1,6 @@
 #include "Network.h"
 #include "Game.h"
-#include "FastLZ.h"
+#include "LZ.h"
 #include "JSON.h"
 
 #include <cstdlib>
