@@ -460,7 +460,7 @@ void LevelGenerator::update()
 		game.level.calculateSpawnPosition();
 		game.level.reset();
 
-		game.levelRenderer.initChunks();
+		game.levelRenderer.loadAllChunks();
 		game.network.connect();
 
 		heights.reset();

@@ -100,14 +100,18 @@ void LevelRenderer::tick()
 {
     glBindTexture(GL_TEXTURE_2D, game.atlasTexture);
 
-    updateWaterTexture();
     updateLavaTexture();
-
-    skybox.updateWater(waterTextureData);
+    updateWaterTexture();
 }
 
 void LevelRenderer::updateWaterTexture()
 {
+    static unsigned char waterTextureData[1024] = {};
+	static float waterTextureRed[256] = {};
+	static float waterTextureGreen[256] = {};
+	static float waterTextureBlue[256] = {};
+	static float waterTextureAlpha[256] = {};
+
     for (int x = 0; x < 16; x++) 
     {
         for (int y = 0; y < 16; y++) 
@@ -156,10 +160,18 @@ void LevelRenderer::updateWaterTexture()
 
     const auto texture = Block::Definitions[(unsigned char)Block::Type::BLOCK_WATER].topTexture;
     glTexSubImage2D(GL_TEXTURE_2D, 0, texture % 16 << 4, texture / 16 << 4, 16, 16, GL_RGBA, GL_UNSIGNED_BYTE, waterTextureData);
+    
+    skybox.updateWater(waterTextureData);
 }
 
 void LevelRenderer::updateLavaTexture()
 {
+    static unsigned char lavaTextureData[1024] = {};
+    static float lavaTextureRed[256] = {};
+	static float lavaTextureGreen[256] = {};
+	static float lavaTextureBlue[256] = {};
+	static float lavaTextureAlpha[256] = {};
+
     for (int x = 0; x < 16; x++) 
     {
         for (int y = 0; y < 16; y++) 
@@ -205,7 +217,7 @@ void LevelRenderer::updateLavaTexture()
     glTexSubImage2D(GL_TEXTURE_2D, 0, texture % 16 << 4, texture / 16 << 4, 16, 16, GL_RGBA, GL_UNSIGNED_BYTE, lavaTextureData);
 }
 
-void LevelRenderer::initChunks()
+void LevelRenderer::loadAllChunks()
 {
     for (int i = 0; i < xChunks * yChunks * zChunks; i++)
     {
@@ -213,64 +225,40 @@ void LevelRenderer::initChunks()
 		chunk->isLoaded = false;
 
 		chunkQueue.push(chunk);
-    }	
+    }
 }
 
-void LevelRenderer::loadChunks(int x0, int y0, int z0, int x1, int y1, int z1)
+void LevelRenderer::loadChunks(int x, int y, int z)
 {
-    x0 /= Chunk::SIZE;
-    y0 /= Chunk::SIZE;
-    z0 /= Chunk::SIZE;
+    static const glm::ivec3 offsets[] = {
+        glm::ivec3(0, 0, 0),
+        glm::ivec3(1, 0, 0),
+        glm::ivec3(-1, 0, 0),
+        glm::ivec3(0, 1, 0),
+        glm::ivec3(0, -1, 0),
+        glm::ivec3(0, 0, 1),
+        glm::ivec3(0, 0, -1),
+    };
 
-    x1 /= Chunk::SIZE;
-    y1 /= Chunk::SIZE;
-    z1 /= Chunk::SIZE;
-
-    if (x0 < 0)
+    for (const auto& offset : offsets)
     {
-        x0 = 0;
-    }
+        auto offsetX = (x + offset.x) / Chunk::SIZE;
+        auto offsetY = (y + offset.y) / Chunk::SIZE;
+        auto offsetZ = (z + offset.z) / Chunk::SIZE;
 
-    if (y0 < 0)
-    {
-        y0 = 0;
-    }
-
-    if (z0 < 0)
-    {
-        z0 = 0;
-    }
-
-    if (x1 > xChunks - 1)
-    {
-        x1 = xChunks - 1;
-    }
-
-    if (y1 > yChunks - 1)
-    {
-        y1 = yChunks - 1;
-    }
-
-    if (z1 > zChunks - 1)
-    {
-        z1 = zChunks - 1;
-    }
-
-    for (int x = x0; x <= x1; x++)
-    {
-        for (int y = y0; y <= y1; y++)
+        if (
+            offsetX < 0 || offsetY < 0 || offsetZ < 0 || 
+            offsetX > xChunks - 1 || offsetY > yChunks - 1 || offsetZ > zChunks - 1
+        )
         {
-            for (int z = z0; z <= z1; z++)
-            {
-                Chunk* chunk = getChunk(x, y, z);
+            continue;
+        }
 
-                if (chunk->isLoaded)
-                {
-                    chunk->isLoaded = false;
+        if (Chunk* chunk = getChunk(offsetX, offsetY, offsetZ); chunk->isLoaded)
+        {
+            chunk->isLoaded = false;
 
-                    chunkQueue.push(chunk);
-                }
-            }
+            chunkQueue.push(chunk);
         }
     }
 }

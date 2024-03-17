@@ -17,15 +17,10 @@ public:
 	void renderPost();
 	void tick();
 
-	void initChunks();
-	void loadChunks(int x0, int y0, int z0, int x1, int y1, int z1);
-
+	void loadAllChunks();
+	void loadChunks(int x, int y, int z);
 	Chunk* getChunk(int x, int y, int z);
 
-	unsigned char waterTextureData[1024] = {};
-	unsigned char lavaTextureData[1024] = {};
-
-	std::priority_queue<Chunk*, std::vector<Chunk*>, Chunk::Comparator> chunkQueue;
 private:
 	void updateWaterTexture();
 	void updateLavaTexture();
@@ -33,16 +28,7 @@ private:
 	Skybox skybox;
 
 	std::unique_ptr<Chunk[]> chunks;
-
-	float waterTextureRed[256] = {};
-	float waterTextureGreen[256] = {};
-	float waterTextureBlue[256] = {};
-	float waterTextureAlpha[256] = {};
-
-	float lavaTextureRed[256] = {};
-	float lavaTextureGreen[256] = {};
-	float lavaTextureBlue[256] = {};
-	float lavaTextureAlpha[256] = {};
+	std::priority_queue<Chunk*, std::vector<Chunk*>, Chunk::Comparator> chunkQueue;
 
 	int xChunks;
 	int yChunks;

@@ -319,7 +319,7 @@ void Network::sendPosition(const glm::vec3& position, const glm::vec2& rotation)
 {
     if (isConnected() && players.size() > 1)
     {
-        PositionPacket packet = PositionPacket();
+        auto packet = PositionPacket();
         packet.index = UCHAR_MAX;
         packet.position = position;
         packet.rotation = rotation;
@@ -348,7 +348,7 @@ void Network::sendSetBlock(int x, int y, int z, unsigned char blockType, bool mo
 {
     if (isConnected() && players.size() > 1)
     {
-        SetBlockPacket packet = SetBlockPacket();
+        auto packet = SetBlockPacket();
 
         if (isHost())
         {
@@ -610,7 +610,7 @@ void Network::onBinaryMessage(const unsigned char* data, size_t size)
         }
 
         game.level.calculateLightDepths(0, 0, Level::WIDTH, Level::DEPTH);
-        game.levelRenderer.loadChunks(0, 0, 0, Level::WIDTH, Level::HEIGHT, Level::DEPTH);
+        game.levelRenderer.loadAllChunks();
 
         if (packet->respawn)
         {

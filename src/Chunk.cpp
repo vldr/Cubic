@@ -797,9 +797,9 @@ void Chunk::renderWater()
 
 float Chunk::distanceToPlayer() const
 {
-    float distanceX = game.localPlayer.position.x - (float)position.x;
-    float distanceY = game.localPlayer.position.y - (float)position.y;
-    float distanceZ = game.localPlayer.position.z - (float)position.z;
+    float distanceX = game.localPlayer.position.x - (position.x + SIZE / 2);
+    float distanceY = game.localPlayer.position.y - (position.y + SIZE / 2);
+    float distanceZ = game.localPlayer.position.z - (position.z + SIZE / 2);
 
     return distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ;
 }

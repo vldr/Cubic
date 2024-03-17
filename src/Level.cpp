@@ -381,7 +381,7 @@ void Level::calculateLightDepths(int x, int z, int offsetX, int offsetZ)
 				int min = blocker < k ? blocker : k;
 				int max = blocker > k ? blocker : k;
 
-				game.levelRenderer.loadChunks(i - 1, min - 1, j - 1, i + 1, max + 1, j + 1);
+				game.levelRenderer.loadChunks(i, min, j);
 			}
 		}
 	}
@@ -606,7 +606,7 @@ bool Level::setTileWithNoNeighborChange(int x, int y, int z, unsigned char block
 	setTile(x, y, z, blockType, mode);
 	calculateLightDepths(x, z, 1, 1);
 
-	game.levelRenderer.loadChunks(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1);
+	game.levelRenderer.loadChunks(x, y, z);
 
 	if (previousBlockType != (unsigned char)Block::Type::BLOCK_AIR) 
 	{ 
