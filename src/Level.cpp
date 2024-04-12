@@ -757,7 +757,7 @@ AABBPosition Level::clip(glm::vec3 start, glm::vec3 end, const glm::ivec3* expec
 			if (nextIntersection.z != 999.0) { intersectionDistances.z = (nextIntersection.z - start.z) / movementVector.z; }
 
 			int axisOfLeastPenetration;
-			if (intersectionDistances.x < intersectionDistances.y&& intersectionDistances.x < intersectionDistances.z)
+			if (intersectionDistances.x < intersectionDistances.y && intersectionDistances.x < intersectionDistances.z)
 			{
 				axisOfLeastPenetration = endBlockX > startBlockX ? 4 : 5;
 				start.x = nextIntersection.x;
