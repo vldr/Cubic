@@ -1271,13 +1271,13 @@ void UI::drawBlock(unsigned char blockType, float x, float y, float scale)
 	if (blockDefinition.draw == Block::DrawType::DRAW_SPRITE)
 	{
 		const VertexList::Vertex spriteVertexList[] = {
-			VertexList::Vertex(0.0f, 1.0f, 1.0f, u, v, 1.0f),
-			VertexList::Vertex(0.0f, 0.0f, 1.0f, u, v2, 1.0f),
-			VertexList::Vertex(1.0f, 0.0f, 1.0f, u2, v2, 1.0f),
+			{0.0f, 1.0f, 1.0f, u, v, 1.0f},
+			{0.0f, 0.0f, 1.0f, u, v2, 1.0f},
+			{1.0f, 0.0f, 1.0f, u2, v2, 1.0f},
 
-			VertexList::Vertex(0.0f, 1.0f, 1.0f, u, v, 1.0f),
-			VertexList::Vertex(1.0f, 0.0f, 1.0f, u2, v2, 1.0f),
-			VertexList::Vertex(1.0f, 1.0f, 1.0f, u2, v, 1.0f),
+			{0.0f, 1.0f, 1.0f, u, v, 1.0f},
+			{1.0f, 0.0f, 1.0f, u2, v2, 1.0f},
+			{1.0f, 1.0f, 1.0f, u2, v, 1.0f},
 		};
 
 		for (const auto& vertex : spriteVertexList)
@@ -1287,7 +1287,7 @@ void UI::drawBlock(unsigned char blockType, float x, float y, float scale)
 				glm::scale(glm::mat4(1.0f), glm::vec3(scale, -scale, scale)) *
 				glm::vec4(vertex.x, vertex.y, vertex.z, 1.0f);
 
-			blockVertices.push(VertexList::Vertex(position.x, position.y, position.z, vertex.u, vertex.v, vertex.s));
+			blockVertices.push({position.x, position.y, position.z, vertex.u, vertex.v, vertex.s});
 		}
 	}
 	else
@@ -1298,29 +1298,29 @@ void UI::drawBlock(unsigned char blockType, float x, float y, float scale)
 		float vTop2 = 0.0625f + 0.0625f * (blockDefinition.topTexture / 16);
 
 		const VertexList::Vertex blockVertexList[] = {
-			VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, uTop, vTop, 1.0f),
-			VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, uTop, vTop2, 1.0f),
-			VertexList::Vertex(1.0f, blockDefinition.height, 1.0f, uTop2, vTop2, 1.0f),
+			{0.0f, blockDefinition.height, 0.0f, uTop, vTop, 1.0f},
+			{0.0f, blockDefinition.height, 1.0f, uTop, vTop2, 1.0f},
+			{1.0f, blockDefinition.height, 1.0f, uTop2, vTop2, 1.0f},
 
-			VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, uTop, vTop, 1.0f),
-			VertexList::Vertex(1.0f, blockDefinition.height, 1.0f, uTop2, vTop2, 1.0f),
-			VertexList::Vertex(1.0f, blockDefinition.height, 0.0f, uTop2, vTop, 1.0f),
+			{0.0f, blockDefinition.height, 0.0f, uTop, vTop, 1.0f},
+			{1.0f, blockDefinition.height, 1.0f, uTop2, vTop2, 1.0f},
+			{1.0f, blockDefinition.height, 0.0f, uTop2, vTop, 1.0f},
 
-			VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, u, v, 0.8f),
-			VertexList::Vertex(0.0f, 0.0f, 1.0f, u, v2, 0.8f),
-			VertexList::Vertex(1.0f, 0.0f, 1.0f, u2, v2, 0.8f),
+			{0.0f, blockDefinition.height, 1.0f, u, v, 0.8f},
+			{0.0f, 0.0f, 1.0f, u, v2, 0.8f},
+			{1.0f, 0.0f, 1.0f, u2, v2, 0.8f},
 
-			VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, u, v, 0.8f),
-			VertexList::Vertex(1.0f, 0.0f, 1.0f, u2, v2, 0.8f),
-			VertexList::Vertex(1.0f, blockDefinition.height, 1.0f, u2, v, 0.8f),
+			{0.0f, blockDefinition.height, 1.0f, u, v, 0.8f},
+			{1.0f, 0.0f, 1.0f, u2, v2, 0.8f},
+			{1.0f, blockDefinition.height, 1.0f, u2, v, 0.8f},
 
-			VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, u, v, 0.6f),
-			VertexList::Vertex(0.0f, 0.0f, 0.0f, u, v2, 0.6f),
-			VertexList::Vertex(0.0f, 0.0f, 1.0f, u2, v2, 0.6f),
+			{0.0f, blockDefinition.height, 0.0f, u, v, 0.6f},
+			{0.0f, 0.0f, 0.0f, u, v2, 0.6f},
+			{0.0f, 0.0f, 1.0f, u2, v2, 0.6f},
 
-			VertexList::Vertex(0.0f, blockDefinition.height, 0.0f, u, v, 0.6f),
-			VertexList::Vertex(0.0f, 0.0f, 1.0f, u2, v2, 0.6f),
-			VertexList::Vertex(0.0f, blockDefinition.height, 1.0f, u2, v, 0.6f),
+			{0.0f, blockDefinition.height, 0.0f, u, v, 0.6f},
+			{0.0f, 0.0f, 1.0f, u2, v2, 0.6f},
+			{0.0f, blockDefinition.height, 1.0f, u2, v, 0.6f},
 		};
 
 		for (const auto& vertex : blockVertexList)
@@ -1332,7 +1332,7 @@ void UI::drawBlock(unsigned char blockType, float x, float y, float scale)
 				glm::scale(glm::mat4(1.0f), glm::vec3(scale, -scale, scale)) *
 				glm::vec4(vertex.x, vertex.y, vertex.z, 1.0f);
 
-			blockVertices.push(VertexList::Vertex(position.x, position.y, position.z, vertex.u, vertex.v, vertex.s));
+			blockVertices.push({position.x, position.y, position.z, vertex.u, vertex.v, vertex.s});
 		}
 	}
 }
@@ -1341,13 +1341,13 @@ void UI::drawInterface(float x0, float y0, float x1, float y1, float u0, float v
 {
 	float size = 0.00390625f;
 
-	interfaceVertices.push(VertexList::Vertex(x0, y0, z, u0 * size, v0 * size, shade));
-	interfaceVertices.push(VertexList::Vertex(x0, y0 + y1, z, u0 * size, (v0 + v1) * size, shade));
-	interfaceVertices.push(VertexList::Vertex(x0 + x1, y0 + y1, z, (u0 + u1) * size, (v0 + v1) * size, shade));
+	interfaceVertices.push({x0, y0, z, u0 * size, v0 * size, shade});
+	interfaceVertices.push({x0, y0 + y1, z, u0 * size, (v0 + v1) * size, shade});
+	interfaceVertices.push({x0 + x1, y0 + y1, z, (u0 + u1) * size, (v0 + v1) * size, shade});
 
-	interfaceVertices.push(VertexList::Vertex(x0, y0, z, u0 * size, v0 * size, shade));
-	interfaceVertices.push(VertexList::Vertex(x0 + x1, y0 + y1, z, (u0 + u1) * size, (v0 + v1) * size, shade));
-	interfaceVertices.push(VertexList::Vertex(x0 + x1, y0, z, (u0 + u1) * size, v0 * size, shade));
+	interfaceVertices.push({x0, y0, z, u0 * size, v0 * size, shade});
+	interfaceVertices.push({x0 + x1, y0 + y1, z, (u0 + u1) * size, (v0 + v1) * size, shade});
+	interfaceVertices.push({x0 + x1, y0, z, (u0 + u1) * size, v0 * size, shade});
 }
 
 void UI::drawInterface(float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1, float shade)
@@ -1359,13 +1359,13 @@ void UI::drawInterface(float x0, float y0, float x1, float y1, float u, float v,
 {
 	float size = 0.00390625;
 
-	interfaceVertices.push(VertexList::Vertex(x0, y0, z, x1 * size, y1 * size, shade));
-	interfaceVertices.push(VertexList::Vertex(x0, y0 + v, z, x1 * size, (y1 + v) * size, shade));
-	interfaceVertices.push(VertexList::Vertex(x0 + u, y0 + v, z, (x1 + u) * size, (y1 + v) * size, shade));
+	interfaceVertices.push({x0, y0, z, x1 * size, y1 * size, shade});
+	interfaceVertices.push({x0, y0 + v, z, x1 * size, (y1 + v) * size, shade});
+	interfaceVertices.push({x0 + u, y0 + v, z, (x1 + u) * size, (y1 + v) * size, shade});
 
-	interfaceVertices.push(VertexList::Vertex(x0, y0, z, x1 * size, y1 * size, shade));
-	interfaceVertices.push(VertexList::Vertex(x0 + u, y0 + v, z, (x1 + u) * size, (y1 + v) * size, shade));
-	interfaceVertices.push(VertexList::Vertex(x0 + u, y0, z, (x1 + u) * size, y1 * size, shade));
+	interfaceVertices.push({x0, y0, z, x1 * size, y1 * size, shade});
+	interfaceVertices.push({x0 + u, y0 + v, z, (x1 + u) * size, (y1 + v) * size, shade});
+	interfaceVertices.push({x0 + u, y0, z, (x1 + u) * size, y1 * size, shade});
 }
 
 void UI::drawInterface(float x0, float y0, float x1, float y1, float u, float v, float shade)
@@ -1390,13 +1390,13 @@ void UI::drawFont(const char* text, float x, float y, float shade, float z)
 
 		float height = 7.98f;
 
-		fontVertices.push(VertexList::Vertex(x + width, y, z, u / 128.0f, v / 128.0f, shade));
-		fontVertices.push(VertexList::Vertex(x + width, y + height, z, u / 128.0f, (v + height) / 128.0f, shade));
-		fontVertices.push(VertexList::Vertex(x + width + height, y + height, z, (u + height) / 128.0f, (v + height) / 128.0f, shade));
+		fontVertices.push({x + width, y, z, u / 128.0f, v / 128.0f, shade});
+		fontVertices.push({x + width, y + height, z, u / 128.0f, (v + height) / 128.0f, shade});
+		fontVertices.push({x + width + height, y + height, z, (u + height) / 128.0f, (v + height) / 128.0f, shade});
 
-		fontVertices.push(VertexList::Vertex(x + width, y, z, u / 128.0f, v / 128.0f, shade));
-		fontVertices.push(VertexList::Vertex(x + width + height, y + height, z, (u + height) / 128.0f, (v + height) / 128.0f, shade));
-		fontVertices.push(VertexList::Vertex(x + width + height, y, z, (u + height) / 128.0f, v / 128.0f, shade));
+		fontVertices.push({x + width, y, z, u / 128.0f, v / 128.0f, shade});
+		fontVertices.push({x + width + height, y + height, z, (u + height) / 128.0f, (v + height) / 128.0f, shade});
+		fontVertices.push({x + width + height, y, z, (u + height) / 128.0f, v / 128.0f, shade});
 
 		width += FONT_WIDTHS[int(text[index])];
 	}
