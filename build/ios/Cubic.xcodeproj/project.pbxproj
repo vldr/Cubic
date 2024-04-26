@@ -144,7 +144,7 @@
 		23D39B0D2BDB448F001DC26A /* Cubic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cubic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		23D39B1F2BDB4490001DC26A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		23D39B222BDB4490001DC26A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		23D39B2B2BDB44D3001DC26A /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = ../SDL2/Xcode/SDL/SDL.xcodeproj; sourceTree = "<group>"; };
+		23D39B2B2BDB44D3001DC26A /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = SDL2/Xcode/SDL/SDL.xcodeproj; sourceTree = "<group>"; };
 		23D39B512BDB4528001DC26A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		23D39B582BDB454B001DC26A /* SDL_uikit_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SDL_uikit_main.c; sourceTree = "<group>"; };
 		23ECC5622BDB547C007BE30F /* Frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Frustum.cpp; path = ../../../src/Frustum.cpp; sourceTree = "<group>"; };
@@ -672,7 +672,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/SDL2/include\"";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Cubic/SDL2/include\"";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = metal;
@@ -700,7 +700,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/SDL2/include\"";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Cubic/SDL2/include\"";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = metal;

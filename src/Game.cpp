@@ -129,6 +129,9 @@ void Game::init(SDL_Window* window_)
 #if defined(ANDROID)
     fullscreen = true;
 	path = SDL_AndroidGetInternalStoragePath();
+#elif defined(TARGET_OS_IPHONE)
+    fullscreen = true;
+    path = SDL_GetBasePath();
 #elif defined(EMSCRIPTEN)
     path = "saves";
 #else
@@ -244,7 +247,7 @@ void Game::input(const SDL_Event& event)
     {
         static bool state = false;
 
-#if !defined(ANDROID)
+#if !defined(ANDROID) && !defined(TARGET_OS_IPHONE)
         glPolygonMode(GL_FRONT_AND_BACK, state ? GL_FILL : GL_LINE);
 #endif
 
@@ -337,7 +340,7 @@ void Game::resize()
 
 #if defined(EMSCRIPTEN) 
     int maxScaleFactor = (ui.isTouch || emscripten_get_device_pixel_ratio() >= 2.0) ? 6 : 3;
-#elif defined(ANDROID)
+#elif defined(ANDROID) || defined(TARGET_OS_IPHONE)
     int maxScaleFactor = 6;
 #else
     int maxScaleFactor = ui.isTouch ? 6 : 3;
