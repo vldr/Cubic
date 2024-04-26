@@ -1,0 +1,746 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		23D39B202BDB4490001DC26A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 23D39B1F2BDB4490001DC26A /* Assets.xcassets */; };
+		23D39B232BDB4490001DC26A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 23D39B212BDB4490001DC26A /* LaunchScreen.storyboard */; };
+		23D39B532BDB4537001DC26A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23D39B512BDB4528001DC26A /* OpenGLES.framework */; };
+		23D39B562BDB4538001DC26A /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23D39B3C2BDB44D3001DC26A /* SDL2.framework */; };
+		23D39B572BDB4538001DC26A /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 23D39B3C2BDB44D3001DC26A /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		23D39B592BDB454B001DC26A /* SDL_uikit_main.c in Sources */ = {isa = PBXBuildFile; fileRef = 23D39B582BDB454B001DC26A /* SDL_uikit_main.c */; };
+		23ECC5A12BDB547D007BE30F /* Frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5622BDB547C007BE30F /* Frustum.cpp */; };
+		23ECC5A22BDB547D007BE30F /* ShaderManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5632BDB547C007BE30F /* ShaderManager.cpp */; };
+		23ECC5A32BDB547D007BE30F /* Resources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5672BDB547C007BE30F /* Resources.cpp */; };
+		23ECC5A42BDB547D007BE30F /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5682BDB547C007BE30F /* Game.cpp */; };
+		23ECC5A52BDB547D007BE30F /* OctaveNoise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC56B2BDB547C007BE30F /* OctaveNoise.cpp */; };
+		23ECC5A62BDB547D007BE30F /* Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC56D2BDB547C007BE30F /* Timer.cpp */; };
+		23ECC5A72BDB547D007BE30F /* LevelRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC56E2BDB547C007BE30F /* LevelRenderer.cpp */; };
+		23ECC5A82BDB547D007BE30F /* CombinedNoise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC56F2BDB547C007BE30F /* CombinedNoise.cpp */; };
+		23ECC5A92BDB547D007BE30F /* Random.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5702BDB547C007BE30F /* Random.cpp */; };
+		23ECC5AA2BDB547D007BE30F /* VertexList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5732BDB547C007BE30F /* VertexList.cpp */; };
+		23ECC5AB2BDB547D007BE30F /* SelectedBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5742BDB547C007BE30F /* SelectedBlock.cpp */; };
+		23ECC5AC2BDB547D007BE30F /* AABB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5752BDB547C007BE30F /* AABB.cpp */; };
+		23ECC5AD2BDB547D007BE30F /* TextureManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5792BDB547C007BE30F /* TextureManager.cpp */; };
+		23ECC5AE2BDB547D007BE30F /* Block.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC57E2BDB547C007BE30F /* Block.cpp */; };
+		23ECC5AF2BDB547D007BE30F /* PerlinNoise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5802BDB547C007BE30F /* PerlinNoise.cpp */; };
+		23ECC5B02BDB547D007BE30F /* Entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5832BDB547C007BE30F /* Entity.cpp */; };
+		23ECC5B12BDB547D007BE30F /* ParticleManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5862BDB547C007BE30F /* ParticleManager.cpp */; };
+		23ECC5B22BDB547D007BE30F /* LocalPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5872BDB547C007BE30F /* LocalPlayer.cpp */; };
+		23ECC5B32BDB547D007BE30F /* Chunk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5882BDB547C007BE30F /* Chunk.cpp */; };
+		23ECC5B42BDB547D007BE30F /* Particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5892BDB547C007BE30F /* Particle.cpp */; };
+		23ECC5B52BDB547D007BE30F /* HeldBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC58A2BDB547C007BE30F /* HeldBlock.cpp */; };
+		23ECC5B62BDB547D007BE30F /* Network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC58D2BDB547C007BE30F /* Network.cpp */; };
+		23ECC5B72BDB547D007BE30F /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC58E2BDB547C007BE30F /* Player.cpp */; };
+		23ECC5B82BDB547D007BE30F /* PNG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5902BDB547D007BE30F /* PNG.cpp */; };
+		23ECC5B92BDB547D007BE30F /* UI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5912BDB547D007BE30F /* UI.cpp */; };
+		23ECC5BA2BDB547D007BE30F /* LZ.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5922BDB547D007BE30F /* LZ.cpp */; };
+		23ECC5BB2BDB547D007BE30F /* JSON.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5932BDB547D007BE30F /* JSON.cpp */; };
+		23ECC5BC2BDB547D007BE30F /* LevelGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5942BDB547D007BE30F /* LevelGenerator.cpp */; };
+		23ECC5BD2BDB547D007BE30F /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5962BDB547D007BE30F /* Main.cpp */; };
+		23ECC5BE2BDB547D007BE30F /* Level.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC59F2BDB547D007BE30F /* Level.cpp */; };
+		23ECC5BF2BDB547D007BE30F /* Skybox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 23ECC5A02BDB547D007BE30F /* Skybox.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		23D39B392BDB44D3001DC26A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 23D39B2B2BDB44D3001DC26A /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BECDF66C0761BA81005FE872;
+			remoteInfo = Framework;
+		};
+		23D39B3B2BDB44D3001DC26A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 23D39B2B2BDB44D3001DC26A /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7D88B5423E2437C00DCD162;
+			remoteInfo = "Framework-iOS";
+		};
+		23D39B3D2BDB44D3001DC26A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 23D39B2B2BDB44D3001DC26A /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7D88D1523E24BED00DCD162;
+			remoteInfo = "Framework-tvOS";
+		};
+		23D39B3F2BDB44D3001DC26A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 23D39B2B2BDB44D3001DC26A /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E2D187CF28A5673500D2B4F1;
+			remoteInfo = "xcFramework-iOS";
+		};
+		23D39B412BDB44D3001DC26A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 23D39B2B2BDB44D3001DC26A /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BECDF6B30761BA81005FE872;
+			remoteInfo = "Static Library";
+		};
+		23D39B432BDB44D3001DC26A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 23D39B2B2BDB44D3001DC26A /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7D88E5423E24D3B00DCD162;
+			remoteInfo = "Static Library-iOS";
+		};
+		23D39B452BDB44D3001DC26A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 23D39B2B2BDB44D3001DC26A /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A769B23D23E259AE00872273;
+			remoteInfo = "Static Library-tvOS";
+		};
+		23D39B472BDB44D3001DC26A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 23D39B2B2BDB44D3001DC26A /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DB31407717554B71006C0E22;
+			remoteInfo = "Shared Library";
+		};
+		23D39B492BDB44D3001DC26A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 23D39B2B2BDB44D3001DC26A /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A75FCEB323E25AB700529352;
+			remoteInfo = "Shared Library-iOS";
+		};
+		23D39B4B2BDB44D3001DC26A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 23D39B2B2BDB44D3001DC26A /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A75FD06C23E25AC700529352;
+			remoteInfo = "Shared Library-tvOS";
+		};
+		23D39B4D2BDB44D3001DC26A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 23D39B2B2BDB44D3001DC26A /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BECDF6BE0761BA81005FE872;
+			remoteInfo = "Standard DMG";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		23D39B552BDB4537001DC26A /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				23D39B572BDB4538001DC26A /* SDL2.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		23D39B0D2BDB448F001DC26A /* Cubic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cubic.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		23D39B1F2BDB4490001DC26A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		23D39B222BDB4490001DC26A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		23D39B2B2BDB44D3001DC26A /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = ../SDL2/Xcode/SDL/SDL.xcodeproj; sourceTree = "<group>"; };
+		23D39B512BDB4528001DC26A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		23D39B582BDB454B001DC26A /* SDL_uikit_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SDL_uikit_main.c; sourceTree = "<group>"; };
+		23ECC5622BDB547C007BE30F /* Frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Frustum.cpp; path = ../../../src/Frustum.cpp; sourceTree = "<group>"; };
+		23ECC5632BDB547C007BE30F /* ShaderManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ShaderManager.cpp; path = ../../../src/ShaderManager.cpp; sourceTree = "<group>"; };
+		23ECC5642BDB547C007BE30F /* SelectedBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SelectedBlock.h; path = ../../../src/SelectedBlock.h; sourceTree = "<group>"; };
+		23ECC5652BDB547C007BE30F /* ParticleManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleManager.h; path = ../../../src/ParticleManager.h; sourceTree = "<group>"; };
+		23ECC5662BDB547C007BE30F /* UI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UI.h; path = ../../../src/UI.h; sourceTree = "<group>"; };
+		23ECC5672BDB547C007BE30F /* Resources.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Resources.cpp; path = ../../../src/Resources.cpp; sourceTree = "<group>"; };
+		23ECC5682BDB547C007BE30F /* Game.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Game.cpp; path = ../../../src/Game.cpp; sourceTree = "<group>"; };
+		23ECC5692BDB547C007BE30F /* PNG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PNG.h; path = ../../../src/PNG.h; sourceTree = "<group>"; };
+		23ECC56A2BDB547C007BE30F /* Particle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Particle.h; path = ../../../src/Particle.h; sourceTree = "<group>"; };
+		23ECC56B2BDB547C007BE30F /* OctaveNoise.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OctaveNoise.cpp; path = ../../../src/OctaveNoise.cpp; sourceTree = "<group>"; };
+		23ECC56C2BDB547C007BE30F /* ShaderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShaderManager.h; path = ../../../src/ShaderManager.h; sourceTree = "<group>"; };
+		23ECC56D2BDB547C007BE30F /* Timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Timer.cpp; path = ../../../src/Timer.cpp; sourceTree = "<group>"; };
+		23ECC56E2BDB547C007BE30F /* LevelRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LevelRenderer.cpp; path = ../../../src/LevelRenderer.cpp; sourceTree = "<group>"; };
+		23ECC56F2BDB547C007BE30F /* CombinedNoise.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CombinedNoise.cpp; path = ../../../src/CombinedNoise.cpp; sourceTree = "<group>"; };
+		23ECC5702BDB547C007BE30F /* Random.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Random.cpp; path = ../../../src/Random.cpp; sourceTree = "<group>"; };
+		23ECC5712BDB547C007BE30F /* Skybox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Skybox.h; path = ../../../src/Skybox.h; sourceTree = "<group>"; };
+		23ECC5722BDB547C007BE30F /* Resources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../../../src/Resources.h; sourceTree = "<group>"; };
+		23ECC5732BDB547C007BE30F /* VertexList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VertexList.cpp; path = ../../../src/VertexList.cpp; sourceTree = "<group>"; };
+		23ECC5742BDB547C007BE30F /* SelectedBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SelectedBlock.cpp; path = ../../../src/SelectedBlock.cpp; sourceTree = "<group>"; };
+		23ECC5752BDB547C007BE30F /* AABB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AABB.cpp; path = ../../../src/AABB.cpp; sourceTree = "<group>"; };
+		23ECC5762BDB547C007BE30F /* Noise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Noise.h; path = ../../../src/Noise.h; sourceTree = "<group>"; };
+		23ECC5772BDB547C007BE30F /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSON.h; path = ../../../src/JSON.h; sourceTree = "<group>"; };
+		23ECC5782BDB547C007BE30F /* Frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Frustum.h; path = ../../../src/Frustum.h; sourceTree = "<group>"; };
+		23ECC5792BDB547C007BE30F /* TextureManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureManager.cpp; path = ../../../src/TextureManager.cpp; sourceTree = "<group>"; };
+		23ECC57A2BDB547C007BE30F /* TextureManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureManager.h; path = ../../../src/TextureManager.h; sourceTree = "<group>"; };
+		23ECC57B2BDB547C007BE30F /* Block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Block.h; path = ../../../src/Block.h; sourceTree = "<group>"; };
+		23ECC57C2BDB547C007BE30F /* AABB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AABB.h; path = ../../../src/AABB.h; sourceTree = "<group>"; };
+		23ECC57D2BDB547C007BE30F /* AABBPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AABBPosition.h; path = ../../../src/AABBPosition.h; sourceTree = "<group>"; };
+		23ECC57E2BDB547C007BE30F /* Block.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Block.cpp; path = ../../../src/Block.cpp; sourceTree = "<group>"; };
+		23ECC57F2BDB547C007BE30F /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Player.h; path = ../../../src/Player.h; sourceTree = "<group>"; };
+		23ECC5802BDB547C007BE30F /* PerlinNoise.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PerlinNoise.cpp; path = ../../../src/PerlinNoise.cpp; sourceTree = "<group>"; };
+		23ECC5812BDB547C007BE30F /* Level.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Level.h; path = ../../../src/Level.h; sourceTree = "<group>"; };
+		23ECC5822BDB547C007BE30F /* CombinedNoise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CombinedNoise.h; path = ../../../src/CombinedNoise.h; sourceTree = "<group>"; };
+		23ECC5832BDB547C007BE30F /* Entity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Entity.cpp; path = ../../../src/Entity.cpp; sourceTree = "<group>"; };
+		23ECC5842BDB547C007BE30F /* HeldBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HeldBlock.h; path = ../../../src/HeldBlock.h; sourceTree = "<group>"; };
+		23ECC5852BDB547C007BE30F /* VertexList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VertexList.h; path = ../../../src/VertexList.h; sourceTree = "<group>"; };
+		23ECC5862BDB547C007BE30F /* ParticleManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleManager.cpp; path = ../../../src/ParticleManager.cpp; sourceTree = "<group>"; };
+		23ECC5872BDB547C007BE30F /* LocalPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LocalPlayer.cpp; path = ../../../src/LocalPlayer.cpp; sourceTree = "<group>"; };
+		23ECC5882BDB547C007BE30F /* Chunk.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Chunk.cpp; path = ../../../src/Chunk.cpp; sourceTree = "<group>"; };
+		23ECC5892BDB547C007BE30F /* Particle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Particle.cpp; path = ../../../src/Particle.cpp; sourceTree = "<group>"; };
+		23ECC58A2BDB547C007BE30F /* HeldBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HeldBlock.cpp; path = ../../../src/HeldBlock.cpp; sourceTree = "<group>"; };
+		23ECC58B2BDB547C007BE30F /* OctaveNoise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OctaveNoise.h; path = ../../../src/OctaveNoise.h; sourceTree = "<group>"; };
+		23ECC58C2BDB547C007BE30F /* Chunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Chunk.h; path = ../../../src/Chunk.h; sourceTree = "<group>"; };
+		23ECC58D2BDB547C007BE30F /* Network.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Network.cpp; path = ../../../src/Network.cpp; sourceTree = "<group>"; };
+		23ECC58E2BDB547C007BE30F /* Player.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Player.cpp; path = ../../../src/Player.cpp; sourceTree = "<group>"; };
+		23ECC58F2BDB547D007BE30F /* LevelGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LevelGenerator.h; path = ../../../src/LevelGenerator.h; sourceTree = "<group>"; };
+		23ECC5902BDB547D007BE30F /* PNG.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PNG.cpp; path = ../../../src/PNG.cpp; sourceTree = "<group>"; };
+		23ECC5912BDB547D007BE30F /* UI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UI.cpp; path = ../../../src/UI.cpp; sourceTree = "<group>"; };
+		23ECC5922BDB547D007BE30F /* LZ.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LZ.cpp; path = ../../../src/LZ.cpp; sourceTree = "<group>"; };
+		23ECC5932BDB547D007BE30F /* JSON.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSON.cpp; path = ../../../src/JSON.cpp; sourceTree = "<group>"; };
+		23ECC5942BDB547D007BE30F /* LevelGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LevelGenerator.cpp; path = ../../../src/LevelGenerator.cpp; sourceTree = "<group>"; };
+		23ECC5952BDB547D007BE30F /* LocalPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LocalPlayer.h; path = ../../../src/LocalPlayer.h; sourceTree = "<group>"; };
+		23ECC5962BDB547D007BE30F /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Main.cpp; path = ../../../src/Main.cpp; sourceTree = "<group>"; };
+		23ECC5972BDB547D007BE30F /* Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Random.h; path = ../../../src/Random.h; sourceTree = "<group>"; };
+		23ECC5982BDB547D007BE30F /* Game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Game.h; path = ../../../src/Game.h; sourceTree = "<group>"; };
+		23ECC5992BDB547D007BE30F /* PerlinNoise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PerlinNoise.h; path = ../../../src/PerlinNoise.h; sourceTree = "<group>"; };
+		23ECC59A2BDB547D007BE30F /* LZ.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LZ.h; path = ../../../src/LZ.h; sourceTree = "<group>"; };
+		23ECC59B2BDB547D007BE30F /* Network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Network.h; path = ../../../src/Network.h; sourceTree = "<group>"; };
+		23ECC59C2BDB547D007BE30F /* Timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Timer.h; path = ../../../src/Timer.h; sourceTree = "<group>"; };
+		23ECC59D2BDB547D007BE30F /* Entity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Entity.h; path = ../../../src/Entity.h; sourceTree = "<group>"; };
+		23ECC59E2BDB547D007BE30F /* LevelRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LevelRenderer.h; path = ../../../src/LevelRenderer.h; sourceTree = "<group>"; };
+		23ECC59F2BDB547D007BE30F /* Level.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Level.cpp; path = ../../../src/Level.cpp; sourceTree = "<group>"; };
+		23ECC5A02BDB547D007BE30F /* Skybox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Skybox.cpp; path = ../../../src/Skybox.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		23D39B0A2BDB448F001DC26A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				23D39B532BDB4537001DC26A /* OpenGLES.framework in Frameworks */,
+				23D39B562BDB4538001DC26A /* SDL2.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		23D39B042BDB448F001DC26A = {
+			isa = PBXGroup;
+			children = (
+				23D39B0F2BDB448F001DC26A /* Cubic */,
+				23D39B0E2BDB448F001DC26A /* Products */,
+				23D39B4F2BDB4523001DC26A /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		23D39B0E2BDB448F001DC26A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				23D39B0D2BDB448F001DC26A /* Cubic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		23D39B0F2BDB448F001DC26A /* Cubic */ = {
+			isa = PBXGroup;
+			children = (
+				23D39B2B2BDB44D3001DC26A /* SDL.xcodeproj */,
+				23D39B582BDB454B001DC26A /* SDL_uikit_main.c */,
+				23D39B1F2BDB4490001DC26A /* Assets.xcassets */,
+				23D39B212BDB4490001DC26A /* LaunchScreen.storyboard */,
+				23ECC5752BDB547C007BE30F /* AABB.cpp */,
+				23ECC57C2BDB547C007BE30F /* AABB.h */,
+				23ECC57D2BDB547C007BE30F /* AABBPosition.h */,
+				23ECC57E2BDB547C007BE30F /* Block.cpp */,
+				23ECC57B2BDB547C007BE30F /* Block.h */,
+				23ECC5882BDB547C007BE30F /* Chunk.cpp */,
+				23ECC58C2BDB547C007BE30F /* Chunk.h */,
+				23ECC56F2BDB547C007BE30F /* CombinedNoise.cpp */,
+				23ECC5822BDB547C007BE30F /* CombinedNoise.h */,
+				23ECC5832BDB547C007BE30F /* Entity.cpp */,
+				23ECC59D2BDB547D007BE30F /* Entity.h */,
+				23ECC5622BDB547C007BE30F /* Frustum.cpp */,
+				23ECC5782BDB547C007BE30F /* Frustum.h */,
+				23ECC5682BDB547C007BE30F /* Game.cpp */,
+				23ECC5982BDB547D007BE30F /* Game.h */,
+				23ECC58A2BDB547C007BE30F /* HeldBlock.cpp */,
+				23ECC5842BDB547C007BE30F /* HeldBlock.h */,
+				23ECC5932BDB547D007BE30F /* JSON.cpp */,
+				23ECC5772BDB547C007BE30F /* JSON.h */,
+				23ECC59F2BDB547D007BE30F /* Level.cpp */,
+				23ECC5812BDB547C007BE30F /* Level.h */,
+				23ECC5942BDB547D007BE30F /* LevelGenerator.cpp */,
+				23ECC58F2BDB547D007BE30F /* LevelGenerator.h */,
+				23ECC56E2BDB547C007BE30F /* LevelRenderer.cpp */,
+				23ECC59E2BDB547D007BE30F /* LevelRenderer.h */,
+				23ECC5872BDB547C007BE30F /* LocalPlayer.cpp */,
+				23ECC5952BDB547D007BE30F /* LocalPlayer.h */,
+				23ECC5922BDB547D007BE30F /* LZ.cpp */,
+				23ECC59A2BDB547D007BE30F /* LZ.h */,
+				23ECC5962BDB547D007BE30F /* Main.cpp */,
+				23ECC58D2BDB547C007BE30F /* Network.cpp */,
+				23ECC59B2BDB547D007BE30F /* Network.h */,
+				23ECC5762BDB547C007BE30F /* Noise.h */,
+				23ECC56B2BDB547C007BE30F /* OctaveNoise.cpp */,
+				23ECC58B2BDB547C007BE30F /* OctaveNoise.h */,
+				23ECC5892BDB547C007BE30F /* Particle.cpp */,
+				23ECC56A2BDB547C007BE30F /* Particle.h */,
+				23ECC5862BDB547C007BE30F /* ParticleManager.cpp */,
+				23ECC5652BDB547C007BE30F /* ParticleManager.h */,
+				23ECC5802BDB547C007BE30F /* PerlinNoise.cpp */,
+				23ECC5992BDB547D007BE30F /* PerlinNoise.h */,
+				23ECC58E2BDB547C007BE30F /* Player.cpp */,
+				23ECC57F2BDB547C007BE30F /* Player.h */,
+				23ECC5902BDB547D007BE30F /* PNG.cpp */,
+				23ECC5692BDB547C007BE30F /* PNG.h */,
+				23ECC5702BDB547C007BE30F /* Random.cpp */,
+				23ECC5972BDB547D007BE30F /* Random.h */,
+				23ECC5672BDB547C007BE30F /* Resources.cpp */,
+				23ECC5722BDB547C007BE30F /* Resources.h */,
+				23ECC5742BDB547C007BE30F /* SelectedBlock.cpp */,
+				23ECC5642BDB547C007BE30F /* SelectedBlock.h */,
+				23ECC5632BDB547C007BE30F /* ShaderManager.cpp */,
+				23ECC56C2BDB547C007BE30F /* ShaderManager.h */,
+				23ECC5A02BDB547D007BE30F /* Skybox.cpp */,
+				23ECC5712BDB547C007BE30F /* Skybox.h */,
+				23ECC5792BDB547C007BE30F /* TextureManager.cpp */,
+				23ECC57A2BDB547C007BE30F /* TextureManager.h */,
+				23ECC56D2BDB547C007BE30F /* Timer.cpp */,
+				23ECC59C2BDB547D007BE30F /* Timer.h */,
+				23ECC5912BDB547D007BE30F /* UI.cpp */,
+				23ECC5662BDB547C007BE30F /* UI.h */,
+				23ECC5732BDB547C007BE30F /* VertexList.cpp */,
+				23ECC5852BDB547C007BE30F /* VertexList.h */,
+			);
+			path = Cubic;
+			sourceTree = "<group>";
+		};
+		23D39B2C2BDB44D3001DC26A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				23D39B3A2BDB44D3001DC26A /* SDL2.framework */,
+				23D39B3C2BDB44D3001DC26A /* SDL2.framework */,
+				23D39B3E2BDB44D3001DC26A /* SDL2.framework */,
+				23D39B402BDB44D3001DC26A /* SDL2.framework */,
+				23D39B422BDB44D3001DC26A /* libSDL2.a */,
+				23D39B442BDB44D3001DC26A /* libSDL2.a */,
+				23D39B462BDB44D3001DC26A /* libSDL2.a */,
+				23D39B482BDB44D3001DC26A /* libSDL2.dylib */,
+				23D39B4A2BDB44D3001DC26A /* libSDL2.dylib */,
+				23D39B4C2BDB44D3001DC26A /* libSDL2.dylib */,
+				23D39B4E2BDB44D3001DC26A /* SDL2 */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		23D39B4F2BDB4523001DC26A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				23D39B512BDB4528001DC26A /* OpenGLES.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		23D39B0C2BDB448F001DC26A /* Cubic */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 23D39B282BDB4490001DC26A /* Build configuration list for PBXNativeTarget "Cubic" */;
+			buildPhases = (
+				23D39B092BDB448F001DC26A /* Sources */,
+				23D39B0A2BDB448F001DC26A /* Frameworks */,
+				23D39B0B2BDB448F001DC26A /* Resources */,
+				23D39B552BDB4537001DC26A /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Cubic;
+			productName = Cubic;
+			productReference = 23D39B0D2BDB448F001DC26A /* Cubic.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		23D39B052BDB448F001DC26A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					23D39B0C2BDB448F001DC26A = {
+						CreatedOnToolsVersion = 15.0.1;
+					};
+				};
+			};
+			buildConfigurationList = 23D39B082BDB448F001DC26A /* Build configuration list for PBXProject "Cubic" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 23D39B042BDB448F001DC26A;
+			productRefGroup = 23D39B0E2BDB448F001DC26A /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 23D39B2C2BDB44D3001DC26A /* Products */;
+					ProjectRef = 23D39B2B2BDB44D3001DC26A /* SDL.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				23D39B0C2BDB448F001DC26A /* Cubic */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		23D39B3A2BDB44D3001DC26A /* SDL2.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SDL2.framework;
+			remoteRef = 23D39B392BDB44D3001DC26A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		23D39B3C2BDB44D3001DC26A /* SDL2.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SDL2.framework;
+			remoteRef = 23D39B3B2BDB44D3001DC26A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		23D39B3E2BDB44D3001DC26A /* SDL2.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SDL2.framework;
+			remoteRef = 23D39B3D2BDB44D3001DC26A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		23D39B402BDB44D3001DC26A /* SDL2.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SDL2.framework;
+			remoteRef = 23D39B3F2BDB44D3001DC26A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		23D39B422BDB44D3001DC26A /* libSDL2.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSDL2.a;
+			remoteRef = 23D39B412BDB44D3001DC26A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		23D39B442BDB44D3001DC26A /* libSDL2.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSDL2.a;
+			remoteRef = 23D39B432BDB44D3001DC26A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		23D39B462BDB44D3001DC26A /* libSDL2.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSDL2.a;
+			remoteRef = 23D39B452BDB44D3001DC26A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		23D39B482BDB44D3001DC26A /* libSDL2.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libSDL2.dylib;
+			remoteRef = 23D39B472BDB44D3001DC26A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		23D39B4A2BDB44D3001DC26A /* libSDL2.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libSDL2.dylib;
+			remoteRef = 23D39B492BDB44D3001DC26A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		23D39B4C2BDB44D3001DC26A /* libSDL2.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libSDL2.dylib;
+			remoteRef = 23D39B4B2BDB44D3001DC26A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		23D39B4E2BDB44D3001DC26A /* SDL2 */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = SDL2;
+			remoteRef = 23D39B4D2BDB44D3001DC26A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		23D39B0B2BDB448F001DC26A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				23D39B232BDB4490001DC26A /* LaunchScreen.storyboard in Resources */,
+				23D39B202BDB4490001DC26A /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		23D39B092BDB448F001DC26A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				23ECC5A12BDB547D007BE30F /* Frustum.cpp in Sources */,
+				23ECC5B12BDB547D007BE30F /* ParticleManager.cpp in Sources */,
+				23ECC5B62BDB547D007BE30F /* Network.cpp in Sources */,
+				23ECC5AA2BDB547D007BE30F /* VertexList.cpp in Sources */,
+				23ECC5A72BDB547D007BE30F /* LevelRenderer.cpp in Sources */,
+				23ECC5AC2BDB547D007BE30F /* AABB.cpp in Sources */,
+				23ECC5A32BDB547D007BE30F /* Resources.cpp in Sources */,
+				23ECC5A22BDB547D007BE30F /* ShaderManager.cpp in Sources */,
+				23ECC5B72BDB547D007BE30F /* Player.cpp in Sources */,
+				23ECC5B42BDB547D007BE30F /* Particle.cpp in Sources */,
+				23D39B592BDB454B001DC26A /* SDL_uikit_main.c in Sources */,
+				23ECC5A52BDB547D007BE30F /* OctaveNoise.cpp in Sources */,
+				23ECC5B52BDB547D007BE30F /* HeldBlock.cpp in Sources */,
+				23ECC5B92BDB547D007BE30F /* UI.cpp in Sources */,
+				23ECC5B22BDB547D007BE30F /* LocalPlayer.cpp in Sources */,
+				23ECC5AF2BDB547D007BE30F /* PerlinNoise.cpp in Sources */,
+				23ECC5B32BDB547D007BE30F /* Chunk.cpp in Sources */,
+				23ECC5BA2BDB547D007BE30F /* LZ.cpp in Sources */,
+				23ECC5A62BDB547D007BE30F /* Timer.cpp in Sources */,
+				23ECC5AE2BDB547D007BE30F /* Block.cpp in Sources */,
+				23ECC5B82BDB547D007BE30F /* PNG.cpp in Sources */,
+				23ECC5A82BDB547D007BE30F /* CombinedNoise.cpp in Sources */,
+				23ECC5A92BDB547D007BE30F /* Random.cpp in Sources */,
+				23ECC5BE2BDB547D007BE30F /* Level.cpp in Sources */,
+				23ECC5BB2BDB547D007BE30F /* JSON.cpp in Sources */,
+				23ECC5BD2BDB547D007BE30F /* Main.cpp in Sources */,
+				23ECC5AB2BDB547D007BE30F /* SelectedBlock.cpp in Sources */,
+				23ECC5BF2BDB547D007BE30F /* Skybox.cpp in Sources */,
+				23ECC5BC2BDB547D007BE30F /* LevelGenerator.cpp in Sources */,
+				23ECC5B02BDB547D007BE30F /* Entity.cpp in Sources */,
+				23ECC5A42BDB547D007BE30F /* Game.cpp in Sources */,
+				23ECC5AD2BDB547D007BE30F /* TextureManager.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		23D39B212BDB4490001DC26A /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				23D39B222BDB4490001DC26A /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		23D39B262BDB4490001DC26A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		23D39B272BDB4490001DC26A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		23D39B292BDB4490001DC26A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/SDL2/include\"";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = metal;
+				INFOPLIST_KEY_UIStatusBarHidden = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.vldr.Cubic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		23D39B2A2BDB4490001DC26A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/SDL2/include\"";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = metal;
+				INFOPLIST_KEY_UIStatusBarHidden = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.vldr.Cubic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		23D39B082BDB448F001DC26A /* Build configuration list for PBXProject "Cubic" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				23D39B262BDB4490001DC26A /* Debug */,
+				23D39B272BDB4490001DC26A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		23D39B282BDB4490001DC26A /* Build configuration list for PBXNativeTarget "Cubic" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				23D39B292BDB4490001DC26A /* Debug */,
+				23D39B2A2BDB4490001DC26A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 23D39B052BDB448F001DC26A /* Project object */;
+}

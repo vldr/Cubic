@@ -24,6 +24,10 @@ build/macos/objs
 # Clangd Compile Commands
 compile_commands.json
 
+# Xcode userdata
+xcuserdata/
+.DS_Store
+
 # User-specific files
 *.rsuser
 *.suo
