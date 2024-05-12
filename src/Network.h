@@ -40,7 +40,7 @@ private:
 #if defined(EMSCRIPTEN)
     const char* URI = "wss://relay.vldr.org/";
 #else
-    const char* URI = "ws://vldr.org:1234";
+    const char* URI = "ws://relay.vldr.org/";
 #endif
 
 #pragma pack(push, 1)
