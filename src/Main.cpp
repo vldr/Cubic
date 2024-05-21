@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 
-#if defined(ANDROID) || defined(TARGET_OS_IPHONE)
+#if defined(ANDROID) || TARGET_OS_IPHONE
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
 	flags |= SDL_WINDOW_RESIZABLE;
 	flags |= SDL_WINDOW_ALLOW_HIGHDPI;
 
-#if defined(ANDROID) || defined(TARGET_OS_IPHONE)
+#if defined(ANDROID) || TARGET_OS_IPHONE
 	flags |= SDL_WINDOW_FULLSCREEN;
 #endif
 

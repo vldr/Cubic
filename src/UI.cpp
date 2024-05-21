@@ -50,7 +50,7 @@ void UI::init()
 {
 #if defined(EMSCRIPTEN)
 	isTouch = isTouchScreen();
-#elif defined(ANDROID) || defined(TARGET_OS_IPHONE)
+#elif defined(ANDROID) || TARGET_OS_IPHONE
 	isTouch = true;
 #else
     isTouch = false;
