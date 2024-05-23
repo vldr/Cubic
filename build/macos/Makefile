@@ -1,7 +1,7 @@
 OUTPUT = output/cubic
 OUTPUT_BUNDLE = output/Cubic.app
 CXX = clang++
-CXXFLAGS = -arch x86_64 -arch arm64 -MMD -std=c++17 -Iincludes -ffast-math -O3 -mmacos-version-min=10.12
+CXXFLAGS = -arch x86_64 -arch arm64 -MMD -std=c++17 -Iincludes -ffast-math -O3 -mmacos-version-min=10.15
 LINKFLAGS = -w -Llibs -lpthread -lSDL2main -lSDL2 -framework OpenGL -lGLEW
 
 SRCS = $(wildcard ../../src/*.cpp)
