@@ -17,6 +17,6 @@
 	<key>CFBundleIconName</key>
 	<string>Icon</string>
     <key>SDL_FILESYSTEM_BASE_DIR_TYPE</key>
-    <string>parent</string>
+    <string>bundle</string>
 </dict>
 </plist>
