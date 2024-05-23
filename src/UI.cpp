@@ -470,7 +470,7 @@ void UI::log(const char* format, ...)
 	update();
 }
 
-void UI::refresh(UI::State newState)
+void UI::refresh()
 {
 	page = 0;
 	saves.clear();
@@ -501,16 +501,6 @@ void UI::refresh(UI::State newState)
 	}
 
 	std::sort(saves.begin(), saves.end(), [](Save& save, Save& save2) { return save.index < save2.index; });
-
-	if (ec)
-	{
-		closeMenu();
-		log("Error: %s", ec.message().c_str());
-	}
-	else
-	{
-		openMenu(newState);
-	}
 }
 
 void UI::load(size_t index)
@@ -1044,13 +1034,17 @@ bool UI::drawMainMenu()
 
 	if (drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 - offset + 40, 65.0f, "Load Level", game.network.isHost() || !game.network.isConnected(), 98.0f))
 	{
-		refresh(State::LoadMenu);
+		refresh();
+		openMenu(State::LoadMenu);
+
 		return true;
 	}
 
 	if (drawButton(game.scaledWidth / 2, game.scaledHeight / 2 - offset + 40, 65.0f, "Save Level", 1, 100.0f))
 	{
-		refresh(State::SaveMenu);
+		refresh();
+		openMenu(State::SaveMenu);
+
 		return true;
 	}
 

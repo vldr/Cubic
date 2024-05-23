@@ -89,7 +89,7 @@ private:
 		bool isHolding;
 	};
 
-	void refresh(UI::State newState);
+	void refresh();
 	void load(size_t index);
 	void save(size_t index);
 
