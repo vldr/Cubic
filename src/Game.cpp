@@ -126,12 +126,15 @@ void Game::init(SDL_Window* window_)
     frameRate = 0;
     fullscreen = false;
 
-#if defined(ANDROID)
+#if TARGET_OS_IPHONE
+    static std::string documentsPath =
+        std::getenv("HOME") + std::string("/Documents");
+
+    fullscreen = true;
+    path = documentsPath.c_str();
+#elif defined(ANDROID)
     fullscreen = true;
 	path = SDL_AndroidGetInternalStoragePath();
-#elif TARGET_OS_IPHONE
-    fullscreen = true;
-    path = SDL_GetBasePath();
 #elif defined(EMSCRIPTEN)
     path = "saves";
 #else
