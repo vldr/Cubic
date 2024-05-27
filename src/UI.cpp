@@ -470,7 +470,7 @@ void UI::log(const char* format, ...)
 	update();
 }
 
-void UI::refresh()
+bool UI::refresh()
 {
 	page = 0;
 	saves.clear();
@@ -501,31 +501,37 @@ void UI::refresh()
 	}
 
 	std::sort(saves.begin(), saves.end(), [](Save& save, Save& save2) { return save.index < save2.index; });
+
+	return !ec;
 }
 
-void UI::load(size_t index)
+bool UI::load(size_t index)
 {
 	if (index >= saves.size())
 	{
-		return;
+		return false;
 	}
 
 	FILE* file = fopen(saves[index].path.c_str(), "r");
-	if (file)
+	if (!file)
 	{
-		fread(game.level.blocks.get(), Level::WIDTH * Level::HEIGHT * Level::DEPTH, sizeof(unsigned char), file);
-		fclose(file);
-
-		game.level.calculateLightDepths(0, 0, Level::WIDTH, Level::DEPTH);
-		game.level.calculateSpawnPosition();
-		game.level.reset();
-
-		game.levelRenderer.loadAllChunks();
-		game.network.sendLevel(UCHAR_MAX, true);
+		return false;
 	}
+
+	fread(game.level.blocks.get(), Level::WIDTH * Level::HEIGHT * Level::DEPTH, sizeof(unsigned char), file);
+	fclose(file);
+
+	game.level.calculateLightDepths(0, 0, Level::WIDTH, Level::DEPTH);
+	game.level.calculateSpawnPosition();
+	game.level.reset();
+
+	game.levelRenderer.loadAllChunks();
+	game.network.sendLevel(UCHAR_MAX, true);
+
+	return true;
 }
 
-void UI::save(size_t index)
+bool UI::save(size_t index)
 {
 	FILE* file;
 	if (index < saves.size())
@@ -541,19 +547,23 @@ void UI::save(size_t index)
 		file = fopen(filename.u8string().c_str(), "w");
 	}
 
-	if (file)
+	if (!file)
 	{
-		fwrite(game.level.blocks.get(), Level::WIDTH * Level::HEIGHT * Level::DEPTH, sizeof(unsigned char), file);
-		fclose(file);
+		return false;
+	}
+
+	fwrite(game.level.blocks.get(), Level::WIDTH * Level::HEIGHT * Level::DEPTH, sizeof(unsigned char), file);
+	fclose(file);
 
 #if defined(EMSCRIPTEN)
-		EM_ASM(
-			FS.syncfs(false, function(err) {
-				console.log(err);
-			});
-		);
+	EM_ASM(
+		FS.syncfs(false, function(err) {
+			console.log(err);
+		});
+	);
 #endif
-	}
+
+	return true;
 }
 
 void UI::drawHUD()
@@ -942,9 +952,16 @@ bool UI::drawLoadMenu()
 	{
 		if (drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 - offset + 16 + 24 * i, 65.0f, saves.size() >= i + 1 + 4 * page ? saves[i + 4 * page].name.c_str() : "-", saves.size() >= i + 1 + 4 * page))
 		{
-			load(i + 4 * page);
-
-			closeMenu();
+			if (load(i + 4 * page))
+			{
+				closeMenu();
+			}
+			else 
+			{
+				closeMenu();
+				log("Failed to load level.");
+			}
+			
 			return true;
 		}
 	}
@@ -985,9 +1002,16 @@ bool UI::drawSaveMenu()
 	{
 		if (drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 - offset + 16 + 24 * i, 65.0f, saves.size() >= i + 1 + 4 * page ? saves[i + 4 * page].name.c_str() : "-", saves.size() >= i + 4 * page))
 		{
-			save(i + 4 * page);
+			if (save(i + 4 * page))
+			{
+				openMainMenu();
+			}
+			else 
+			{
+				closeMenu();
+				log("Failed to save level.");
+			}
 
-			openMainMenu();
 			return true;
 		}
 	}
@@ -1034,16 +1058,30 @@ bool UI::drawMainMenu()
 
 	if (drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 - offset + 40, 65.0f, "Load Level", game.network.isHost() || !game.network.isConnected(), 98.0f))
 	{
-		refresh();
-		openMenu(State::LoadMenu);
+		if (refresh())
+		{
+			openMenu(State::LoadMenu);
+		}
+		else 
+		{
+			closeMenu();
+			log("Failed to list levels.");
+		}
 
 		return true;
 	}
 
 	if (drawButton(game.scaledWidth / 2, game.scaledHeight / 2 - offset + 40, 65.0f, "Save Level", 1, 100.0f))
 	{
-		refresh();
-		openMenu(State::SaveMenu);
+		if (refresh())
+		{
+			openMenu(State::SaveMenu);
+		}
+		else 
+		{
+			closeMenu();
+			log("Failed to list levels.");
+		}
 
 		return true;
 	}

@@ -89,9 +89,9 @@ private:
 		bool isHolding;
 	};
 
-	void refresh();
-	void load(size_t index);
-	void save(size_t index);
+	bool refresh();
+	bool load(size_t index);
+	bool save(size_t index);
 
 	void drawHUD();
 	void drawFPS();

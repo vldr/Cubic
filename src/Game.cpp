@@ -127,8 +127,7 @@ void Game::init(SDL_Window* window_)
     fullscreen = false;
 
 #if TARGET_OS_IPHONE
-    static std::string documentsPath =
-        std::getenv("HOME") + std::string("/Documents");
+    static std::string documentsPath = std::getenv("HOME") + std::string("/Documents");
 
     fullscreen = true;
     path = documentsPath.c_str();
