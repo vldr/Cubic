@@ -1032,7 +1032,6 @@ bool UI::drawSaveMenu()
 		return true;
 	}
 
-
 	if (drawButton(game.scaledWidth / 2 - 100, game.scaledHeight / 2 - offset + 16 + 24 + 24 + 24 + 36, 65.0f, "Back to Menu"))
 	{
 		openMainMenu();
