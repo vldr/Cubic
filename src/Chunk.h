@@ -32,9 +32,9 @@ private:
 	{
 		bool valid = false;
 		unsigned char blockType;
-		Block::Definition blockDefinition;
 		float brightness;
 		float blockShift;
+		float height;
 		bool mirror;
 
 		bool operator==(const Face& rhs)
@@ -44,7 +44,7 @@ private:
 				this->blockType == rhs.blockType &&
 				this->brightness == rhs.brightness &&
 				this->blockShift == rhs.blockShift &&
-				this->blockDefinition.height == rhs.blockDefinition.height;
+				this->height == rhs.height;
 		}
 	};
 

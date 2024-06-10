@@ -275,7 +275,7 @@ inline void Chunk::generateMesh(Face* faces)
                     {
                         if constexpr (faceType == FaceType::Front || faceType == FaceType::Back || faceType == FaceType::Left || faceType == FaceType::Right)
                         {
-                            if (face.blockDefinition.height != 1.0f)
+                            if (face.height != 1.0f)
                             {
                                 break;
                             }
@@ -374,7 +374,7 @@ inline void Chunk::generateMesh(Face* faces)
                 }
 
                 const auto& blockType = face.blockType;
-                const auto& blockDefinition = face.blockDefinition;
+                const auto& blockDefinition = Block::Definitions[blockType];
                 const auto& brightness = face.brightness;
                 const auto& blockShift = face.blockShift;
                 const auto& mirror = face.mirror;
@@ -642,9 +642,9 @@ inline void Chunk::generateFaces()
                         topFaces[index] = {
                             true,
                             blockType,
-                            blockDefinition,
                             brightness,
                             blockShift,
+                            blockDefinition.height,
                             mirror
                         };
                     }
@@ -658,9 +658,9 @@ inline void Chunk::generateFaces()
                         bottomFaces[index] = {
                             true,
                             blockType,
-                            blockDefinition,
                             brightness,
                             blockShift,
+                            blockDefinition.height,
                             mirror
                         };
                     }
@@ -683,9 +683,9 @@ inline void Chunk::generateFaces()
                         frontFaces[index] = {
                             true,
                             blockType,
-                            blockDefinition,
                             brightness,
                             blockShift,
+                            blockDefinition.height,
                             mirror
                         };
                     }
@@ -708,9 +708,9 @@ inline void Chunk::generateFaces()
                         backFaces[index] = {
                             true,
                             blockType,
-                            blockDefinition,
                             brightness,
                             blockShift,
+                            blockDefinition.height,
                             mirror
                         };
                     }
@@ -733,9 +733,9 @@ inline void Chunk::generateFaces()
                         rightFaces[index] = {
                             true,
                             blockType,
-                            blockDefinition,
                             brightness,
                             blockShift,
+                            blockDefinition.height,
                             mirror
                         };
                     }
@@ -758,9 +758,9 @@ inline void Chunk::generateFaces()
                         leftFaces[index] = {
                             true,
                             blockType,
-                            blockDefinition,
                             brightness,
                             blockShift,
+                            blockDefinition.height,
                             mirror
                         };
                     }

@@ -35,6 +35,9 @@ xcuserdata/
 *.userosscache
 *.sln.docstates
 
+# VSCode user configuration
+.vscode/
+
 # Exception for Visual Studio project user profile
 !Windows/Cubic.vcxproj.user
 

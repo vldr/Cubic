@@ -16,33 +16,32 @@
 #include <emscripten/html5.h>
 
 EM_JS(void, copyToClipboard, (const char* text), {
-	if (navigator.clipboard) navigator.clipboard.writeText(UTF8ToString(text));
+	if (navigator.clipboard)
+		navigator.clipboard.writeText(UTF8ToString(text));
 });
 
 EM_JS(void, toggleFullscreen, (), {
 	if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement) {
-         if (document.documentElement.requestFullscreen) {
+		if (document.documentElement.requestFullscreen) {
 			document.documentElement.requestFullscreen();
-         } else if (document.documentElement.mozRequestFullScreen) {
+		} else if (document.documentElement.mozRequestFullScreen) {
 			document.documentElement.mozRequestFullScreen();
-         } else if (document.documentElement.webkitRequestFullscreen) {
+		} else if (document.documentElement.webkitRequestFullscreen) {
 			document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-         }
+		}
 	} else {
-        if (document.cancelFullScreen) {
-            document.cancelFullScreen();
-        } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-        } else if (document.webkitCancelFullScreen) {
+		if (document.cancelFullScreen) {
+			document.cancelFullScreen();
+		} else if (document.mozCancelFullScreen) {
+			document.mozCancelFullScreen();
+		} else if (document.webkitCancelFullScreen) {
 			document.webkitCancelFullScreen();
-        }
+		}
 	}
 });
 
 EM_JS(bool, isTouchScreen, (), {
-  return (('ontouchstart' in window) ||
-	 (navigator.maxTouchPoints > 0) ||
-	 (navigator.msMaxTouchPoints > 0));
+	return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
 });
 #endif
 
@@ -53,7 +52,7 @@ void UI::init()
 #elif defined(ANDROID) || TARGET_OS_IPHONE
 	isTouch = true;
 #else
-    isTouch = false;
+	isTouch = false;
 #endif
 
 	state = State::None;
