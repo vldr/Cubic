@@ -375,6 +375,7 @@ inline void Chunk::generateMesh(Face* faces)
 
                 const auto& blockType = face.blockType;
                 const auto& blockDefinition = Block::Definitions[blockType];
+                const auto& blockHeight = face.height;
                 const auto& brightness = face.brightness;
                 const auto& blockShift = face.blockShift;
                 const auto& mirror = face.mirror;
@@ -402,23 +403,23 @@ inline void Chunk::generateMesh(Face* faces)
                         float u2 = 0.0625f + u;
                         float v2 = 0.0625f + v;
 
-                        vertices->push({x, blockDefinition.height + y, z, u, v, brightness});
-                        vertices->push({x, blockDefinition.height + y, width + z, u, v2, brightness});
-                        vertices->push({height + x, blockDefinition.height + y, width + z, u2, v2, brightness});
+                        vertices->push({x, blockHeight + y, z, u, v, brightness});
+                        vertices->push({x, blockHeight + y, width + z, u, v2, brightness});
+                        vertices->push({height + x, blockHeight + y, width + z, u2, v2, brightness});
 
-                        vertices->push({x, blockDefinition.height + y, z, u, v, brightness});
-                        vertices->push({height + x, blockDefinition.height + y, width + z, u2, v2, brightness});
-                        vertices->push({height + x, blockDefinition.height + y, z, u2, v, brightness});
+                        vertices->push({x, blockHeight + y, z, u, v, brightness});
+                        vertices->push({height + x, blockHeight + y, width + z, u2, v2, brightness});
+                        vertices->push({height + x, blockHeight + y, z, u2, v, brightness});
 
                         if (mirror)
                         {
-                            vertices->push({x, blockDefinition.height + y, width + z, u, v, brightness});
-                            vertices->push({x, blockDefinition.height + y, z, u, v2, brightness});
-                            vertices->push({height + x, blockDefinition.height + y, z, u2, v2, brightness});
+                            vertices->push({x, blockHeight + y, width + z, u, v, brightness});
+                            vertices->push({x, blockHeight + y, z, u, v2, brightness});
+                            vertices->push({height + x, blockHeight + y, z, u2, v2, brightness});
 
-                            vertices->push({x, blockDefinition.height + y, width + z, u, v, brightness});
-                            vertices->push({height + x, blockDefinition.height + y, z, u2, v2, brightness});
-                            vertices->push({height + x, blockDefinition.height + y, width + z, u2, v, brightness});
+                            vertices->push({x, blockHeight + y, width + z, u, v, brightness});
+                            vertices->push({height + x, blockHeight + y, z, u2, v2, brightness});
+                            vertices->push({height + x, blockHeight + y, width + z, u2, v, brightness});
                         }
                     }
                     else if constexpr (faceType == FaceType::Bottom)
@@ -453,7 +454,7 @@ inline void Chunk::generateMesh(Face* faces)
                     float u = height + 0.0625f * (blockDefinition.sideTexture % 16);
                     float v = width + 0.0625f * (blockDefinition.sideTexture / 16);
                     float u2 = 0.0625f + u;
-                    float v2 = blockDefinition.height * 0.0625f + v;
+                    float v2 = blockHeight * 0.0625f + v;
 
                     int x = position.x + column;
                     int y = position.y + row;
@@ -461,44 +462,44 @@ inline void Chunk::generateMesh(Face* faces)
 
                     if constexpr (faceType == FaceType::Front)
                     {
-                        vertices->push({x, width * blockDefinition.height + y, 1.0f + z, u, v, brightness * 0.8f});
+                        vertices->push({x, width * blockHeight + y, 1.0f + z, u, v, brightness * 0.8f});
                         vertices->push({x, blockShift + y, 1.0f + z, u, v2, brightness * 0.8f});
                         vertices->push({height + x, blockShift + y, 1.0f + z, u2, v2, brightness * 0.8f});
 
-                        vertices->push({x, width * blockDefinition.height + y, 1.0f + z, u, v, brightness * 0.8f});
+                        vertices->push({x, width * blockHeight + y, 1.0f + z, u, v, brightness * 0.8f});
                         vertices->push({height + x, blockShift + y, 1.0f + z, u2, v2, brightness * 0.8f});
-                        vertices->push({height + x, width * blockDefinition.height + y, 1.0f + z, u2, v, brightness * 0.8f});
+                        vertices->push({height + x, width * blockHeight + y, 1.0f + z, u2, v, brightness * 0.8f});
 
                         if (mirror)
                         {
-                            vertices->push({height + x, width * blockDefinition.height + y, 1.0f + z, u, v, brightness * 0.8f});
+                            vertices->push({height + x, width * blockHeight + y, 1.0f + z, u, v, brightness * 0.8f});
                             vertices->push({height + x, blockShift + y, 1.0f + z, u, v2, brightness * 0.8f});
                             vertices->push({x, blockShift + y, 1.0f + z, u2, v2, brightness * 0.8f});
 
-                            vertices->push({height + x, width * blockDefinition.height + y, 1.0f + z, u, v, brightness * 0.8f});
+                            vertices->push({height + x, width * blockHeight + y, 1.0f + z, u, v, brightness * 0.8f});
                             vertices->push({x, blockShift + y, 1.0f + z, u2, v2, brightness * 0.8f});
-                            vertices->push({x, width * blockDefinition.height + y, 1.0f + z, u2, v, brightness * 0.8f});
+                            vertices->push({x, width * blockHeight + y, 1.0f + z, u2, v, brightness * 0.8f});
                         }
                     }
                     else if constexpr (faceType == FaceType::Back)
                     {
-                        vertices->push({height + x, width * blockDefinition.height + y, z, u, v, brightness * 0.8f});
+                        vertices->push({height + x, width * blockHeight + y, z, u, v, brightness * 0.8f});
                         vertices->push({height + x, blockShift + y, z, u, v2, brightness * 0.8f});
                         vertices->push({x, blockShift + y, z, u2, v2, brightness * 0.8f});
 
-                        vertices->push({height + x, width * blockDefinition.height + y, z, u, v, brightness * 0.8f});
+                        vertices->push({height + x, width * blockHeight + y, z, u, v, brightness * 0.8f});
                         vertices->push({x, blockShift + y, z, u2, v2, brightness * 0.8f});
-                        vertices->push({x, width * blockDefinition.height + y, z, u2, v, brightness * 0.8f});
+                        vertices->push({x, width * blockHeight + y, z, u2, v, brightness * 0.8f});
                         
                         if (mirror)
                         {
-                            vertices->push({x, width * blockDefinition.height + y, z, u, v, brightness * 0.8f});
+                            vertices->push({x, width * blockHeight + y, z, u, v, brightness * 0.8f});
                             vertices->push({x, blockShift + y, z, u, v2, brightness * 0.8f});
                             vertices->push({height + x, blockShift + y, z, u2, v2, brightness * 0.8f});
 
-                            vertices->push({x, width * blockDefinition.height + y, z, u, v, brightness * 0.8f});
+                            vertices->push({x, width * blockHeight + y, z, u, v, brightness * 0.8f});
                             vertices->push({height + x, blockShift + y, z, u2, v2, brightness * 0.8f});
-                            vertices->push({height + x, width * blockDefinition.height + y, z, u2, v, brightness * 0.8f});
+                            vertices->push({height + x, width * blockHeight + y, z, u2, v, brightness * 0.8f});
                         }
                     }
                 }
@@ -507,7 +508,7 @@ inline void Chunk::generateMesh(Face* faces)
                     float u = height + 0.0625f * (blockDefinition.sideTexture % 16);
                     float v = width + 0.0625f * (blockDefinition.sideTexture / 16);
                     float u2 = 0.0625f + u;
-                    float v2 = blockDefinition.height * 0.0625f + v;
+                    float v2 = blockHeight * 0.0625f + v;
 
                     int x = position.x + slice;
                     int y = position.y + row;
@@ -515,44 +516,44 @@ inline void Chunk::generateMesh(Face* faces)
 
                     if constexpr (faceType == FaceType::Right)
                     {
-                        vertices->push({1.0f + x, width * blockDefinition.height + y, height + z, u, v, brightness * 0.6f});
+                        vertices->push({1.0f + x, width * blockHeight + y, height + z, u, v, brightness * 0.6f});
                         vertices->push({1.0f + x, blockShift + y, height + z, u, v2, brightness * 0.6f});
                         vertices->push({1.0f + x, blockShift + y, z, u2, v2, brightness * 0.6f});
 
-                        vertices->push({1.0f + x, width * blockDefinition.height + y, height + z, u, v, brightness * 0.6f});
+                        vertices->push({1.0f + x, width * blockHeight + y, height + z, u, v, brightness * 0.6f});
                         vertices->push({1.0f + x, blockShift + y, z, u2, v2, brightness * 0.6f});
-                        vertices->push({1.0f + x, width * blockDefinition.height + y, z, u2, v, brightness * 0.6f});
+                        vertices->push({1.0f + x, width * blockHeight + y, z, u2, v, brightness * 0.6f});
 
                         if (mirror)
                         {
-                            vertices->push({1.0f + x, width * blockDefinition.height + y, z, u, v, brightness * 0.6f});
+                            vertices->push({1.0f + x, width * blockHeight + y, z, u, v, brightness * 0.6f});
                             vertices->push({1.0f + x, blockShift + y, z, u, v2, brightness * 0.6f});
                             vertices->push({1.0f + x, blockShift + y, height + z, u2, v2, brightness * 0.6f});
 
-                            vertices->push({1.0f + x, width * blockDefinition.height + y, z, u, v, brightness * 0.6f});
+                            vertices->push({1.0f + x, width * blockHeight + y, z, u, v, brightness * 0.6f});
                             vertices->push({1.0f + x, blockShift + y, height + z, u2, v2, brightness * 0.6f});
-                            vertices->push({1.0f + x, width * blockDefinition.height + y, height + z, u2, v, brightness * 0.6f});
+                            vertices->push({1.0f + x, width * blockHeight + y, height + z, u2, v, brightness * 0.6f});
                         }
                     }
                     else if constexpr (faceType == FaceType::Left)
                     {
-                        vertices->push({x, width * blockDefinition.height + y, z, u, v, brightness * 0.6f});
+                        vertices->push({x, width * blockHeight + y, z, u, v, brightness * 0.6f});
                         vertices->push({x, blockShift + y, z, u, v2, brightness * 0.6f});
                         vertices->push({x, blockShift + y, height + z, u2, v2, brightness * 0.6f});
                                 
-                        vertices->push({x, width * blockDefinition.height + y, z, u, v, brightness * 0.6f});
+                        vertices->push({x, width * blockHeight + y, z, u, v, brightness * 0.6f});
                         vertices->push({x, blockShift + y, height + z, u2, v2, brightness * 0.6f});
-                        vertices->push({x, width * blockDefinition.height + y, height + z, u2, v, brightness * 0.6f});
+                        vertices->push({x, width * blockHeight + y, height + z, u2, v, brightness * 0.6f});
 
                         if (mirror)
                         {
-                            vertices->push({x, width * blockDefinition.height + y, height + z, u, v, brightness * 0.6f});
+                            vertices->push({x, width * blockHeight + y, height + z, u, v, brightness * 0.6f});
                             vertices->push({x, blockShift + y, height + z, u, v2, brightness * 0.6f});
                             vertices->push({x, blockShift + y, z, u2, v2, brightness * 0.6f});
 
-                            vertices->push({x, width * blockDefinition.height + y, height + z, u, v, brightness * 0.6f});
+                            vertices->push({x, width * blockHeight + y, height + z, u, v, brightness * 0.6f});
                             vertices->push({x, blockShift + y, z, u2, v2, brightness * 0.6f});
-                            vertices->push({x, width * blockDefinition.height + y, z, u2, v, brightness * 0.6f});
+                            vertices->push({x, width * blockHeight + y, z, u2, v, brightness * 0.6f});
                         }
                     }
                 }
