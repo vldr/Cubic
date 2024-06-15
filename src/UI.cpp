@@ -79,22 +79,25 @@ bool UI::input(const SDL_Event& event)
 			mousePosition.x = event.tfinger.x * game.scaledWidth;
 			mousePosition.y = event.tfinger.y * game.scaledHeight;
 
-			for (auto touchPosition = touchPositions.begin(); touchPosition != touchPositions.end(); touchPosition++)
+			for (auto& touchPosition : touchPositions)
 			{
-				if (touchPosition->id == event.tfinger.fingerId)
+				if (touchPosition.id == event.tfinger.fingerId)
 				{
-					if (glm::abs(event.tfinger.dx) > TOUCH_SWIPE_OFFSET || glm::abs(event.tfinger.dy) > TOUCH_SWIPE_OFFSET)
+					touchPosition.x = event.tfinger.x * game.scaledWidth;
+					touchPosition.y = event.tfinger.y * game.scaledHeight;
+
+					if (
+						glm::abs(touchPosition.x - touchPosition.initialX) > TOUCH_SWIPE_OFFSET * game.scaledWidth || 
+						glm::abs(touchPosition.y - touchPosition.initialY) > TOUCH_SWIPE_OFFSET * game.scaledHeight
+					)
 					{
-						touchPosition->hold = false;
+						touchPosition.hold = false;
 					}
 
-					if (state == State::None && touchPosition->swipe)
+					if (state == State::None && touchPosition.swipe)
 					{
 						game.localPlayer.turn(event.tfinger.dx * 360.0f, event.tfinger.dy * 180.0f);
 					}
-
-					touchPosition->x = event.tfinger.x * game.scaledWidth;
-					touchPosition->y = event.tfinger.y * game.scaledHeight;
 
 					break;
 				}
@@ -109,10 +112,15 @@ bool UI::input(const SDL_Event& event)
 		}
 		else if (event.type == SDL_FINGERDOWN)
 		{
+			float x = event.tfinger.x * game.scaledWidth;
+			float y = event.tfinger.y * game.scaledHeight;
+
 			touchPositions.push_back({
 				event.tfinger.fingerId,
-				event.tfinger.x * game.scaledWidth,
-				event.tfinger.y * game.scaledHeight,
+				x,
+				y,
+				x,
+				y,
 				game.timer.milliTime(),
 				true,
 				true,

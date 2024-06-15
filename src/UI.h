@@ -79,8 +79,11 @@ private:
 	struct TouchPosition 
 	{
 		int64_t id;
+
 		float x;
 		float y;
+		float initialX;
+		float initialY;
 
 		uint64_t startTime;
 
@@ -169,7 +172,7 @@ private:
 
 	VertexList blockVertices;
 
-	const float TOUCH_SWIPE_OFFSET = 0.003f;
+	const float TOUCH_SWIPE_OFFSET = 0.015f;
 	const int TOUCH_PLACE_DELAY = 200;
 	const int TOUCH_BREAK_DELAY = 300;
 };
