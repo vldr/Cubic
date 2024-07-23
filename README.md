@@ -16,9 +16,10 @@ You can play the game from the web — [cubic.vldr.org](https://cubic.vldr.org/)
 Alternatively, you can play the game by downloading the precompiled binaries for your platform:
 
 - [Windows (x64)](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Windows_x64.zip)  
-  [Windows (ARM64)](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Windows_ARM64.zip)
+[Windows (ARM64)](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Windows_ARM64.zip)
 
   Download and unzip all files, then run the *Cubic.exe* executable.
+  - You may need to install the latest [Visual C++ redistributable](https://aka.ms/vs/17/release/vc_redist.x64.exe) for your platform.
 - [MacOS](https://github.com/vldr/Cubic/releases/download/Build/Cubic_MacOS.zip)
 
   Download and unzip all files, then:
