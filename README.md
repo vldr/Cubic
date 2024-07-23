@@ -15,9 +15,15 @@ You can play the game from the web — [cubic.vldr.org](https://cubic.vldr.org/)
 
 Alternatively, you can play the game by downloading the precompiled binaries for your platform:
 
-- [Windows](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Windows.zip)
+- [Windows (x64)](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Windows_x64.zip)  
+  [Windows (ARM64)](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Windows_ARM64.zip)
 
   Download and unzip all files, then run the *Cubic.exe* executable.
+- [MacOS](https://github.com/vldr/Cubic/releases/download/Build/Cubic_MacOS.zip)
+
+  Download and unzip all files, then:
+  * Move *Cubic.app* to the **Applications** folder.
+  * Run the *Cubic.app* application.
 - [Linux (Ubuntu/Debian)](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Linux.zip)
 
   Download and unzip all files, then in a terminal, run:
@@ -25,11 +31,6 @@ Alternatively, you can play the game by downloading the precompiled binaries for
   * `sudo apt install libgl-dev libglew-dev libsdl2-dev`
   * `chmod +x cubic`
   * `./cubic`
-- [MacOS](https://github.com/vldr/Cubic/releases/download/Build/Cubic_MacOS.zip)
-
-  Download and unzip all files, then:
-  * Move *Cubic.app* to the **Applications** folder.
-  * Run the *Cubic.app* application.
   * Go to **Apple menu > System Settings > Privacy & Security** and allow *Cubic.app* to run.
 - [Android](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Android.zip)
 
@@ -54,9 +55,8 @@ Alternatively, you can play the game by downloading the precompiled binaries for
 After the build process completes, the output HTML, JS, and WASM files will be located in the `build/web/output/` directory.
 
 ### Windows
-**Note:** The included compiled SDL2 and GLEW dynamic link binaries are built for x86_64 machines only.
 
-1. Install [Visual Studio](https://visualstudio.microsoft.com/#vs-section).
+1. Install [Visual Studio](https://visualstudio.microsoft.com/#vs-section) with the "Desktop development with C++" component.
 2. Open `build/windows/Cubic.sln` in Visual Studio.
 3. Optionally, if needed, upgrade the project's platform toolset to your Visual Studio's available platform toolset.
 4. Select either **Debug** or **Release** from the build dropdown menu (top-center).
@@ -78,7 +78,6 @@ After the build process completes, the output executable will be located either 
 After the build process completes, the output executable will be located in the `build/linux/output/` directory.
 
 ### MacOS
-**Note:** The included compiled SDL2 and GLEW dynamic link binaries are built for x86_64 and arm64 machines only.
 
 1. Install [Xcode Command Line Tools](https://mac.install.guide/commandlinetools/4.html).
 2. Open Terminal. 

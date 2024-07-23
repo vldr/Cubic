@@ -59,20 +59,37 @@ jobs:
       - name: Add MSBUILD to PATH
         uses: microsoft/setup-msbuild@v1.1
 
-      - name: Build
+      - name: Build (x64)
         run: msbuild build\windows\Cubic.vcxproj -t:rebuild -property:Configuration=Release -property:Platform=x64
 
-      - name: Bundle
+      - name: Build (ARM64)
+        run: msbuild build\windows\Cubic.vcxproj -t:rebuild -property:Configuration=Release -property:Platform=ARM64
+
+      - name: Bundle (x64)
         run: |
           cd build\windows\x64\Release
           tar.exe -a -c -f cubic.zip Cubic.exe
 
-      - name: Publish
+      - name: Bundle (ARM64)
+        run: |
+          cd build\windows\ARM64\Release
+          tar.exe -a -c -f cubic.zip Cubic.exe
+
+      - name: Publish (x64)
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/windows/x64/Release/cubic.zip
-          asset_name: Cubic_Windows.zip
+          asset_name: Cubic_Windows_x64.zip
+          tag: Build
+          overwrite: true
+
+      - name: Publish (ARM64)
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/windows/ARM64/Release/cubic.zip
+          asset_name: Cubic_Windows_ARM64.zip
           tag: Build
           overwrite: true
 
