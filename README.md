@@ -59,12 +59,12 @@ After the build process completes, the output HTML, JS, and WASM files will be l
 
 1. Install [Visual Studio](https://visualstudio.microsoft.com/#vs-section) with the "Desktop development with C++" component.
 2. Open `build/windows/Cubic.sln` in Visual Studio.
-3. Optionally, if needed, upgrade the project's platform toolset to your Visual Studio's available platform toolset.
-4. Select either **Debug** or **Release** from the build dropdown menu (top-center).
-5. Press **F7** or click **Build > Build Solution** to build the project.
+3. If needed, upgrade the project's platform toolset to your Visual Studio's available platform toolset.
+4. Select either **x64** or **ARM64** from the build architecture dropdown menu (top-center).
+5. Select either **Debug** or **Release** from the build type dropdown menu (top-center).
+6. Press **F7** or click **Build > Build Solution** to build the project.
 
-After the build process completes, the output executable will be located either in `build/windows/x64/Debug` or 
-`build/windows/x64/Release` depending if you've compiled a debug or release build.
+After the build process completes, the output executable will be located either in `build/windows/x64/Debug` or `build/windows/x64/Release` for x64 debug/release builds, and `build/windows/ARM64/Debug` or `build/windows/ARM64/Release` for ARM64 debug/release builds.
 
 ### Linux
 
