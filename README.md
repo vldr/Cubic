@@ -19,7 +19,7 @@ Alternatively, you can play the game by downloading the precompiled binaries for
 [Windows (ARM64)](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Windows_ARM64.zip)
 
   Download and unzip all files, then run the *Cubic.exe* executable.
-  - You may need to install the latest [Visual C++ redistributable](https://aka.ms/vs/17/release/vc_redist.x64.exe) for your platform.
+  - You may need to install the latest [Visual C++ redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version) for your platform.
 - [MacOS](https://github.com/vldr/Cubic/releases/download/Build/Cubic_MacOS.zip)
 
   Download and unzip all files, then:
