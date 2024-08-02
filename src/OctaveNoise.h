@@ -6,10 +6,10 @@
 
 class OctaveNoise : public Noise {
 public:
-	OctaveNoise(Random& random, int octaveCount);
+  OctaveNoise(Random& random, int octaveCount);
 
-	float compute(float x, float y) override;
+  float compute(float x, float y) override;
 private:
-	int octaveCount;
-	std::unique_ptr<std::unique_ptr<Noise>[]> noises;
+  int octaveCount;
+  std::unique_ptr<std::unique_ptr<Noise>[]> noises;
 };

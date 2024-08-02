@@ -12,28 +12,28 @@ class Random;
 class LevelRenderer
 {
 public:
-	void init();
-	void render();
-	void renderPost();
-	void tick();
+  void init();
+  void render();
+  void renderPost();
+  void tick();
 
-	void loadAllChunks();
-	void loadChunks(int x, int y, int z);
-	Chunk* getChunk(int x, int y, int z);
+  void loadAllChunks();
+  void loadChunks(int x, int y, int z);
+  Chunk* getChunk(int x, int y, int z);
 
 private:
-	void updateWaterTexture();
-	void updateLavaTexture();
+  void updateWaterTexture();
+  void updateLavaTexture();
 
-	Skybox skybox;
+  Skybox skybox;
 
-	std::unique_ptr<Chunk[]> chunks;
-	std::priority_queue<Chunk*, std::vector<Chunk*>, Chunk::Comparator> chunkQueue;
+  std::unique_ptr<Chunk[]> chunks;
+  std::priority_queue<Chunk*, std::vector<Chunk*>, Chunk::Comparator> chunkQueue;
 
-	int xChunks;
-	int yChunks;
-	int zChunks;
+  int xChunks;
+  int yChunks;
+  int zChunks;
 
-	const int MAX_CHUNK_UPDATES = 4;
+  const int MAX_CHUNK_UPDATES = 4;
 };
 

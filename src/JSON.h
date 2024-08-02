@@ -28,7 +28,7 @@
 */
 
 #ifndef _TINY_JSON_H_
-#define	_TINY_JSON_H_
+#define _TINY_JSON_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -173,7 +173,7 @@ json_t const* json_createWithPool( char* str, jsonPool_t* pool );
 }
 #endif
 
-#endif	/* _TINY_JSON_H_ */
+#endif  /* _TINY_JSON_H_ */
 
 /*
 <https://github.com/rafagafe/tiny-json>
@@ -202,9 +202,9 @@ json_t const* json_createWithPool( char* str, jsonPool_t* pool );
 #include <stddef.h>
 
 #ifndef MAKE_JSON_H
-#define	MAKE_JSON_H
+#define MAKE_JSON_H
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -328,8 +328,8 @@ char* json_double( char* dest, char const* name, double value, size_t* remLen );
 
 /** @ } */
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* MAKE_JSON_H */
+#endif  /* MAKE_JSON_H */

@@ -20,75 +20,75 @@
 
 extern class Game {
 public:
-	void init(SDL_Window* window);
-	void input(const SDL_Event& event);
-	void render();
-	void resize();
+  void init(SDL_Window* window);
+  void input(const SDL_Event& event);
+  void render();
+  void resize();
 
-	SDL_Window* window;
-	SDL_GameController* controller;
+  SDL_Window* window;
+  SDL_GameController* controller;
 
-	TextureManager textureManager;
-	ShaderManager shaderManager;
-	ParticleManager particleManager;
-	LocalPlayer localPlayer;
-	HeldBlock heldBlock;
-	SelectedBlock selectedBlock;
-	LevelRenderer levelRenderer;
-	LevelGenerator levelGenerator;
-	Level level;
-	Random random;
-	Timer timer;
-	UI ui;
-	Frustum frustum;
-	Network network;
+  TextureManager textureManager;
+  ShaderManager shaderManager;
+  ParticleManager particleManager;
+  LocalPlayer localPlayer;
+  HeldBlock heldBlock;
+  SelectedBlock selectedBlock;
+  LevelRenderer levelRenderer;
+  LevelGenerator levelGenerator;
+  Level level;
+  Random random;
+  Timer timer;
+  UI ui;
+  Frustum frustum;
+  Network network;
 
-	GLuint shader;
-	GLuint atlasTexture;
+  GLuint shader;
+  GLuint atlasTexture;
 
-	GLuint projectionMatrixUniform;
-	GLuint viewMatrixUniform;
-	GLuint modelMatrixUniform;
+  GLuint projectionMatrixUniform;
+  GLuint viewMatrixUniform;
+  GLuint modelMatrixUniform;
 
-	GLuint playerPositionUniform;
-	GLuint fragmentOffsetUniform;
+  GLuint playerPositionUniform;
+  GLuint fragmentOffsetUniform;
 
-	GLuint fogEnableUniform;
-	GLuint fogDistanceUniform;
-	GLuint fogColorUniform;
+  GLuint fogEnableUniform;
+  GLuint fogDistanceUniform;
+  GLuint fogColorUniform;
 
-	GLuint positionAttribute;
-	GLuint uvAttribute;
-	GLuint shadeAttribute;
+  GLuint positionAttribute;
+  GLuint uvAttribute;
+  GLuint shadeAttribute;
 
-	int height;
-	int width;
-	bool fullscreen;
-	const char* path;
+  int height;
+  int width;
+  bool fullscreen;
+  const char* path;
 
-	int windowHeight;
-	int windowWidth;
+  int windowHeight;
+  int windowWidth;
 
-	float scaledHeight;
-	float scaledWidth;
+  float scaledHeight;
+  float scaledWidth;
 
-	uint64_t lastTick;
-	uint64_t lastChunkUpdates;
-	uint64_t lastFrameRate;
-	uint64_t frameRate;
-	size_t chunkUpdates;
+  uint64_t lastTick;
+  uint64_t lastChunkUpdates;
+  uint64_t lastFrameRate;
+  uint64_t frameRate;
+  size_t chunkUpdates;
 
-	float fogDistance;
-	glm::vec4 fogColor;
+  float fogDistance;
+  glm::vec4 fogColor;
 
-	glm::mat4 orthographicProjectionMatrix;
-	glm::mat4 perspectiveProjectionMatrix;
-	glm::mat4 viewMatrix;
+  glm::mat4 orthographicProjectionMatrix;
+  glm::mat4 perspectiveProjectionMatrix;
+  glm::mat4 viewMatrix;
 
-	const glm::mat4 IDENTITY_MATRIX = glm::mat4(1.0f);
+  const glm::mat4 IDENTITY_MATRIX = glm::mat4(1.0f);
 
-	const float FIELD_OF_VIEW = 70.0f;
-	const float NEAR_PLANE = 0.01f;
-	const float FAR_PLANE = 1000.0f;
-	const float TICK_RATE = 20.0f;
+  const float FIELD_OF_VIEW = 70.0f;
+  const float NEAR_PLANE = 0.01f;
+  const float FAR_PLANE = 1000.0f;
+  const float TICK_RATE = 20.0f;
 } game;

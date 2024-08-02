@@ -4,6 +4,6 @@
 class ShaderManager
 {
 public:
-	GLuint load(const char* vertexSource, const char* fragmentSource);
+  GLuint load(const char* vertexSource, const char* fragmentSource);
 };
 

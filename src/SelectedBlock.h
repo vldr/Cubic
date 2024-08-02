@@ -4,14 +4,14 @@
 class SelectedBlock
 {
 public:
-	void init();
-	void renderPost();
+  void init();
+  void renderPost();
 
 private:
-	const static int BUFFER_SIZE = 24;
+  const static int BUFFER_SIZE = 24;
 
-	GLuint vao;
-	GLuint buffer;
-	GLuint texture;
+  GLuint vao;
+  GLuint buffer;
+  GLuint texture;
 };
 

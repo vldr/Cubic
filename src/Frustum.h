@@ -5,11 +5,11 @@ class Chunk;
 class Frustum 
 {
 public:
-	void update();
-	bool contains(Chunk* chunk);
+  void update();
+  bool contains(Chunk* chunk);
 private:
-	void normalizePlane(int plane);
+  void normalizePlane(int plane);
 
-	float planes[6][16];
-	float clip[16];
+  float planes[6][16];
+  float clip[16];
 };

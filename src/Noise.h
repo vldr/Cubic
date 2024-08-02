@@ -3,6 +3,6 @@
 class Noise 
 {
 public:
-	virtual ~Noise() {}
-	virtual float compute(float x, float y) = 0;
+  virtual ~Noise() {}
+  virtual float compute(float x, float y) = 0;
 };

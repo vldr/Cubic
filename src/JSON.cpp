@@ -50,11 +50,11 @@ json_t const* json_getProperty( json_t const* obj, char const* property ) {
 
 /* Search a property by its name in a JSON object and return its value. */
 char const* json_getPropertyValue( json_t const* obj, char const* property ) {
-	json_t const* field = json_getProperty( obj, property );
-	if ( !field ) return 0;
+  json_t const* field = json_getProperty( obj, property );
+  if ( !field ) return 0;
         jsonType_t type = json_getType( field );
         if ( JSON_ARRAY >= type ) return 0;
-	return json_getValue( field );
+  return json_getValue( field );
 }
 
 /* Internal prototypes: */
@@ -310,11 +310,11 @@ static char* numValue( char* ptr, json_t* property ) {
 static void add( json_t* obj, json_t* property ) {
     property->sibling = 0;
     if ( !obj->u.c.child ){
-	    obj->u.c.child = property;
-	    obj->u.c.last_child = property;
+      obj->u.c.child = property;
+      obj->u.c.last_child = property;
     } else {
-	    obj->u.c.last_child->sibling = property;
-	    obj->u.c.last_child = property;
+      obj->u.c.last_child->sibling = property;
+      obj->u.c.last_child = property;
     }
 }
 
@@ -767,7 +767,7 @@ char* funcname( char* dest, char const* name, type value, size_t* remLen  ) {   
     dest = primitivename( dest, name, remLen );                                     \
     digitLen = snprintf( dest, *remLen, fmt, value );                               \
     if(digitLen >= (int)*remLen+1){                                                 \
-    	digitLen = (int)*remLen;}                                                     \
+      digitLen = (int)*remLen;}                                                     \
     *remLen -= (size_t)digitLen;                                                    \
     dest += digitLen;                                                               \
     dest = chtoa( dest, ',', remLen );                                              \

@@ -6,19 +6,19 @@
 class HeldBlock
 {
 public:
-	void init();
-	void update();
-	void tick();
-	void render();
-	void swing();
-	void reset();
+  void init();
+  void update();
+  void tick();
+  void render();
+  void swing();
+  void reset();
 private:
-	float height;
-	float lastHeight;
+  float height;
+  float lastHeight;
 
-	int swingOffset;
-	bool isSwinging;
+  int swingOffset;
+  bool isSwinging;
 
-	VertexList vertices;
+  VertexList vertices;
 };
 

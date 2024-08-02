@@ -11,41 +11,41 @@ class Random;
 class LevelGenerator
 {
 public:
-	void init();
-	void update();
+  void init();
+  void update();
 
 private:
-	enum class State
-	{
-		Init,
-		HeightMap,
-		DirtStoneLava,
-		Water,
-		Caves,
-		Ore,
-		GrassSandGravel,
-		Flowers,
-		Mushrooms,
-		Trees,
-		Destroy,
-		Finished,
-	};
+  enum class State
+  {
+    Init,
+    HeightMap,
+    DirtStoneLava,
+    Water,
+    Caves,
+    Ore,
+    GrassSandGravel,
+    Flowers,
+    Mushrooms,
+    Trees,
+    Destroy,
+    Finished,
+  };
 
-	void generateHeightMap();
-	void generateDirtStoneLava();
-	void generateWater();
-	void generateCaves();
-	void generateOre(Block::Type blockType, int amount);
-	void generateGrassSandGravel();
-	void generateFlowers();
-	void generateMushrooms();
-	void generateTrees();
+  void generateHeightMap();
+  void generateDirtStoneLava();
+  void generateWater();
+  void generateCaves();
+  void generateOre(Block::Type blockType, int amount);
+  void generateGrassSandGravel();
+  void generateFlowers();
+  void generateMushrooms();
+  void generateTrees();
 
-	State state;
+  State state;
 
-	std::unique_ptr<int[]> heights;
-	std::unique_ptr<Random> random;
-	std::shared_ptr<CombinedNoise> noise1;
-	std::shared_ptr<CombinedNoise> noise2;
-	std::shared_ptr<OctaveNoise> noise3;
+  std::unique_ptr<int[]> heights;
+  std::unique_ptr<Random> random;
+  std::shared_ptr<CombinedNoise> noise1;
+  std::shared_ptr<CombinedNoise> noise2;
+  std::shared_ptr<OctaveNoise> noise3;
 };
