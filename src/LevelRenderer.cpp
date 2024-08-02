@@ -222,9 +222,9 @@ void LevelRenderer::loadAllChunks()
   for (int i = 0; i < xChunks * yChunks * zChunks; i++)
   {
     Chunk* chunk = &chunks[i];
-  chunk->isLoaded = false;
+    chunk->isLoaded = false;
 
-  chunkQueue.push(chunk);
+    chunkQueue.push(chunk);
   }
 }
 
