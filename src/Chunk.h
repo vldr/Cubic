@@ -13,10 +13,9 @@ public:
   void update();
   float distanceToPlayer() const;
 
-  glm::ivec3 position;
-
   bool isVisible;
   bool isLoaded;
+  glm::ivec3 position;
 
   static const int SIZE = 16;
   struct Comparator
@@ -30,11 +29,11 @@ private:
   struct Face
   {
     bool valid = false;
+    bool mirror;
     unsigned char blockType;
     float brightness;
     float blockShift;
     float height;
-    bool mirror;
 
     bool operator==(const Face& rhs)
     {
