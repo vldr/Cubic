@@ -486,8 +486,17 @@ void Network::onMessage(const std::string& text)
   std::string type = json_getValue(json_getProperty(message, "type"));
   if (type == "error")
   {
-    std::string reason = json_getValue(json_getProperty(message, "message"));
-    game.ui.openStatusMenu("Error", reason.c_str(), true);
+    std::string error = json_getValue(json_getProperty(message, "message"));
+    const char* description;
+
+    if (error == "DoesNotExist")
+      description = "The room does not exist.";
+    else if (error == "IsFull")
+      description = "The room is full.";
+    else
+      description = error.c_str();
+
+    game.ui.openStatusMenu("Error", description, true);
   }
   else if (type == "create")
   {
