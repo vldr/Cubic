@@ -328,13 +328,14 @@ void Game::input(const SDL_Event& event)
 
 void Game::resize()
 {
-  SDL_GetWindowSize(window, &windowWidth, &windowHeight);
-
 #if defined(EMSCRIPTEN)
   fullscreen = isFullscreen();
+  windowWidth = EM_ASM_INT(return window.innerWidth);
+  windowHeight = EM_ASM_INT(return window.innerHeight);
   width = std::lround(windowWidth * emscripten_get_device_pixel_ratio());
   height = std::lround(windowHeight * emscripten_get_device_pixel_ratio());
 #else
+  SDL_GetWindowSize(window, &windowWidth, &windowHeight);
   SDL_GL_GetDrawableSize(window, &width, &height);
 #endif
 
