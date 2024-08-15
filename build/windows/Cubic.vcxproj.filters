@@ -151,9 +151,6 @@
     <ClInclude Include="..\..\src\Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Noise.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\OctaveNoise.h">
       <Filter>Header Files</Filter>
     </ClInclude>

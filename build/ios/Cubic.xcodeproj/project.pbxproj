@@ -167,7 +167,6 @@
 		23ECC5732BDB547C007BE30F /* VertexList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VertexList.cpp; path = ../../../src/VertexList.cpp; sourceTree = "<group>"; };
 		23ECC5742BDB547C007BE30F /* SelectedBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SelectedBlock.cpp; path = ../../../src/SelectedBlock.cpp; sourceTree = "<group>"; };
 		23ECC5752BDB547C007BE30F /* AABB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AABB.cpp; path = ../../../src/AABB.cpp; sourceTree = "<group>"; };
-		23ECC5762BDB547C007BE30F /* Noise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Noise.h; path = ../../../src/Noise.h; sourceTree = "<group>"; };
 		23ECC5772BDB547C007BE30F /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSON.h; path = ../../../src/JSON.h; sourceTree = "<group>"; };
 		23ECC5782BDB547C007BE30F /* Frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Frustum.h; path = ../../../src/Frustum.h; sourceTree = "<group>"; };
 		23ECC5792BDB547C007BE30F /* TextureManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureManager.cpp; path = ../../../src/TextureManager.cpp; sourceTree = "<group>"; };
@@ -281,7 +280,6 @@
 				23ECC5962BDB547D007BE30F /* Main.cpp */,
 				23ECC58D2BDB547C007BE30F /* Network.cpp */,
 				23ECC59B2BDB547D007BE30F /* Network.h */,
-				23ECC5762BDB547C007BE30F /* Noise.h */,
 				23ECC56B2BDB547C007BE30F /* OctaveNoise.cpp */,
 				23ECC58B2BDB547C007BE30F /* OctaveNoise.h */,
 				23ECC5892BDB547C007BE30F /* Particle.cpp */,

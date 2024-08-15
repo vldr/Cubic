@@ -1,15 +1,12 @@
 #pragma once
-#include "Noise.h"
 
 class Random;
 
-class PerlinNoise : public Noise {
+class PerlinNoise {
 public:
   PerlinNoise(Random& random);
-  ~PerlinNoise() override;
 
-  float compute(float x, float y) override;
-
+  float compute(float x, float y);
 private:
   float f(float x);
   float lerp(float t, float a, float b);

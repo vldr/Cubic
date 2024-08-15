@@ -2,6 +2,11 @@
 
 #include <glm/glm.hpp>
 
+Random::Random(uint64_t seed)
+{
+  init(seed);
+}
+
 void Random::init(uint64_t seed_)
 {
   seed = seed_;

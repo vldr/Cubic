@@ -276,7 +276,6 @@
     <ClInclude Include="..\..\src\LocalPlayer.h" />
     <ClInclude Include="..\..\src\Level.h" />
     <ClInclude Include="..\..\src\Game.h" />
-    <ClInclude Include="..\..\src\Noise.h" />
     <ClInclude Include="..\..\src\OctaveNoise.h" />
     <ClInclude Include="..\..\src\Particle.h" />
     <ClInclude Include="..\..\src\PerlinNoise.h" />

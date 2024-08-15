@@ -5,18 +5,19 @@
 
 PerlinNoise::PerlinNoise(Random& random) 
 {
-  for (int i = 0; i < 256; i++) { hash[i] = i; }
-  for (int i = 0; i < 256; i++) {
+  for (int i = 0; i < 256; i++) 
+  { 
+    hash[i] = i; 
+  }
+
+  for (int i = 0; i < 256; i++) 
+  {
     int r1 = (int)random.integerRange(0, 256 - i - 1) + i;
     int r2 = hash[i];
     hash[i] = hash[r1];
     hash[r1] = r2;
     hash[i + 256] = hash[i];
   }
-}
-
-PerlinNoise::~PerlinNoise()
-{
 }
 
 float PerlinNoise::f(float x) 
@@ -41,11 +42,14 @@ float PerlinNoise::compute(float x, float y)
 {
   float vx = x, vy = y, vz = 0.0f;
   int ix = ((int)vx) & 255, iy = ((int)vy) & 255, iz = ((int)vz) & 255;
+
   vx -= glm::floor(vx);
   vy -= glm::floor(vy);
   vz -= glm::floor(vz);
+
   float xd = f(vx), yd = f(vy), zd = f(vz);
   int aaa, aba, aab, abb, baa, bba, bab, bbb;
+
   aaa = hash[hash[hash[ix] + iy] + iz];
   aba = hash[hash[hash[ix] + iy + 1] + iz];
   aab = hash[hash[hash[ix] + iy] + iz + 1];
@@ -54,6 +58,7 @@ float PerlinNoise::compute(float x, float y)
   bba = hash[hash[hash[ix + 1] + iy + 1] + iz];
   bab = hash[hash[hash[ix + 1] + iy] + iz + 1];
   bbb = hash[hash[hash[ix + 1] + iy + 1] + iz + 1];
+
   float l1 = lerp(xd, grad(aaa, vx, vy, vz), grad(baa, vx - 1.0f, vy, vz));
   float l2 = lerp(xd, grad(aba, vx, vy - 1.0f, vz), grad(bba, vx - 1.0f, vy - 1.0f, vz));
   float l3 = lerp(xd, grad(aab, vx, vy, vz - 1.0f), grad(bab, vx - 1.0f, vy, vz - 1.0f));

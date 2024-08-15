@@ -2,11 +2,11 @@
 #include "Block.h"
 #include "OctaveNoise.h"
 #include "CombinedNoise.h"
+#include "Level.h"
+#include "Random.h"
 
-#include <memory>
-
-class Level;
-class Random;
+#include <cstdint>
+#include <ctime>
 
 class LevelGenerator
 {
@@ -42,10 +42,10 @@ private:
   void generateTrees();
 
   State state;
+  int heights[Level::WIDTH * Level::DEPTH];
 
-  std::unique_ptr<int[]> heights;
-  std::unique_ptr<Random> random;
-  std::shared_ptr<CombinedNoise> noise1;
-  std::shared_ptr<CombinedNoise> noise2;
-  std::shared_ptr<OctaveNoise> noise3;
+  Random random = { uint64_t(std::time(nullptr)) };
+  CombinedNoise noise1 = { OctaveNoise(random, 8), OctaveNoise(random, 8) };
+  CombinedNoise noise2 = { OctaveNoise(random, 8), OctaveNoise(random, 8) };
+  OctaveNoise noise3 = { random, 6 };
 };

@@ -1,14 +1,12 @@
 #pragma once
-#include "Noise.h"
+#include "OctaveNoise.h"
 
-#include <memory>
-
-class CombinedNoise : public Noise {
+class CombinedNoise {
 public:
-  CombinedNoise(std::unique_ptr<Noise> noise1, std::unique_ptr<Noise> noise2);
+  CombinedNoise(OctaveNoise noise1, OctaveNoise noise2);
 
-  float compute(float x, float y) override;
+  float compute(float x, float y);
 private:
-  std::unique_ptr<Noise> noise1;
-  std::unique_ptr<Noise> noise2;
+  OctaveNoise noise1;
+  OctaveNoise noise2;
 };

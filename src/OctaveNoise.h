@@ -1,15 +1,15 @@
 #pragma once
-#include "Noise.h"
+#include "PerlinNoise.h"
 #include "Random.h"
 
-#include <memory>
+#include <vector>
 
-class OctaveNoise : public Noise {
+class OctaveNoise {
 public:
   OctaveNoise(Random& random, int octaveCount);
 
-  float compute(float x, float y) override;
+  float compute(float x, float y);
 private:
   int octaveCount;
-  std::unique_ptr<std::unique_ptr<Noise>[]> noises;
+  std::vector<PerlinNoise> noises;
 };
