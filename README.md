@@ -25,6 +25,7 @@ Alternatively, you can play the game by downloading the precompiled binaries for
   Download and unzip all files, then:
   * Move *Cubic.app* to the **Applications** folder.
   * Run the *Cubic.app* application.
+  * Go to **Apple menu > System Settings > Privacy & Security** and allow *Cubic.app* to run.
 - [Linux (Ubuntu/Debian)](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Linux.zip)
 
   Download and unzip all files, then in a terminal, run:
@@ -32,7 +33,6 @@ Alternatively, you can play the game by downloading the precompiled binaries for
   * `sudo apt install libgl-dev libglew-dev libsdl2-dev`
   * `chmod +x cubic`
   * `./cubic`
-  * Go to **Apple menu > System Settings > Privacy & Security** and allow *Cubic.app* to run.
 - [Android](https://github.com/vldr/Cubic/releases/download/Build/Cubic_Android.zip)
 
   Download and unzip all files, then install the *Cubic.apk* package:
