@@ -81,6 +81,11 @@ void VertexList::push(const VertexList::Vertex& vertex)
 {
   if (index == allocator->size)
   {
+    if (!allocator->size)
+    {
+      allocator->size++;
+    }
+
     allocator->size *= 2;
     allocator->data = static_cast<VertexList::Vertex*>(
       std::realloc(allocator->data, allocator->size * sizeof(VertexList::Vertex))
