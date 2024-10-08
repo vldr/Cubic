@@ -1,6 +1,7 @@
 #pragma once
-#include <cstdlib>
 #include <GL/glew.h>
+#include <cstdlib>
+#include <utility>
 
 class VertexList
 {
@@ -135,7 +136,24 @@ public:
   void update();
   void render();
   void reset();
-  void push(const VertexList::Vertex& vertex);
+
+  template <typename... Args>
+  void push(Args&&... args)
+  {
+    if (index == allocator->size)
+    {
+      if (!allocator->size)
+      {
+        allocator->size++;
+      }
+
+      allocator->size *= 2;
+      allocator->data = static_cast<VertexList::Vertex*>(
+        std::realloc(allocator->data, allocator->size * sizeof(VertexList::Vertex))
+      );
+    }
+    allocator->data[index++] = VertexList::Vertex(std::forward<Args>(args)...);
+  }
 
 private:
   Allocator* allocator;

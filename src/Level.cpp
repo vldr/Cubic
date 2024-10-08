@@ -423,7 +423,7 @@ void Level::updateTile(int x, int y, int z, bool deferred)
   {
     if (deferred)
     {
-      updates.push({ x, y, z });
+      updates.push({x, y, z});
     }
     else 
     {
@@ -431,7 +431,7 @@ void Level::updateTile(int x, int y, int z, bool deferred)
       {
         setTileWithNoNeighborChange(x - 1, y, z, blockType);
 
-        updates.push({ x - 1, y, z });
+        updates.push({x - 1, y, z});
       }
       else if (
         (isLavaTile(x - 1, y, z) && isWaterTile(blockType)) || 
@@ -445,7 +445,7 @@ void Level::updateTile(int x, int y, int z, bool deferred)
       {
         setTileWithNoNeighborChange(x + 1, y, z, blockType);
 
-        updates.push({ x + 1, y, z });
+        updates.push({x + 1, y, z});
       }
       else if (
         (isLavaTile(x + 1, y, z) && isWaterTile(blockType)) || 
@@ -459,7 +459,7 @@ void Level::updateTile(int x, int y, int z, bool deferred)
       {
         setTileWithNoNeighborChange(x, y - 1, z, blockType);
 
-        updates.push({ x, y - 1, z });
+        updates.push({x, y - 1, z});
       }
       else if (
         (isLavaTile(x, y - 1, z) && isWaterTile(blockType)) || 
@@ -473,7 +473,7 @@ void Level::updateTile(int x, int y, int z, bool deferred)
       {
         setTileWithNoNeighborChange(x, y, z - 1, blockType);
 
-        updates.push({ x, y, z - 1 });
+        updates.push({x, y, z - 1});
       }
       else if (
         (isLavaTile(x, y, z - 1) && isWaterTile(blockType)) ||
@@ -487,7 +487,7 @@ void Level::updateTile(int x, int y, int z, bool deferred)
       {
         setTileWithNoNeighborChange(x, y, z + 1, blockType);
 
-        updates.push({ x, y, z + 1 });
+        updates.push({x, y, z + 1});
       }
       else if (
         (isLavaTile(x, y, z + 1) && isWaterTile(blockType)) || 

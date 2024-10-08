@@ -67,7 +67,7 @@ public:
 private:
   struct Update
   { 
-    int x, y, z; 
+    int x, y, z;
   };
 
   std::queue<Update> updates;

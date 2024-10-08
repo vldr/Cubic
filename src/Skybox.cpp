@@ -35,52 +35,52 @@ void Skybox::initBedrock()
       float g = ground;
       if (i >= 0 && j >= 0 && i < Level::WIDTH && j < Level::DEPTH) { g = 0; }
 
-      bedrockVertices.push({i, g, j, 0.0f, 0.0f, 0.5f});
-      bedrockVertices.push({i, g, j + a, 0.0f, a, 0.5f});
-      bedrockVertices.push({i + a, g, j + a, a, a, 0.5f});
+      bedrockVertices.push(i, g, j, 0.0f, 0.0f, 0.5f);
+      bedrockVertices.push(i, g, j + a, 0.0f, a, 0.5f);
+      bedrockVertices.push(i + a, g, j + a, a, a, 0.5f);
 
-      bedrockVertices.push({i, g, j, 0.0f, 0.0f, 0.5f});
-      bedrockVertices.push({i + a, g, j + a, a, a, 0.5f});
-      bedrockVertices.push({i + a, g, j, a, 0.0f, 0.5f});
+      bedrockVertices.push(i, g, j, 0.0f, 0.0f, 0.5f);
+      bedrockVertices.push(i + a, g, j + a, a, a, 0.5f);
+      bedrockVertices.push(i + a, g, j, a, 0.0f, 0.5f);
     }
   }
 
   for (int i = 0; i < Level::WIDTH; i += a)
   {
-    bedrockVertices.push({i, ground, 0.0f, 0.0f, ground, 0.8f});
-    bedrockVertices.push({i, 0.0f, 0.0f, 0.0f, 0.0f, 0.8f});
-    bedrockVertices.push({i + a, 0.0f, 0.0f, a, 0.0f, 0.8f});
+    bedrockVertices.push(i, ground, 0.0f, 0.0f, ground, 0.8f);
+    bedrockVertices.push(i, 0.0f, 0.0f, 0.0f, 0.0f, 0.8f);
+    bedrockVertices.push(i + a, 0.0f, 0.0f, a, 0.0f, 0.8f);
 
-    bedrockVertices.push({i, ground, 0.0f, 0.0f, ground, 0.8f});
-    bedrockVertices.push({i + a, 0.0f, 0.0f, a, 0.0f, 0.8f});
-    bedrockVertices.push({i + a, ground, 0.0f, a, ground, 0.8f});
+    bedrockVertices.push(i, ground, 0.0f, 0.0f, ground, 0.8f);
+    bedrockVertices.push(i + a, 0.0f, 0.0f, a, 0.0f, 0.8f);
+    bedrockVertices.push(i + a, ground, 0.0f, a, ground, 0.8f);
 
-    bedrockVertices.push({i + a, ground, Level::DEPTH, a, ground, 0.8f});
-    bedrockVertices.push({i + a, 0.0f, Level::DEPTH, a, 0.0f, 0.8f});
-    bedrockVertices.push({i, 0.0f, Level::DEPTH, 0.0f, 0.0f, 0.8f});
+    bedrockVertices.push(i + a, ground, Level::DEPTH, a, ground, 0.8f);
+    bedrockVertices.push(i + a, 0.0f, Level::DEPTH, a, 0.0f, 0.8f);
+    bedrockVertices.push(i, 0.0f, Level::DEPTH, 0.0f, 0.0f, 0.8f);
 
-    bedrockVertices.push({i + a, ground, Level::DEPTH, a, ground, 0.8f});
-    bedrockVertices.push({i, 0.0f, Level::DEPTH, 0.0f, 0.0f, 0.8f});
-    bedrockVertices.push({i, ground, Level::DEPTH, 0.0f, ground, 0.8f});
+    bedrockVertices.push(i + a, ground, Level::DEPTH, a, ground, 0.8f);
+    bedrockVertices.push(i, 0.0f, Level::DEPTH, 0.0f, 0.0f, 0.8f);
+    bedrockVertices.push(i, ground, Level::DEPTH, 0.0f, ground, 0.8f);
   }
 
   for (int i = 0; i < Level::DEPTH; i += a)
   {
-    bedrockVertices.push({0.0f, ground, i + a, a, 0.0f, 0.6f});
-    bedrockVertices.push({0.0f, 0.0f, i + a, a, ground, 0.6f});
-    bedrockVertices.push({0.0f, 0.0f, i, 0.0f, ground, 0.6f});
+    bedrockVertices.push(0.0f, ground, i + a, a, 0.0f, 0.6f);
+    bedrockVertices.push(0.0f, 0.0f, i + a, a, ground, 0.6f);
+    bedrockVertices.push(0.0f, 0.0f, i, 0.0f, ground, 0.6f);
 
-    bedrockVertices.push({0.0f, ground, i + a, a, 0.0f, 0.6f});
-    bedrockVertices.push({0.0f, 0.0f, i, 0.0f, ground, 0.6f});
-    bedrockVertices.push({0.0f, ground, i, 0.0f, 0.0f, 0.6f});
+    bedrockVertices.push(0.0f, ground, i + a, a, 0.0f, 0.6f);
+    bedrockVertices.push(0.0f, 0.0f, i, 0.0f, ground, 0.6f);
+    bedrockVertices.push(0.0f, ground, i, 0.0f, 0.0f, 0.6f);
 
-    bedrockVertices.push({Level::WIDTH, ground, i, 0.0f, 0.0f, 0.6f});
-    bedrockVertices.push({Level::WIDTH, 0.0f, i, 0.0f, ground, 0.6f});
-    bedrockVertices.push({Level::WIDTH, 0.0f, i + a, a, ground, 0.6f});
+    bedrockVertices.push(Level::WIDTH, ground, i, 0.0f, 0.0f, 0.6f);
+    bedrockVertices.push(Level::WIDTH, 0.0f, i, 0.0f, ground, 0.6f);
+    bedrockVertices.push(Level::WIDTH, 0.0f, i + a, a, ground, 0.6f);
 
-    bedrockVertices.push({Level::WIDTH, ground, i, 0.0f, 0.0f, 0.6f});
-    bedrockVertices.push({Level::WIDTH, 0.0f, i + a, a, ground, 0.6f});
-    bedrockVertices.push({Level::WIDTH, ground, i + a, a, 0.0f, 0.6f});
+    bedrockVertices.push(Level::WIDTH, ground, i, 0.0f, 0.0f, 0.6f);
+    bedrockVertices.push(Level::WIDTH, 0.0f, i + a, a, ground, 0.6f);
+    bedrockVertices.push(Level::WIDTH, ground, i + a, a, 0.0f, 0.6f);
   }
 
   bedrockVertices.update();
@@ -110,21 +110,21 @@ void Skybox::initWater()
 
       if (i < 0 || j < 0 || i >= Level::WIDTH || j >= Level::DEPTH)
       {
-        waterVertices.push({i, w, j, 0.0f, 0.0f, 1.0f});
-        waterVertices.push({i, w, j + a, 0.0f, a, 1.0f});
-        waterVertices.push({i + a, w, j + a, a, a, 1.0f});
+        waterVertices.push(i, w, j, 0.0f, 0.0f, 1.0f);
+        waterVertices.push(i, w, j + a, 0.0f, a, 1.0f);
+        waterVertices.push(i + a, w, j + a, a, a, 1.0f);
 
-        waterVertices.push({i, w, j, 0.0f, 0.0f, 1.0f});
-        waterVertices.push({i + a, w, j + a, a, a, 1.0f});
-        waterVertices.push({i + a, w, j, a, 0.0f, 1.0f});
+        waterVertices.push(i, w, j, 0.0f, 0.0f, 1.0f);
+        waterVertices.push(i + a, w, j + a, a, a, 1.0f);
+        waterVertices.push(i + a, w, j, a, 0.0f, 1.0f);
 
-        waterVertices.push({i, w, j + a, 0.0f, a, 1.0f});
-        waterVertices.push({i, w, j, 0.0f, 0.0f, 1.0f});
-        waterVertices.push({i + a, w, j, a, 0.0f, 1.0f});
+        waterVertices.push(i, w, j + a, 0.0f, a, 1.0f);
+        waterVertices.push(i, w, j, 0.0f, 0.0f, 1.0f);
+        waterVertices.push(i + a, w, j, a, 0.0f, 1.0f);
 
-        waterVertices.push({i, w, j + a, 0.0f, a, 1.0f});
-        waterVertices.push({i + a, w, j, a, 0.0f, 1.0f});
-        waterVertices.push({i + a, w, j + a, a, a, 1.0f});
+        waterVertices.push(i, w, j + a, 0.0f, a, 1.0f);
+        waterVertices.push(i + a, w, j, a, 0.0f, 1.0f);
+        waterVertices.push(i + a, w, j + a, a, a, 1.0f);
       }
     }
   }
@@ -144,21 +144,21 @@ void Skybox::initClouds()
   {
     for (int z = -1024; z < Level::DEPTH + 1024; z += 512)
     {
-      cloudsVertices.push({x, y, z, (x + t) / 2048.0f, z / 2048.0f, 1.0f});
-      cloudsVertices.push({x, y, z + 512, (x + t) / 2048.0f, (z + 512) / 2048.0f, 1.0f});
-      cloudsVertices.push({x + 512, y, z + 512, (x + 512 + t) / 2048.0f, (z + 512) / 2048.0f, 1.0f});
+      cloudsVertices.push(x, y, z, (x + t) / 2048.0f, z / 2048.0f, 1.0f);
+      cloudsVertices.push(x, y, z + 512, (x + t) / 2048.0f, (z + 512) / 2048.0f, 1.0f);
+      cloudsVertices.push(x + 512, y, z + 512, (x + 512 + t) / 2048.0f, (z + 512) / 2048.0f, 1.0f);
 
-      cloudsVertices.push({x, y, z, (x + t) / 2048.0f, z / 2048.0f, 1.0f});
-      cloudsVertices.push({x + 512, y, z + 512, (x + 512 + t) / 2048.0f, (z + 512) / 2048.0f, 1.0f});
-      cloudsVertices.push({x + 512, y, z, (x + 512 + t) / 2048.0f, z / 2048.0f, 1.0f});
+      cloudsVertices.push(x, y, z, (x + t) / 2048.0f, z / 2048.0f, 1.0f);
+      cloudsVertices.push(x + 512, y, z + 512, (x + 512 + t) / 2048.0f, (z + 512) / 2048.0f, 1.0f);
+      cloudsVertices.push(x + 512, y, z, (x + 512 + t) / 2048.0f, z / 2048.0f, 1.0f);
 
-      cloudsVertices.push({x, y, z + 512, (x + t) / 2048.0f, (z + 512) / 2048.0f, 1.0f});
-      cloudsVertices.push({x, y, z, (x + t) / 2048.0f, z / 2048.0f, 1.0f});
-      cloudsVertices.push({x + 512, y, z, (x + 512 + t) / 2048.0f, z / 2048.0f, 1.0f});
+      cloudsVertices.push(x, y, z + 512, (x + t) / 2048.0f, (z + 512) / 2048.0f, 1.0f);
+      cloudsVertices.push(x, y, z, (x + t) / 2048.0f, z / 2048.0f, 1.0f);
+      cloudsVertices.push(x + 512, y, z, (x + 512 + t) / 2048.0f, z / 2048.0f, 1.0f);
 
-      cloudsVertices.push({x, y, z + 512, (x + t) / 2048.0f, (z + 512) / 2048.0f, 1.0f});
-      cloudsVertices.push({x + 512, y, z, (x + 512 + t) / 2048.0f, z / 2048.0f, 1.0f});
-      cloudsVertices.push({x + 512, y, z + 512, (x + 512 + t) / 2048.0f, (z + 512) / 2048.0f, 1.0f});
+      cloudsVertices.push(x, y, z + 512, (x + t) / 2048.0f, (z + 512) / 2048.0f, 1.0f);
+      cloudsVertices.push(x + 512, y, z, (x + 512 + t) / 2048.0f, z / 2048.0f, 1.0f);
+      cloudsVertices.push(x + 512, y, z + 512, (x + 512 + t) / 2048.0f, (z + 512) / 2048.0f, 1.0f);
     }
   }
 
@@ -176,13 +176,13 @@ void Skybox::initSky()
   {
     for (int z = -1024; z < Level::DEPTH + 1024; z += 512)
     {
-      skyVertices.push({x, y, z + 512, x / 2048.0f, (z + 512) / 2048.0f, 1.0f});
-      skyVertices.push({x, y, z, x / 2048.0f, z / 2048.0f, 1.0f});
-      skyVertices.push({x + 512, y, z, (x + 512) / 2048.0f, z / 2048.0f, 1.0f});
+      skyVertices.push(x, y, z + 512, x / 2048.0f, (z + 512) / 2048.0f, 1.0f);
+      skyVertices.push(x, y, z, x / 2048.0f, z / 2048.0f, 1.0f);
+      skyVertices.push(x + 512, y, z, (x + 512) / 2048.0f, z / 2048.0f, 1.0f);
 
-      skyVertices.push({x, y, z + 512, x / 2048.0f, (z + 512) / 2048.0f, 1.0f});
-      skyVertices.push({x + 512, y, z, (x + 512) / 2048.0f, z / 2048.0f, 1.0f});
-      skyVertices.push({x + 512, y, z + 512, (x + 512) / 2048.0f, (z + 512) / 2048.0f, 1.0f});
+      skyVertices.push(x, y, z + 512, x / 2048.0f, (z + 512) / 2048.0f, 1.0f);
+      skyVertices.push(x + 512, y, z, (x + 512) / 2048.0f, z / 2048.0f, 1.0f);
+      skyVertices.push(x + 512, y, z + 512, (x + 512) / 2048.0f, (z + 512) / 2048.0f, 1.0f);
     }
   }
 

@@ -76,21 +76,3 @@ void VertexList::render()
     glDrawArrays(GL_TRIANGLES, 0, (GLsizei)length);
   }
 }
-
-void VertexList::push(const VertexList::Vertex& vertex)
-{
-  if (index == allocator->size)
-  {
-    if (!allocator->size)
-    {
-      allocator->size++;
-    }
-
-    allocator->size *= 2;
-    allocator->data = static_cast<VertexList::Vertex*>(
-      std::realloc(allocator->data, allocator->size * sizeof(VertexList::Vertex))
-    );
-  }
-
-  allocator->data[index++] = std::move(vertex);
-}

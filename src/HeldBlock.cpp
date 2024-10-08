@@ -40,87 +40,87 @@ void HeldBlock::update()
 
   if (blockDefinition.draw == Block::DrawType::DRAW_SPRITE)
   {
-    vertices.push({0.0f, 1.5f, 0.0f, u, v, 1.0f});
-    vertices.push({0.0f, 0.5f, 0.0f, u, v2, 1.0f});
-    vertices.push({1.0f, 0.5f, 1.0f, u2, v2, 1.0f});
+    vertices.push(0.0f, 1.5f, 0.0f, u, v, 1.0f);
+    vertices.push(0.0f, 0.5f, 0.0f, u, v2, 1.0f);
+    vertices.push(1.0f, 0.5f, 1.0f, u2, v2, 1.0f);
                          
-    vertices.push({0.0f, 1.5f, 0.0f, u, v, 1.0f});
-    vertices.push({1.0f, 0.5f, 1.0f, u2, v2, 1.0f});
-    vertices.push({1.0f, 1.5f, 1.0f, u2, v, 1.0f});
+    vertices.push(0.0f, 1.5f, 0.0f, u, v, 1.0f);
+    vertices.push(1.0f, 0.5f, 1.0f, u2, v2, 1.0f);
+    vertices.push(1.0f, 1.5f, 1.0f, u2, v, 1.0f);
                         
-    vertices.push({0.0f, 1.5f, 1.0f, u, v, 1.0f});
-    vertices.push({0.0f, 0.5f, 1.0f, u, v2, 1.0f});
-    vertices.push({1.0f, 0.5f, 0.0f, u2, v2, 1.0f});
+    vertices.push(0.0f, 1.5f, 1.0f, u, v, 1.0f);
+    vertices.push(0.0f, 0.5f, 1.0f, u, v2, 1.0f);
+    vertices.push(1.0f, 0.5f, 0.0f, u2, v2, 1.0f);
                          
-    vertices.push({0.0f, 1.5f, 1.0f, u, v, 1.0f});
-    vertices.push({1.0f, 0.5f, 0.0f, u2, v2, 1.0f});
-    vertices.push({1.0f, 1.5f, 0.0f, u2, v, 1.0f});
+    vertices.push(0.0f, 1.5f, 1.0f, u, v, 1.0f);
+    vertices.push(1.0f, 0.5f, 0.0f, u2, v2, 1.0f);
+    vertices.push(1.0f, 1.5f, 0.0f, u2, v, 1.0f);
                           
-    vertices.push({1.0f, 1.5f, 1.0f, u, v, 1.0f});
-    vertices.push({1.0f, 0.5f, 1.0f, u, v2, 1.0f});
-    vertices.push({0.0f, 0.5f, 0.0f, u2, v2, 1.0f});
+    vertices.push(1.0f, 1.5f, 1.0f, u, v, 1.0f);
+    vertices.push(1.0f, 0.5f, 1.0f, u, v2, 1.0f);
+    vertices.push(0.0f, 0.5f, 0.0f, u2, v2, 1.0f);
                          
-    vertices.push({1.0f, 1.5f, 1.0f, u, v, 1.0f});
-    vertices.push({0.0f, 0.5f, 0.0f, u2, v2, 1.0f});
-    vertices.push({0.0f, 1.5f, 0.0f, u2, v, 1.0f});
+    vertices.push(1.0f, 1.5f, 1.0f, u, v, 1.0f);
+    vertices.push(0.0f, 0.5f, 0.0f, u2, v2, 1.0f);
+    vertices.push(0.0f, 1.5f, 0.0f, u2, v, 1.0f);
                         
-    vertices.push({1.0f, 1.5f, 0.0f, u, v, 1.0f});
-    vertices.push({1.0f, 0.5f, 0.0f, u, v2, 1.0f});
-    vertices.push({0.0f, 0.5f, 1.0f, u2, v2, 1.0f});
+    vertices.push(1.0f, 1.5f, 0.0f, u, v, 1.0f);
+    vertices.push(1.0f, 0.5f, 0.0f, u, v2, 1.0f);
+    vertices.push(0.0f, 0.5f, 1.0f, u2, v2, 1.0f);
                          
-    vertices.push({1.0f, 1.5f, 0.0f, u, v, 1.0f});
-    vertices.push({0.0f, 0.5f, 1.0f, u2, v2, 1.0f});
-    vertices.push({0.0f, 1.5f, 1.0f, u2, v, 1.0f});
+    vertices.push(1.0f, 1.5f, 0.0f, u, v, 1.0f);
+    vertices.push(0.0f, 0.5f, 1.0f, u2, v2, 1.0f);
+    vertices.push(0.0f, 1.5f, 1.0f, u2, v, 1.0f);
   }
   else
   {
-    vertices.push({0.0f, blockDefinition.height, 0.0f, uTop, vTop, 1.0f});
-    vertices.push({0.0f, blockDefinition.height, 1.0f, uTop, vTop2, 1.0f});
-    vertices.push({1.0f, blockDefinition.height, 1.0f, uTop2, vTop2, 1.0f});
+    vertices.push(0.0f, blockDefinition.height, 0.0f, uTop, vTop, 1.0f);
+    vertices.push(0.0f, blockDefinition.height, 1.0f, uTop, vTop2, 1.0f);
+    vertices.push(1.0f, blockDefinition.height, 1.0f, uTop2, vTop2, 1.0f);
 
-    vertices.push({0.0f, blockDefinition.height, 0.0f, uTop, vTop, 1.0f});
-    vertices.push({1.0f, blockDefinition.height, 1.0f, uTop2, vTop2, 1.0f});
-    vertices.push({1.0f, blockDefinition.height, 0.0f, uTop2, vTop, 1.0f});
+    vertices.push(0.0f, blockDefinition.height, 0.0f, uTop, vTop, 1.0f);
+    vertices.push(1.0f, blockDefinition.height, 1.0f, uTop2, vTop2, 1.0f);
+    vertices.push(1.0f, blockDefinition.height, 0.0f, uTop2, vTop, 1.0f);
 
-    vertices.push({0.0f, 0.0f, 1.0f, uBottom, vBottom, 0.5f});
-    vertices.push({0.0f, 0.0f, 0.0f, uBottom, vBottom2, 0.5f});
-    vertices.push({1.0f, 0.0f, 0.0f, uBottom2, vBottom2, 0.5f});
+    vertices.push(0.0f, 0.0f, 1.0f, uBottom, vBottom, 0.5f);
+    vertices.push(0.0f, 0.0f, 0.0f, uBottom, vBottom2, 0.5f);
+    vertices.push(1.0f, 0.0f, 0.0f, uBottom2, vBottom2, 0.5f);
 
-    vertices.push({0.0f, 0.0f, 1.0f, uBottom, vBottom, 0.5f});
-    vertices.push({1.0f, 0.0f, 0.0f, uBottom2, vBottom2, 0.5f});
-    vertices.push({1.0f, 0.0f, 1.0f, uBottom2, vBottom, 0.5f});
+    vertices.push(0.0f, 0.0f, 1.0f, uBottom, vBottom, 0.5f);
+    vertices.push(1.0f, 0.0f, 0.0f, uBottom2, vBottom2, 0.5f);
+    vertices.push(1.0f, 0.0f, 1.0f, uBottom2, vBottom, 0.5f);
 
-    vertices.push({0.0f, blockDefinition.height, 1.0f, u, v, 0.8f});
-    vertices.push({0.0f, 0.0f, 1.0f, u, v2, 0.8f});
-    vertices.push({1.0f, 0.0f, 1.0f, u2, v2, 0.8f});
+    vertices.push(0.0f, blockDefinition.height, 1.0f, u, v, 0.8f);
+    vertices.push(0.0f, 0.0f, 1.0f, u, v2, 0.8f);
+    vertices.push(1.0f, 0.0f, 1.0f, u2, v2, 0.8f);
 
-    vertices.push({0.0f, blockDefinition.height, 1.0f, u, v, 0.8f});
-    vertices.push({1.0f, 0.0f, 1.0f, u2, v2, 0.8f});
-    vertices.push({1.0f, blockDefinition.height, 1.0f, u2, v, 0.8f});
+    vertices.push(0.0f, blockDefinition.height, 1.0f, u, v, 0.8f);
+    vertices.push(1.0f, 0.0f, 1.0f, u2, v2, 0.8f);
+    vertices.push(1.0f, blockDefinition.height, 1.0f, u2, v, 0.8f);
 
-    vertices.push({1.0f, blockDefinition.height, 0.0f, u, v, 0.8f});
-    vertices.push({1.0f, 0.0f, 0.0f, u, v2, 0.8f});
-    vertices.push({0.0f, 0.0f, 0.0f, u2, v2, 0.8f});
+    vertices.push(1.0f, blockDefinition.height, 0.0f, u, v, 0.8f);
+    vertices.push(1.0f, 0.0f, 0.0f, u, v2, 0.8f);
+    vertices.push(0.0f, 0.0f, 0.0f, u2, v2, 0.8f);
 
-    vertices.push({1.0f, blockDefinition.height, 0.0f, u, v, 0.8f});
-    vertices.push({0.0f, 0.0f, 0.0f, u2, v2, 0.8f});
-    vertices.push({0.0f, blockDefinition.height, 0.0f, u2, v, 0.8f});
+    vertices.push(1.0f, blockDefinition.height, 0.0f, u, v, 0.8f);
+    vertices.push(0.0f, 0.0f, 0.0f, u2, v2, 0.8f);
+    vertices.push(0.0f, blockDefinition.height, 0.0f, u2, v, 0.8f);
 
-    vertices.push({1.0f, blockDefinition.height, 1.0f, u, v, 0.6f});
-    vertices.push({1.0f, 0.0f, 1.0f, u, v2, 0.6f});
-    vertices.push({1.0f, 0.0f, 0.0f, u2, v2, 0.6f});
+    vertices.push(1.0f, blockDefinition.height, 1.0f, u, v, 0.6f);
+    vertices.push(1.0f, 0.0f, 1.0f, u, v2, 0.6f);
+    vertices.push(1.0f, 0.0f, 0.0f, u2, v2, 0.6f);
 
-    vertices.push({1.0f, blockDefinition.height, 1.0f, u, v, 0.6f});
-    vertices.push({1.0f, 0.0f, 0.0f, u2, v2, 0.6f});
-    vertices.push({1.0f, blockDefinition.height, 0.0f, u2, v, 0.6f});
+    vertices.push(1.0f, blockDefinition.height, 1.0f, u, v, 0.6f);
+    vertices.push(1.0f, 0.0f, 0.0f, u2, v2, 0.6f);
+    vertices.push(1.0f, blockDefinition.height, 0.0f, u2, v, 0.6f);
 
-    vertices.push({0.0f, blockDefinition.height, 0.0f, u, v, 0.6f});
-    vertices.push({0.0f, 0.0f, 0.0f, u, v2, 0.6f});
-    vertices.push({0.0f, 0.0f, 1.0f, u2, v2, 0.6f});
+    vertices.push(0.0f, blockDefinition.height, 0.0f, u, v, 0.6f);
+    vertices.push(0.0f, 0.0f, 0.0f, u, v2, 0.6f);
+    vertices.push(0.0f, 0.0f, 1.0f, u2, v2, 0.6f);
 
-    vertices.push({0.0f, blockDefinition.height, 0.0f, u, v, 0.6f});
-    vertices.push({0.0f, 0.0f, 1.0f, u2, v2, 0.6f});
-    vertices.push({0.0f, blockDefinition.height, 1.0f, u2, v, 0.6f});
+    vertices.push(0.0f, blockDefinition.height, 0.0f, u, v, 0.6f);
+    vertices.push(0.0f, 0.0f, 1.0f, u2, v2, 0.6f);
+    vertices.push(0.0f, blockDefinition.height, 1.0f, u2, v, 0.6f);
   }
 
   vertices.update();

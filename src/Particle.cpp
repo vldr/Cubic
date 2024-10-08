@@ -80,11 +80,11 @@ void Particle::update(VertexList& vertexList)
   const float rotX = -z * glm::sin(glm::radians(game.localPlayer.rotation.y));
   const float rotZ = x * glm::sin(glm::radians(game.localPlayer.rotation.y));
 
-  vertexList.push({viewPosition.x - x * size + rotX * size, viewPosition.y + y * size, viewPosition.z - z * size + rotZ * size, u0, v0, brightness});
-  vertexList.push({viewPosition.x - x * size - rotX * size, viewPosition.y - y * size, viewPosition.z - z * size - rotZ * size, u0, v1, brightness});
-  vertexList.push({viewPosition.x + x * size - rotX * size, viewPosition.y - y * size, viewPosition.z + z * size - rotZ * size, u1, v1, brightness});
+  vertexList.push(viewPosition.x - x * size + rotX * size, viewPosition.y + y * size, viewPosition.z - z * size + rotZ * size, u0, v0, brightness);
+  vertexList.push(viewPosition.x - x * size - rotX * size, viewPosition.y - y * size, viewPosition.z - z * size - rotZ * size, u0, v1, brightness);
+  vertexList.push(viewPosition.x + x * size - rotX * size, viewPosition.y - y * size, viewPosition.z + z * size - rotZ * size, u1, v1, brightness);
 
-  vertexList.push({viewPosition.x - x * size + rotX * size, viewPosition.y + y * size, viewPosition.z - z * size + rotZ * size, u0, v0, brightness});
-  vertexList.push({viewPosition.x + x * size - rotX * size, viewPosition.y - y * size, viewPosition.z + z * size - rotZ * size, u1, v1, brightness});
-  vertexList.push({viewPosition.x + x * size + rotX * size, viewPosition.y + y * size, viewPosition.z + z * size + rotZ * size, u1, v0, brightness});
+  vertexList.push(viewPosition.x - x * size + rotX * size, viewPosition.y + y * size, viewPosition.z - z * size + rotZ * size, u0, v0, brightness);
+  vertexList.push(viewPosition.x + x * size - rotX * size, viewPosition.y - y * size, viewPosition.z + z * size - rotZ * size, u1, v1, brightness);
+  vertexList.push(viewPosition.x + x * size + rotX * size, viewPosition.y + y * size, viewPosition.z + z * size + rotZ * size, u1, v0, brightness);
 }
