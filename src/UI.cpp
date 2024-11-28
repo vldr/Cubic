@@ -525,7 +525,7 @@ bool UI::load(size_t index)
     return false;
   }
 
-  fread(game.level.blocks.get(), Level::WIDTH * Level::HEIGHT * Level::DEPTH, sizeof(unsigned char), file);
+  fread(game.level.blocks, std::size(game.level.blocks), sizeof(unsigned char), file);
   fclose(file);
 
   game.level.calculateLightDepths(0, 0, Level::WIDTH, Level::DEPTH);
@@ -559,7 +559,7 @@ bool UI::save(size_t index)
     return false;
   }
 
-  fwrite(game.level.blocks.get(), Level::WIDTH * Level::HEIGHT * Level::DEPTH, sizeof(unsigned char), file);
+  fwrite(game.level.blocks, std::size(game.level.blocks), sizeof(unsigned char), file);
   fclose(file);
 
 #if defined(EMSCRIPTEN)

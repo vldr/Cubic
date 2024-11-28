@@ -50,16 +50,12 @@ private:
     Position,
     SetBlock,
   };
-#pragma pack(pop)
 
-#pragma pack(push, 1)
   struct Packet
   {
     uint8_t index;
   };
-#pragma pack(pop)
 
-#pragma pack(push, 1)
   struct LevelPacket : Packet
   {
     PacketType type = PacketType::Level;
@@ -69,9 +65,7 @@ private:
     uint32_t length;
     uint8_t data[2 * Level::WIDTH * Level::HEIGHT * Level::DEPTH];
   };
-#pragma pack(pop)
 
-#pragma pack(push, 1)
   struct PositionPacket : Packet
   {
     PacketType type = PacketType::Position;
@@ -79,9 +73,7 @@ private:
     glm::f32vec3 position;
     glm::f32vec2 rotation;
   };
-#pragma pack(pop)
 
-#pragma pack(push, 1)
   struct SetBlockPacket : Packet
   {
     PacketType type = PacketType::SetBlock;

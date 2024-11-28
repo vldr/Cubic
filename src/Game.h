@@ -18,15 +18,13 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-extern class Game {
+extern class Game
+{
 public:
   void init(SDL_Window* window);
   void input(const SDL_Event& event);
   void render();
   void resize();
-
-  SDL_Window* window;
-  SDL_GameController* controller;
 
   TextureManager textureManager;
   ShaderManager shaderManager;
@@ -42,6 +40,9 @@ public:
   UI ui;
   Frustum frustum;
   Network network;
+
+  SDL_Window* window;
+  SDL_GameController* controller;
 
   GLuint shader;
   GLuint atlasTexture;

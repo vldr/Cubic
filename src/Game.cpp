@@ -280,7 +280,7 @@ void Game::input(const SDL_Event& event)
       return crc;
     };
 
-    auto hash = crc32(level.blocks.get(), Level::WIDTH * Level::HEIGHT * Level::DEPTH);
+    auto hash = crc32(level.blocks, std::size(level.blocks));
     ui.log("CRC32 checksum: %X", hash);
   }
   else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F4)

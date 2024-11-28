@@ -1,9 +1,9 @@
 #pragma once
 #include "Skybox.h"
 #include "Chunk.h"
+#include "Level.h"
 
 #include <queue>
-#include <memory>
 #include <GL/glew.h>
 
 class Level;
@@ -25,15 +25,14 @@ private:
   void updateWaterTexture();
   void updateLavaTexture();
 
+  const static int MAX_CHUNK_UPDATES = 4;
+  const static int CHUNKS_X = Level::WIDTH / Chunk::SIZE;
+  const static int CHUNKS_Y = Level::HEIGHT / Chunk::SIZE;
+  const static int CHUNKS_Z = Level::DEPTH / Chunk::SIZE;
+
   Skybox skybox;
 
-  std::unique_ptr<Chunk[]> chunks;
+  Chunk chunks[CHUNKS_X * CHUNKS_Y * CHUNKS_Z];
   std::priority_queue<Chunk*, std::vector<Chunk*>, Chunk::Comparator> chunkQueue;
-
-  int xChunks;
-  int yChunks;
-  int zChunks;
-
-  const int MAX_CHUNK_UPDATES = 4;
 };
 

@@ -335,7 +335,7 @@ void Network::sendLevel(unsigned char index, bool respawn)
     auto packet = std::make_unique<LevelPacket>();
     packet->index = index;
     packet->respawn = respawn;
-    packet->length = fastlz_compress(game.level.blocks.get(), sizeof(packet->data) / 2, packet->data);
+    packet->length = fastlz_compress(game.level.blocks, sizeof(packet->data) / 2, packet->data);
 
     sendBinary(
       (unsigned char*)packet.get(),
@@ -612,7 +612,7 @@ void Network::onBinaryMessage(const unsigned char* data, size_t size)
 
     LevelPacket* packet = (LevelPacket*)data;
 
-    if (!fastlz_decompress(packet->data, packet->length, game.level.blocks.get(), sizeof(packet->data) / 2))
+    if (!fastlz_decompress(packet->data, packet->length, game.level.blocks, sizeof(packet->data) / 2))
     {
       printf("network error: failed to decompress level data.\n");
       return;

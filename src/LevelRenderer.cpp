@@ -1,6 +1,5 @@
 #include "LevelRenderer.h"
 #include "Game.h"
-#include "Level.h"
 #include "Chunk.h"
 #include "Skybox.h"
 #include "Random.h"
@@ -12,16 +11,11 @@ void LevelRenderer::init()
 {
   skybox.init();
 
-  xChunks = Level::WIDTH / Chunk::SIZE;
-  yChunks = Level::HEIGHT / Chunk::SIZE;
-  zChunks = Level::DEPTH / Chunk::SIZE;
-  chunks = std::make_unique<Chunk[]>(xChunks * yChunks * zChunks);
-
-  for (int x = 0; x < xChunks; x++)
+  for (int x = 0; x < CHUNKS_X; x++)
   {
-    for (int y = 0; y < yChunks; y++)
+    for (int y = 0; y < CHUNKS_Y; y++)
     {
-      for (int z = 0; z < zChunks; z++)
+      for (int z = 0; z < CHUNKS_Z; z++)
       {
         auto chunk = getChunk(x, y, z);
         chunk->init(Chunk::SIZE * x, Chunk::SIZE * y, Chunk::SIZE * z);
@@ -47,14 +41,13 @@ void LevelRenderer::render()
 
   glBindTexture(GL_TEXTURE_2D, game.atlasTexture);
   
-  for (int i = 0; i < xChunks * yChunks * zChunks; i++)
+  for (auto& chunk : chunks)
   {
-    Chunk* chunk = &chunks[i];
-    chunk->isVisible = game.frustum.contains(chunk);
+    chunk.isVisible = game.frustum.contains(&chunk);
 
-    if (chunk->isVisible)
+    if (chunk.isVisible)
     {
-      chunk->render();
+      chunk.render();
     }
   }
 
@@ -68,13 +61,11 @@ void LevelRenderer::renderPost()
   glBindTexture(GL_TEXTURE_2D, game.atlasTexture);
   glColorMask(false, false, false, false);
 
-  for (int i = 0; i < xChunks * yChunks * zChunks; i++)
+  for (auto& chunk : chunks)
   {
-    Chunk* chunk = &chunks[i];
-
-    if (chunk->isVisible)
+    if (chunk.isVisible)
     {
-      chunks[i].renderWater();
+      chunk.renderWater();
     }
   }
 
@@ -83,13 +74,12 @@ void LevelRenderer::renderPost()
   glBindTexture(GL_TEXTURE_2D, game.atlasTexture);
   glColorMask(true, true, true, true);
 
-  for (int i = 0; i < xChunks * yChunks * zChunks; i++)
+  for (auto& chunk : chunks)
   {
-    Chunk* chunk = &chunks[i];
 
-    if (chunk->isVisible)
+    if (chunk.isVisible)
     {
-      chunks[i].renderWater();
+      chunk.renderWater();
     }
   }
 
@@ -219,12 +209,11 @@ void LevelRenderer::updateLavaTexture()
 
 void LevelRenderer::loadAllChunks()
 {
-  for (int i = 0; i < xChunks * yChunks * zChunks; i++)
+  for (auto& chunk : chunks)
   {
-    Chunk* chunk = &chunks[i];
-    chunk->isLoaded = false;
+    chunk.isLoaded = false;
 
-    chunkQueue.push(chunk);
+    chunkQueue.push(&chunk);
   }
 }
 
@@ -248,7 +237,7 @@ void LevelRenderer::loadChunks(int x, int y, int z)
 
     if (
       offsetX < 0 || offsetY < 0 || offsetZ < 0 || 
-      offsetX > xChunks - 1 || offsetY > yChunks - 1 || offsetZ > zChunks - 1
+      offsetX > CHUNKS_X - 1 || offsetY > CHUNKS_Y - 1 || offsetZ > CHUNKS_Z - 1
     )
     {
       continue;
@@ -265,5 +254,5 @@ void LevelRenderer::loadChunks(int x, int y, int z)
 
 Chunk* LevelRenderer::getChunk(int x, int y, int z)
 {
-  return &chunks[(z * yChunks + y) * xChunks + x];
+  return &chunks[(z * CHUNKS_Y + y) * CHUNKS_X + x];
 }

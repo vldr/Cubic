@@ -9,14 +9,12 @@ void Level::init()
 {
   waterLevel = Level::HEIGHT / 2;
   groundLevel = waterLevel - 2;
-  blocks = std::make_unique<unsigned char[]>(Level::WIDTH * Level::HEIGHT * Level::DEPTH);
 
   spawn.x = Level::WIDTH - 1.0f;
   spawn.x = Level::HEIGHT - 1.0f;
   spawn.x = Level::DEPTH - 1.0f;
 
-  lightDepths = std::make_unique<int[]>(Level::WIDTH * Level::DEPTH);
-  for (int i = 0; i < Level::WIDTH * Level::DEPTH; i++)
+  for (int i = 0; i < std::size(lightDepths); i++)
   {
     lightDepths[i] = Level::HEIGHT - 1;
   }
@@ -423,7 +421,7 @@ void Level::updateTile(int x, int y, int z, bool deferred)
   {
     if (deferred)
     {
-      updates.push({x, y, z});
+      updates.emplace(x, y, z);
     }
     else 
     {
@@ -431,7 +429,7 @@ void Level::updateTile(int x, int y, int z, bool deferred)
       {
         setTileWithNoNeighborChange(x - 1, y, z, blockType);
 
-        updates.push({x - 1, y, z});
+        updates.emplace(x - 1, y, z);
       }
       else if (
         (isLavaTile(x - 1, y, z) && isWaterTile(blockType)) || 
@@ -445,7 +443,7 @@ void Level::updateTile(int x, int y, int z, bool deferred)
       {
         setTileWithNoNeighborChange(x + 1, y, z, blockType);
 
-        updates.push({x + 1, y, z});
+        updates.emplace(x + 1, y, z);
       }
       else if (
         (isLavaTile(x + 1, y, z) && isWaterTile(blockType)) || 
@@ -459,7 +457,7 @@ void Level::updateTile(int x, int y, int z, bool deferred)
       {
         setTileWithNoNeighborChange(x, y - 1, z, blockType);
 
-        updates.push({x, y - 1, z});
+        updates.emplace(x, y - 1, z);
       }
       else if (
         (isLavaTile(x, y - 1, z) && isWaterTile(blockType)) || 
@@ -473,7 +471,7 @@ void Level::updateTile(int x, int y, int z, bool deferred)
       {
         setTileWithNoNeighborChange(x, y, z - 1, blockType);
 
-        updates.push({x, y, z - 1});
+        updates.emplace(x, y, z - 1);
       }
       else if (
         (isLavaTile(x, y, z - 1) && isWaterTile(blockType)) ||
@@ -487,7 +485,7 @@ void Level::updateTile(int x, int y, int z, bool deferred)
       {
         setTileWithNoNeighborChange(x, y, z + 1, blockType);
 
-        updates.push({x, y, z + 1});
+        updates.emplace(x, y, z + 1);
       }
       else if (
         (isLavaTile(x, y, z + 1) && isWaterTile(blockType)) || 

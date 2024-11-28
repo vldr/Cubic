@@ -4,7 +4,6 @@
 
 #include <glm/glm.hpp>
 #include <queue>
-#include <memory>
 
 class AABB;
 
@@ -58,18 +57,14 @@ public:
 
   AABBPosition clip(glm::vec3 start, glm::vec3 end, const glm::ivec3* expected = nullptr);
 
+  unsigned char blocks[Level::WIDTH * Level::HEIGHT * Level::DEPTH];
+  int lightDepths[Level::WIDTH * Level::DEPTH];
+
   int groundLevel;
   int waterLevel;
 
   glm::vec3 spawn;
-  std::unique_ptr<unsigned char[]> blocks;
 
 private:
-  struct Update
-  { 
-    int x, y, z;
-  };
-
-  std::queue<Update> updates;
-  std::unique_ptr<int[]> lightDepths;
+  std::queue<glm::ivec3> updates;
 };
