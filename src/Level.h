@@ -9,9 +9,9 @@ class AABB;
 
 class Level {
 public:
-  const static int WIDTH = 128;
-  const static int HEIGHT = 64;
-  const static int DEPTH = 128;
+  constexpr static int WIDTH = 128;
+  constexpr static int HEIGHT = 64;
+  constexpr static int DEPTH = 128;
 
   void init();
   void tick();
