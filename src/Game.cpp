@@ -345,6 +345,8 @@ void Game::resize()
   int maxScaleFactor = (ui.isTouch || emscripten_get_device_pixel_ratio() >= 2.0) ? 6 : 3;
 #elif defined(ANDROID) || TARGET_OS_IPHONE
   int maxScaleFactor = 6;
+#elif TARGET_OS_OSX
+  int maxScaleFactor = (ui.isTouch || (width / windowWidth) >= 2) ? 6 : 3;
 #else
   int maxScaleFactor = ui.isTouch ? 6 : 3;
 #endif
