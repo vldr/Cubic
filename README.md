@@ -49,9 +49,15 @@ Alternatively, you can play the game by downloading the precompiled binaries for
 ### Web
 
 1. Open a terminal.
-2. Install [Emscripten](https://emscripten.org/docs/getting_started/downloads.html) and [Make](https://www.gnu.org/software/make/manual/make.html).
-3. Navigate to the `build/web/` directory.
-4. Run `make -j`
+2. Install [Make](https://www.gnu.org/software/make/manual/make.html).
+3. Install [Emscripten](https://emscripten.org/docs/getting_started/downloads.html) 3.1.34 (newer Emscripten does NOT work):
+   - `git clone https://github.com/emscripten-core/emsdk.git`
+   - `cd emsdk`
+   - `./emsdk install 3.1.34`
+   - `./emsdk activate 3.1.34`
+   - `source ./emsdk_env.sh`
+5. Navigate to the `build/web/` directory.
+6. Run `make -j`
 
 After the build process completes, the output HTML, JS, and WASM files will be located in the `build/web/output/` directory.
 
